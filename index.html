@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PoGORaids - Pokémon GO Tools & Community</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+  <!-- LANGUAGE SWITCHER -->
+  <div class="lang-bar">
+    <span data-i18n="lang_label">🌐 Language:</span>
+    <button class="lang-btn active" data-lang="en">EN</button>
+    <button class="lang-btn" data-lang="es">ES</button>
+    <button class="lang-btn" data-lang="pt">PT</button>
+    <button class="lang-btn" data-lang="nl">NL</button>
+    <button class="lang-btn" data-lang="de">DE</button>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-logo">
+      <img src="assets/logo.png" alt="PoGORaids Logo" class="nav-logo-img" />
+      <span class="nav-title">PoGORaids</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#tools" data-i18n="nav_tools">Tools</a></li>
+      <li><a href="#news" data-i18n="nav_news">News</a></li>
+      <li><a href="#discord" class="nav-discord" data-i18n="nav_discord">Discord</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+      <img src="assets/logo.png" alt="PoGORaids" class="hero-logo" />
+      <h1 class="hero-title" data-i18n="hero_title">Your Pokémon GO Hub</h1>
+      <p class="hero-sub" data-i18n="hero_sub">Tools, news, and community — all in one place for trainers worldwide.</p>
+    </div>
+  </header>
+
+  <!-- TOOLS GRID -->
+  <section class="tools-section" id="tools">
+    <h2 class="section-title" data-i18n="tools_title">Trainer Tools</h2>
+    <div class="tools-grid">
+
+      <a href="/leaderboards" class="tool-card">
+        <div class="tool-icon"><i class="fa-solid fa-trophy"></i></div>
+        <span class="tool-name" data-i18n="tool_leaderboards">Leaderboards</span>
+      </a>
+
+      <a href="/community-map" class="tool-card">
+        <div class="tool-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+        <span class="tool-name" data-i18n="tool_community_map">Community Map</span>
+      </a>
+
+      <a href="/vivillon" class="tool-card">
+        <div class="tool-icon"><i class="fa-solid fa-gift"></i></div>
+        <span class="tool-name" data-i18n="tool_vivillon">Vivillon Gift Exchange</span>
+      </a>
+
+      <a href="/nest-map" class="tool-card">
+        <div class="tool-icon"><i class="fa-solid fa-tree"></i></div>
+        <span class="tool-name" data-i18n="tool_nest_map">Nest Map</span>
+      </a>
+
+      <a href="/events" class="tool-card">
+        <div class="tool-icon"><i class="fa-solid fa-calendar-days"></i></div>
+        <span class="tool-name" data-i18n="tool_events">Event Calendar</span>
+      </a>
+
+      <a href="/infographics" class="tool-card">
+        <div class="tool-icon"><i class="fa-solid fa-chart-bar"></i></div>
+        <span class="tool-name" data-i18n="tool_infographics">Infographics</span>
+      </a>
+
+      <a href="/news" class="tool-card">
+        <div class="tool-icon"><i class="fa-solid fa-newspaper"></i></div>
+        <span class="tool-name" data-i18n="tool_news">News</span>
+      </a>
+
+      <a href="https://discord.gg/pogoraids" class="tool-card discord-card" target="_blank" rel="noopener">
+        <div class="tool-icon"><i class="fa-brands fa-discord"></i></div>
+        <span class="tool-name" data-i18n="tool_discord">Discord</span>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- NEWS SECTION -->
+  <section class="news-section" id="news">
+    <h2 class="section-title" data-i18n="news_title">Latest News</h2>
+    <div class="news-grid" id="news-grid"></div>
+    <div class="news-more">
+      <a href="/news" class="btn-outline" data-i18n="news_more">View All News</a>
+    </div>
+  </section>
+
+  <!-- DISCORD CTA -->
+  <section class="discord-section" id="discord">
+    <div class="discord-inner">
+      <i class="fa-brands fa-discord discord-big-icon"></i>
+      <div class="discord-text">
+        <h2 data-i18n="discord_title">Join Our Community</h2>
+        <p data-i18n="discord_sub">Connect with thousands of Pokémon GO trainers, share raids, and stay up to date.</p>
+      </div>
+      <a href="https://discord.gg/pogoraids" class="btn-discord" target="_blank" rel="noopener" data-i18n="discord_btn">Join Discord</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p data-i18n="footer_text">© 2026 PoGORaids.net — Not affiliated with Niantic or Pokémon GO.</p>
+  </footer>
+
+  <script src="i18n.js"></script>
+  <script src="news.js"></script>
+</body>
+</html>
