@@ -110,13 +110,12 @@
       justify-content: center;
       background: rgba(10,10,20,0.62);
       backdrop-filter: blur(4px);
-      pointer-events: none;
+      pointer-events: none; /* always passthrough — never blocks map interaction */
       opacity: 0;
       transition: opacity 0.3s ease;
     }
     .zoom-guard-overlay.visible {
       opacity: 1;
-      pointer-events: auto;
     }
     .zoom-guard-box {
       display: flex;
@@ -129,6 +128,7 @@
       border-radius: 18px;
       box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 20px rgba(0,212,255,0.08);
       text-align: center;
+      pointer-events: none;
     }
     .zoom-guard-box i {
       font-size: 2rem;
@@ -802,14 +802,12 @@
     },
   };
 
-  // Merge nest-map keys into the global translations object
   Object.keys(nestMapTranslations).forEach(lang => {
     if (translations[lang]) {
       Object.assign(translations[lang], nestMapTranslations[lang]);
     }
   });
 
-  // Re-apply translations now that the page is loaded and keys are merged
   applyTranslations(currentLang);
 
   // ===== NEST RESET COUNTDOWN =====
@@ -842,7 +840,7 @@
   const OVERPASS_API = 'https://overpass-api.de/api/interpreter';
   const SPRITE_BASE  = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
   const STORAGE_KEY  = 'pogoraids_nests_v1';
-  const MIN_ZOOM     = 12; // Don't query Overpass below this zoom level
+  const MIN_ZOOM     = 12;
 
   // ===== POKÉMON LIST — nestable species only =====
   const POKEMON = [
@@ -856,7 +854,7 @@
     {id:77,name:'Ponyta'},{id:79,name:'Slowpoke'},{id:84,name:'Doduo'},
     {id:90,name:'Shellder'},{id:95,name:'Onix'},{id:98,name:'Krabby'},
     {id:102,name:'Exeggcute'},{id:104,name:'Cubone'},{id:111,name:'Rhyhorn'},
-    {id:114,name:'Tangela'},{id:116,name:'Horsea'},{id:118,name:'Goldeen'},
+      {id:114,name:'Tangela'},{id:116,name:'Horsea'},{id:118,name:'Goldeen'},
     {id:123,name:'Scyther'},{id:127,name:'Pinsir'},{id:129,name:'Magikarp'},
     {id:133,name:'Eevee'},{id:147,name:'Dratini'},
     {id:152,name:'Chikorita'},{id:155,name:'Cyndaquil'},{id:158,name:'Totodile'},
@@ -1146,7 +1144,6 @@
   // ===== OVERPASS FETCH =====
   // NOTE: landuse=meadow and leisure=pitch have been intentionally removed.
   function fetchParks(bounds) {
-    // ---- MINIMUM ZOOM GUARD ----
     if (map.getZoom() < MIN_ZOOM) {
       updateZoomGuard();
       return;
@@ -1217,7 +1214,6 @@ out body geom;`;
 
   map.on('moveend zoomend', () => fetchParks(map.getBounds()));
 
-  // Run immediately — show guard right away if starting below MIN_ZOOM
   updateZoomGuard();
   fetchParks(map.getBounds());
   </script>
