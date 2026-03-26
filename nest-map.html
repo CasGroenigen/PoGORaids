@@ -347,7 +347,7 @@
     <!-- CORNER LOADING INDICATOR -->
     <div class="map-fetch-indicator hidden" id="fetch-indicator">
       <i class="fa-solid fa-spinner"></i>
-      Loading parks…
+      Loading areas…
     </div>
 
     <div class="map-legend">
@@ -374,8 +374,8 @@
     {id:1,name:'Bulbasaur'},{id:4,name:'Charmander'},{id:7,name:'Squirtle'},
     {id:10,name:'Caterpie'},{id:13,name:'Weedle'},{id:16,name:'Pidgey'},
     {id:19,name:'Rattata'},{id:21,name:'Spearow'},{id:23,name:'Ekans'},
-    {id:25,name:'Pikachu'},{id:27,name:'Sandshrew'},{id:29,name:'Nidoran♀'},
-    {id:32,name:'Nidoran♂'},{id:35,name:'Clefairy'},{id:37,name:'Vulpix'},
+    {id:25,name:'Pikachu'},{id:27,name:'Sandshrew'},{id:29,name:'Nidoran\u2640'},
+    {id:32,name:'Nidoran\u2642'},{id:35,name:'Clefairy'},{id:37,name:'Vulpix'},
     {id:39,name:'Jigglypuff'},{id:41,name:'Zubat'},{id:43,name:'Oddish'},
     {id:46,name:'Paras'},{id:48,name:'Venonat'},{id:50,name:'Diglett'},
     {id:52,name:'Meowth'},{id:54,name:'Psyduck'},{id:56,name:'Mankey'},
@@ -449,7 +449,7 @@
   });
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    attribution: '\u00a9 <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     maxZoom: 19
   }).addTo(map);
 
@@ -510,7 +510,7 @@
     } else {
       currentHtml = `
         <div class="nest-current">
-          <span class="no-nest">❓</span>
+          <span class="no-nest">\u2753</span>
           <div class="nest-current-info">
             <strong>Unknown</strong>
             <span>No nest reported yet</span>
@@ -519,11 +519,11 @@
     }
     return `
       <div class="nest-popup">
-        <h3><i class="fa-solid fa-tree" style="color:var(--cyan);margin-right:6px;"></i>${parkName || 'Park'}</h3>
+        <h3><i class="fa-solid fa-tree" style="color:var(--cyan);margin-right:6px;"></i>${parkName || 'Area'}</h3>
         ${currentHtml}
-        <label>Report nesting Pokémon</label>
+        <label>Report nesting Pok\u00e9mon</label>
         <div class="poke-search-wrap">
-          <input type="text" id="poke-input-${osmId}" placeholder="Search Pokémon…" autocomplete="off" />
+          <input type="text" id="poke-input-${osmId}" placeholder="Search Pok\u00e9mon\u2026" autocomplete="off" />
           <div class="poke-suggestions" id="poke-suggestions-${osmId}"></div>
         </div>
         <button class="btn-set-nest" id="btn-save-${osmId}" disabled>Set Nest</button>
@@ -587,7 +587,7 @@
 
   function renderPark(feature, center) {
     const osmId   = feature.id;
-    const name    = (feature.tags && feature.tags.name) || 'Unnamed Park';
+    const name    = (feature.tags && feature.tags.name) || 'Unnamed Area';
     const nest    = nests[osmId];
     const hasNest = !!(nest && nest.pokemonId);
 
@@ -624,10 +624,36 @@
           n = bounds.getNorth().toFixed(5),
           e = bounds.getEast().toFixed(5);
 
-    const query = `[out:json][timeout:25];
+    const bbox = `${s},${w},${n},${e}`;
+
+    const query = `[out:json][timeout:60];
 (
-  way["leisure"="park"](${s},${w},${n},${e});
-  relation["leisure"="park"](${s},${w},${n},${e});
+  way["leisure"="park"](${bbox});
+  way["leisure"="recreation_ground"](${bbox});
+  way["leisure"="pitch"](${bbox});
+  way["leisure"="garden"](${bbox});
+  way["leisure"="golf_course"](${bbox});
+  way["leisure"="playground"](${bbox});
+  way["landuse"="recreation_ground"](${bbox});
+  way["landuse"="meadow"](${bbox});
+  way["landuse"="greenfield"](${bbox});
+  way["landuse"="farmyard"](${bbox});
+  way["landuse"="vineyard"](${bbox});
+  way["landuse"="farmland"](${bbox});
+  way["landuse"="orchard"](${bbox});
+  relation["leisure"="park"](${bbox});
+  relation["leisure"="recreation_ground"](${bbox});
+  relation["leisure"="pitch"](${bbox});
+  relation["leisure"="garden"](${bbox});
+  relation["leisure"="golf_course"](${bbox});
+  relation["leisure"="playground"](${bbox});
+  relation["landuse"="recreation_ground"](${bbox});
+  relation["landuse"="meadow"](${bbox});
+  relation["landuse"="greenfield"](${bbox});
+  relation["landuse"="farmyard"](${bbox});
+  relation["landuse"="vineyard"](${bbox});
+  relation["landuse"="farmland"](${bbox});
+  relation["landuse"="orchard"](${bbox});
 );
 out body geom;`;
 
