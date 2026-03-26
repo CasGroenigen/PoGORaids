@@ -46,6 +46,40 @@
       margin: 0 auto;
     }
 
+    /* ===== NEST RESET TIMER ===== */
+    .nest-reset-timer {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 18px;
+      padding: 10px 20px;
+      background: rgba(10,10,25,0.7);
+      border: 1px solid rgba(0,212,255,0.25);
+      border-radius: 30px;
+      font-family: var(--font-alt);
+      font-size: 0.9rem;
+      color: var(--gray);
+      backdrop-filter: blur(8px);
+    }
+    .nest-reset-timer .timer-label {
+      color: var(--gray);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+    }
+    .nest-reset-timer .timer-value {
+      color: var(--cyan);
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      font-variant-numeric: tabular-nums;
+    }
+    .nest-reset-timer i {
+      color: var(--cyan);
+      font-size: 1rem;
+    }
+
     /* ===== MAP WRAPPER ===== */
     .map-wrapper {
       position: relative;
@@ -214,7 +248,7 @@
     }
     .nest-popup .poke-search-wrap {
       position: relative;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
     .nest-popup input[type=text] {
       width: 100%;
@@ -227,6 +261,7 @@
       font-size: 0.9rem;
       outline: none;
       transition: border-color 0.2s;
+      box-sizing: border-box;
     }
     .nest-popup input[type=text]:focus { border-color: var(--cyan); }
     .nest-popup input[type=text]::placeholder { color: var(--gray); }
@@ -255,6 +290,37 @@
     }
     .poke-suggestion-item:hover { background: rgba(0,212,255,0.1); }
     .poke-suggestion-item img { width: 28px; height: 28px; object-fit: contain; image-rendering: pixelated; }
+
+    /* ===== DROPDOWN ===== */
+    .nest-popup .poke-dropdown-wrap {
+      margin-bottom: 10px;
+    }
+    .nest-popup select.poke-dropdown {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(0,212,255,0.25);
+      border-radius: 8px;
+      padding: 9px 12px;
+      color: var(--white);
+      font-family: var(--font-main);
+      font-size: 0.88rem;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2300d4ff' d='M0 0l6 8 6-8z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 10px;
+    }
+    .nest-popup select.poke-dropdown:focus { border-color: var(--cyan); }
+    .nest-popup select.poke-dropdown option {
+      background: #1a1a2e;
+      color: var(--white);
+    }
+
     .nest-popup .btn-set-nest {
       width: 100%;
       padding: 10px;
@@ -348,16 +414,23 @@
       </a>
     </div>
     <ul class="nav-links">
-      <li><a href="/#tools">Tools</a></li>
-      <li><a href="/#news">News</a></li>
-      <li><a href="https://discord.gg/pogoraids" class="nav-discord" target="_blank" rel="noopener">Discord</a></li>
+      <li><a href="/#tools" data-i18n="nav_tools">Tools</a></li>
+      <li><a href="/#news" data-i18n="nav_news">News</a></li>
+      <li><a href="https://discord.gg/pogoraids" class="nav-discord" target="_blank" rel="noopener" data-i18n="nav_discord">Discord</a></li>
     </ul>
   </nav>
 
   <!-- HERO -->
   <div class="nestmap-hero">
-    <h1><i class="fa-solid fa-tree" style="margin-right:12px;"></i>Nest Map</h1>
-    <p>Discover Pokémon nests near you. Click any park to report or view what's currently nesting there.</p>
+    <h1><i class="fa-solid fa-tree" style="margin-right:12px;"></i><span data-i18n="nestmap_title">Nest Map</span></h1>
+    <p data-i18n="nestmap_sub">Discover Pokémon nests near you. Click any park to report or view what's currently nesting there.</p>
+
+    <!-- NEST RESET COUNTDOWN -->
+    <div class="nest-reset-timer">
+      <i class="fa-solid fa-clock-rotate-left"></i>
+      <span class="timer-label" data-i18n="nest_reset_label">Next Nest Reset:</span>
+      <span class="timer-value" id="nest-countdown">--:--:--</span>
+    </div>
   </div>
 
   <!-- MAP -->
@@ -367,87 +440,390 @@
     <!-- CORNER LOADING INDICATOR -->
     <div class="map-fetch-indicator hidden" id="fetch-indicator">
       <i class="fa-solid fa-spinner"></i>
-      Loading areas…
+      <span data-i18n="map_loading">Loading areas…</span>
     </div>
 
     <div class="map-legend">
-      <span style="font-weight:700;color:var(--white);"><i class="fa-solid fa-circle-info" style="color:var(--cyan);margin-right:6px;"></i>Legend</span>
-      <div class="legend-item"><div class="legend-dot known"></div><span>Nest reported</span></div>
-      <div class="legend-item"><div class="legend-dot unknown"></div><span>Unknown nest</span></div>
-      <div class="legend-item"><i class="fa-solid fa-hand-pointer" style="color:var(--cyan);"></i><span>Click a park to report</span></div>
+      <span style="font-weight:700;color:var(--white);"><i class="fa-solid fa-circle-info" style="color:var(--cyan);margin-right:6px;"></i><span data-i18n="legend_title">Legend</span></span>
+      <div class="legend-item"><div class="legend-dot known"></div><span data-i18n="legend_reported">Nest reported</span></div>
+      <div class="legend-item"><div class="legend-dot unknown"></div><span data-i18n="legend_unknown">Unknown nest</span></div>
+      <div class="legend-item"><i class="fa-solid fa-hand-pointer" style="color:var(--cyan);"></i><span data-i18n="legend_click">Click a park to report</span></div>
     </div>
   </div>
 
   <!-- FOOTER -->
   <footer class="footer">
-    <p>© 2026 PoGORaids.net — Not affiliated with Niantic or Pokémon GO. Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" style="color:var(--cyan);">OpenStreetMap</a> contributors.</p>
+    <p data-i18n="footer_text">© 2026 PoGORaids.net — Not affiliated with Niantic or Pokémon GO. Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" style="color:var(--cyan);">OpenStreetMap</a> contributors.</p>
   </footer>
 
+  <!-- i18n (must load before inline script so applyTranslations is available) -->
+  <script src="i18n.js"></script>
+
   <script>
+  // ===== EXTEND i18n WITH NEST-MAP KEYS =====
+  const nestMapTranslations = {
+    en: {
+      nestmap_title: 'Nest Map',
+      nestmap_sub: 'Discover Pokémon nests near you. Click any park to report or view what\'s currently nesting there.',
+      nest_reset_label: 'Next Nest Reset:',
+      map_loading: 'Loading areas…',
+      legend_title: 'Legend',
+      legend_reported: 'Nest reported',
+      legend_unknown: 'Unknown nest',
+      legend_click: 'Click a park to report',
+      popup_report_label: 'REPORT NESTING POKÉMON',
+      popup_search_placeholder: 'Search Pokémon…',
+      popup_dropdown_default: '— or pick from nestable list —',
+      popup_set_nest: 'Set Nest',
+      popup_stored_locally: 'Data stored locally in your browser',
+      popup_reported_by: 'Reported by',
+      popup_no_nest: 'Unknown',
+      popup_no_nest_sub: 'No nest reported yet',
+    },
+    es: {
+      nestmap_title: 'Mapa de Nidos',
+      nestmap_sub: 'Descubre nidos de Pokémon cerca de ti. Haz clic en cualquier parque para reportar o ver qué está anidando actualmente.',
+      nest_reset_label: 'Próximo Reinicio de Nidos:',
+      map_loading: 'Cargando áreas…',
+      legend_title: 'Leyenda',
+      legend_reported: 'Nido reportado',
+      legend_unknown: 'Nido desconocido',
+      legend_click: 'Haz clic en un parque para reportar',
+      popup_report_label: 'REPORTAR POKÉMON ANIDADO',
+      popup_search_placeholder: 'Buscar Pokémon…',
+      popup_dropdown_default: '— o elige de la lista de anidables —',
+      popup_set_nest: 'Establecer Nido',
+      popup_stored_locally: 'Datos guardados localmente en tu navegador',
+      popup_reported_by: 'Reportado por',
+      popup_no_nest: 'Desconocido',
+      popup_no_nest_sub: 'Ningún nido reportado aún',
+    },
+    pt: {
+      nestmap_title: 'Mapa de Ninhos',
+      nestmap_sub: 'Descubra ninhos de Pokémon perto de você. Clique em qualquer parque para reportar ou ver o que está aninhando atualmente.',
+      nest_reset_label: 'Próxima Reinicialização de Ninhos:',
+      map_loading: 'Carregando áreas…',
+      legend_title: 'Legenda',
+      legend_reported: 'Ninho reportado',
+      legend_unknown: 'Ninho desconhecido',
+      legend_click: 'Clique em um parque para reportar',
+      popup_report_label: 'REPORTAR POKÉMON ANINHADO',
+      popup_search_placeholder: 'Buscar Pokémon…',
+      popup_dropdown_default: '— ou escolha da lista de ninháveis —',
+      popup_set_nest: 'Definir Ninho',
+      popup_stored_locally: 'Dados armazenados localmente no seu navegador',
+      popup_reported_by: 'Reportado por',
+      popup_no_nest: 'Desconhecido',
+      popup_no_nest_sub: 'Nenhum ninho reportado ainda',
+    },
+    nl: {
+      nestmap_title: 'Nestenkaart',
+      nestmap_sub: 'Ontdek Pokémon-nesten bij jou in de buurt. Klik op een park om te melden of te bekijken wat er momenteel nestelt.',
+      nest_reset_label: 'Volgende Nestreset:',
+      map_loading: 'Gebieden laden…',
+      legend_title: 'Legenda',
+      legend_reported: 'Nest gemeld',
+      legend_unknown: 'Onbekend nest',
+      legend_click: 'Klik op een park om te melden',
+      popup_report_label: 'NESTENDE POKÉMON MELDEN',
+      popup_search_placeholder: 'Pokémon zoeken…',
+      popup_dropdown_default: '— of kies uit nestbare lijst —',
+      popup_set_nest: 'Nest Instellen',
+      popup_stored_locally: 'Gegevens lokaal opgeslagen in je browser',
+      popup_reported_by: 'Gemeld door',
+      popup_no_nest: 'Onbekend',
+      popup_no_nest_sub: 'Nog geen nest gemeld',
+    },
+    de: {
+      nestmap_title: 'Nesterkarte',
+      nestmap_sub: 'Entdecke Pokémon-Nester in deiner Nähe. Klicke auf einen Park, um zu melden oder zu sehen, was dort aktuell nistet.',
+      nest_reset_label: 'Nächster Nester-Reset:',
+      map_loading: 'Gebiete laden…',
+      legend_title: 'Legende',
+      legend_reported: 'Nest gemeldet',
+      legend_unknown: 'Unbekanntes Nest',
+      legend_click: 'Park anklicken zum Melden',
+      popup_report_label: 'NISTENDES POKÉMON MELDEN',
+      popup_search_placeholder: 'Pokémon suchen…',
+      popup_dropdown_default: '— oder aus Nesterliste wählen —',
+      popup_set_nest: 'Nest Setzen',
+      popup_stored_locally: 'Daten lokal im Browser gespeichert',
+      popup_reported_by: 'Gemeldet von',
+      popup_no_nest: 'Unbekannt',
+      popup_no_nest_sub: 'Noch kein Nest gemeldet',
+    },
+    fr: {
+      nestmap_title: 'Carte des nids',
+      nestmap_sub: 'Découvrez les nids de Pokémon près de chez vous. Cliquez sur un parc pour signaler ou voir ce qui s\'y niche actuellement.',
+      nest_reset_label: 'Prochain Reset des Nids :',
+      map_loading: 'Chargement des zones…',
+      legend_title: 'Légende',
+      legend_reported: 'Nid signalé',
+      legend_unknown: 'Nid inconnu',
+      legend_click: 'Cliquez sur un parc pour signaler',
+      popup_report_label: 'SIGNALER UN POKÉMON NICHEUR',
+      popup_search_placeholder: 'Chercher un Pokémon…',
+      popup_dropdown_default: '— ou choisir dans la liste —',
+      popup_set_nest: 'Définir le Nid',
+      popup_stored_locally: 'Données stockées localement dans votre navigateur',
+      popup_reported_by: 'Signalé par',
+      popup_no_nest: 'Inconnu',
+      popup_no_nest_sub: 'Aucun nid signalé pour l\'instant',
+    },
+    sv: {
+      nestmap_title: 'Bo-karta',
+      nestmap_sub: 'Hitta Pokémon-bon nära dig. Klicka på en park för att rapportera eller se vad som bor där nu.',
+      nest_reset_label: 'Nästa Bo-återställning:',
+      map_loading: 'Laddar områden…',
+      legend_title: 'Förklaring',
+      legend_reported: 'Bo rapporterat',
+      legend_unknown: 'Okänt bo',
+      legend_click: 'Klicka på en park för att rapportera',
+      popup_report_label: 'RAPPORTERA HÄCKANDE POKÉMON',
+      popup_search_placeholder: 'Sök Pokémon…',
+      popup_dropdown_default: '— eller välj från listan —',
+      popup_set_nest: 'Ange Bo',
+      popup_stored_locally: 'Data sparas lokalt i din webbläsare',
+      popup_reported_by: 'Rapporterat av',
+      popup_no_nest: 'Okänt',
+      popup_no_nest_sub: 'Inget bo rapporterat ännu',
+    },
+    ja: {
+      nestmap_title: '巣マップ',
+      nestmap_sub: '近くのポケモンの巣を探そう。公園をクリックして巣を報告したり、現在何が巣にいるかを確認しましょう。',
+      nest_reset_label: '次の巣リセット:',
+      map_loading: 'エリア読み込み中…',
+      legend_title: '凡例',
+      legend_reported: '巣が報告済み',
+      legend_unknown: '巣が不明',
+      legend_click: '公園をクリックして報告',
+      popup_report_label: '巣のポケモンを報告',
+      popup_search_placeholder: 'ポケモンを検索…',
+      popup_dropdown_default: '— またはリストから選択 —',
+      popup_set_nest: '巣を設定',
+      popup_stored_locally: 'データはブラウザにローカル保存されます',
+      popup_reported_by: '報告者',
+      popup_no_nest: '不明',
+      popup_no_nest_sub: 'まだ巣が報告されていません',
+    },
+    pl: {
+      nestmap_title: 'Mapa gniazd',
+      nestmap_sub: 'Odkryj gniazda Pokémonów w pobliżu. Kliknij na park, aby zgłosić lub sprawdzić, co tam teraz gniazdi.',
+      nest_reset_label: 'Następny Reset Gniazd:',
+      map_loading: 'Ładowanie obszarów…',
+      legend_title: 'Legenda',
+      legend_reported: 'Gniazdo zgłoszone',
+      legend_unknown: 'Nieznane gniazdo',
+      legend_click: 'Kliknij park, aby zgłosić',
+      popup_report_label: 'ZGŁOŚ GNIAZDUJĄCEGO POKÉMONA',
+      popup_search_placeholder: 'Szukaj Pokémona…',
+      popup_dropdown_default: '— lub wybierz z listy —',
+      popup_set_nest: 'Ustaw Gniazdo',
+      popup_stored_locally: 'Dane zapisane lokalnie w przeglądarce',
+      popup_reported_by: 'Zgłoszone przez',
+      popup_no_nest: 'Nieznane',
+      popup_no_nest_sub: 'Brak zgłoszonego gniazda',
+    },
+    no: {
+      nestmap_title: 'Rede-kart',
+      nestmap_sub: 'Oppdag Pokémon-reder nær deg. Klikk på en park for å rapportere eller se hva som reder seg der nå.',
+      nest_reset_label: 'Neste Rede-tilbakestilling:',
+      map_loading: 'Laster områder…',
+      legend_title: 'Forklaring',
+      legend_reported: 'Rede rapportert',
+      legend_unknown: 'Ukjent rede',
+      legend_click: 'Klikk en park for å rapportere',
+      popup_report_label: 'RAPPORTER HEKKENDE POKÉMON',
+      popup_search_placeholder: 'Søk etter Pokémon…',
+      popup_dropdown_default: '— eller velg fra liste —',
+      popup_set_nest: 'Angi Rede',
+      popup_stored_locally: 'Data lagret lokalt i nettleseren din',
+      popup_reported_by: 'Rapportert av',
+      popup_no_nest: 'Ukjent',
+      popup_no_nest_sub: 'Ingen rede rapportert ennå',
+    },
+    fi: {
+      nestmap_title: 'Pesäkartta',
+      nestmap_sub: 'Löydä Pokémon-pesiä läheltäsi. Napsauta puistoa ilmoittaaksesi tai nähdäksesi mitä siellä pesii juuri nyt.',
+      nest_reset_label: 'Seuraava Pesien Nollaus:',
+      map_loading: 'Ladataan alueita…',
+      legend_title: 'Selite',
+      legend_reported: 'Pesä ilmoitettu',
+      legend_unknown: 'Tuntematon pesä',
+      legend_click: 'Napsauta puistoa ilmoittaaksesi',
+      popup_report_label: 'ILMOITA PESIVÄ POKÉMON',
+      popup_search_placeholder: 'Hae Pokémonia…',
+      popup_dropdown_default: '— tai valitse listasta —',
+      popup_set_nest: 'Aseta Pesä',
+      popup_stored_locally: 'Tiedot tallennettu paikallisesti selaimeesi',
+      popup_reported_by: 'Ilmoittanut',
+      popup_no_nest: 'Tuntematon',
+      popup_no_nest_sub: 'Pesää ei ole vielä ilmoitettu',
+    },
+    da: {
+      nestmap_title: 'Redekort',
+      nestmap_sub: 'Opdag Pokémon-reder tæt på dig. Klik på en park for at rapportere eller se hvad der reder sig der nu.',
+      nest_reset_label: 'Næste Rede-nulstilling:',
+      map_loading: 'Indlæser områder…',
+      legend_title: 'Forklaring',
+      legend_reported: 'Rede rapporteret',
+      legend_unknown: 'Ukendt rede',
+      legend_click: 'Klik en park for at rapportere',
+      popup_report_label: 'RAPPORTÉR RUGGENDE POKÉMON',
+      popup_search_placeholder: 'Søg Pokémon…',
+      popup_dropdown_default: '— eller vælg fra liste —',
+      popup_set_nest: 'Angiv Rede',
+      popup_stored_locally: 'Data gemt lokalt i din browser',
+      popup_reported_by: 'Rapporteret af',
+      popup_no_nest: 'Ukendt',
+      popup_no_nest_sub: 'Ingen rede rapporteret endnu',
+    },
+    hi: {
+      nestmap_title: 'नेस्ट मैप',
+      nestmap_sub: 'अपने आस-पास Pokémon नेस्ट खोजें। किसी पार्क पर क्लिक करके रिपोर्ट करें या देखें कि वहाँ अभी क्या नेस्टिंग कर रहा है।',
+      nest_reset_label: 'अगला नेस्ट रीसेट:',
+      map_loading: 'क्षेत्र लोड हो रहे हैं…',
+      legend_title: 'लीजेंड',
+      legend_reported: 'नेस्ट रिपोर्ट किया',
+      legend_unknown: 'अज्ञात नेस्ट',
+      legend_click: 'रिपोर्ट करने के लिए पार्क पर क्लिक करें',
+      popup_report_label: 'नेस्टिंग POKÉMON रिपोर्ट करें',
+      popup_search_placeholder: 'Pokémon खोजें…',
+      popup_dropdown_default: '— या सूची से चुनें —',
+      popup_set_nest: 'नेस्ट सेट करें',
+      popup_stored_locally: 'डेटा आपके ब्राउज़र में स्थानीय रूप से संग्रहीत',
+      popup_reported_by: 'द्वारा रिपोर्ट किया गया',
+      popup_no_nest: 'अज्ञात',
+      popup_no_nest_sub: 'अभी तक कोई नेस्ट रिपोर्ट नहीं',
+    },
+    tr: {
+      nestmap_title: 'Yuva Haritası',
+      nestmap_sub: 'Yakınındaki Pokémon yuvalarını keşfet. Şu an ne yuvalandığını görmek veya bildirmek için herhangi bir parka tıkla.',
+      nest_reset_label: 'Sonraki Yuva Sıfırlaması:',
+      map_loading: 'Alanlar yükleniyor…',
+      legend_title: 'Açıklama',
+      legend_reported: 'Yuva bildirildi',
+      legend_unknown: 'Bilinmeyen yuva',
+      legend_click: 'Bildirmek için bir parka tıkla',
+      popup_report_label: 'YUVALAYAN POKÉMON BİLDİR',
+      popup_search_placeholder: 'Pokémon ara…',
+      popup_dropdown_default: '— veya listeden seç —',
+      popup_set_nest: 'Yuvayı Ayarla',
+      popup_stored_locally: 'Veriler tarayıcınızda yerel olarak saklanır',
+      popup_reported_by: 'Bildiren',
+      popup_no_nest: 'Bilinmiyor',
+      popup_no_nest_sub: 'Henüz yuva bildirilmedi',
+    },
+  };
+
+  // Merge nest-map keys into the global translations object
+  Object.keys(nestMapTranslations).forEach(lang => {
+    if (translations[lang]) {
+      Object.assign(translations[lang], nestMapTranslations[lang]);
+    }
+  });
+
+  // Re-apply translations now that the page is loaded and keys are merged
+  applyTranslations(currentLang);
+
+  // ===== NEST RESET COUNTDOWN =====
+  // Nests reset every 2 weeks on Wednesdays at 10:00 UTC
+  // Reference reset: 2026-03-25 10:00 UTC (Wednesday)
+  function getNextNestReset() {
+    const RESET_HOUR_UTC = 10;
+    const RESET_DAY = 3; // Wednesday = 3
+    const PERIOD_MS = 14 * 24 * 60 * 60 * 1000; // 2 weeks
+
+    const anchor = new Date(Date.UTC(2026, 2, 25, RESET_HOUR_UTC, 0, 0)); // 2026-03-25
+    const now = Date.now();
+    let next = anchor.getTime();
+    while (next <= now) next += PERIOD_MS;
+    return next;
+  }
+
+  function updateCountdown() {
+    const el = document.getElementById('nest-countdown');
+    if (!el) return;
+    const diff = getNextNestReset() - Date.now();
+    if (diff <= 0) { el.textContent = 'Resetting…'; return; }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    el.textContent = d > 0
+      ? `${d}d ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+      : `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
   // ===== CONFIG =====
   const OVERPASS_API = 'https://overpass-api.de/api/interpreter';
   const SPRITE_BASE  = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
   const STORAGE_KEY  = 'pogoraids_nests_v1';
 
-  // ===== POKÉMON LIST (first 151 + common nest species) =====
+  // ===== POKÉMON LIST — nestable species only =====
+  // Based on The Silph Road nesting species list (common nesters, excludes legendaries,
+  // mythicals, babies, and species Niantic has confirmed do not nest).
   const POKEMON = [
     {id:1,name:'Bulbasaur'},{id:4,name:'Charmander'},{id:7,name:'Squirtle'},
-    {id:10,name:'Caterpie'},{id:13,name:'Weedle'},{id:16,name:'Pidgey'},
-    {id:19,name:'Rattata'},{id:21,name:'Spearow'},{id:23,name:'Ekans'},
     {id:25,name:'Pikachu'},{id:27,name:'Sandshrew'},{id:29,name:'Nidoran\u2640'},
     {id:32,name:'Nidoran\u2642'},{id:35,name:'Clefairy'},{id:37,name:'Vulpix'},
-    {id:39,name:'Jigglypuff'},{id:41,name:'Zubat'},{id:43,name:'Oddish'},
-    {id:46,name:'Paras'},{id:48,name:'Venonat'},{id:50,name:'Diglett'},
+    {id:43,name:'Oddish'},{id:46,name:'Paras'},{id:50,name:'Diglett'},
     {id:52,name:'Meowth'},{id:54,name:'Psyduck'},{id:56,name:'Mankey'},
     {id:58,name:'Growlithe'},{id:60,name:'Poliwag'},{id:63,name:'Abra'},
-    {id:66,name:'Machop'},{id:69,name:'Bellsprout'},{id:72,name:'Tentacool'},
-    {id:74,name:'Geodude'},{id:77,name:'Ponyta'},{id:79,name:'Slowpoke'},
-    {id:81,name:'Magnemite'},{id:84,name:'Doduo'},{id:86,name:'Seel'},
-    {id:88,name:'Grimer'},{id:90,name:'Shellder'},{id:92,name:'Gastly'},
-    {id:95,name:'Onix'},{id:96,name:'Drowzee'},{id:98,name:'Krabby'},
-    {id:100,name:'Voltorb'},{id:102,name:'Exeggcute'},{id:104,name:'Cubone'},
-    {id:108,name:'Lickitung'},{id:109,name:'Koffing'},{id:111,name:'Rhyhorn'},
-    {id:113,name:'Chansey'},{id:114,name:'Tangela'},{id:116,name:'Horsea'},
-    {id:118,name:'Goldeen'},{id:120,name:'Staryu'},{id:123,name:'Scyther'},
-    {id:124,name:'Jynx'},{id:125,name:'Electabuzz'},{id:126,name:'Magmar'},
-    {id:127,name:'Pinsir'},{id:128,name:'Tauros'},{id:129,name:'Magikarp'},
-    {id:132,name:'Ditto'},{id:133,name:'Eevee'},{id:137,name:'Porygon'},
-    {id:138,name:'Omanyte'},{id:140,name:'Kabuto'},{id:143,name:'Snorlax'},
-    {id:147,name:'Dratini'},
+    {id:66,name:'Machop'},{id:69,name:'Bellsprout'},{id:74,name:'Geodude'},
+    {id:77,name:'Ponyta'},{id:79,name:'Slowpoke'},{id:84,name:'Doduo'},
+    {id:90,name:'Shellder'},{id:95,name:'Onix'},{id:98,name:'Krabby'},
+    {id:102,name:'Exeggcute'},{id:104,name:'Cubone'},{id:111,name:'Rhyhorn'},
+    {id:114,name:'Tangela'},{id:116,name:'Horsea'},{id:118,name:'Goldeen'},
+    {id:123,name:'Scyther'},{id:127,name:'Pinsir'},{id:129,name:'Magikarp'},
+    {id:133,name:'Eevee'},{id:147,name:'Dratini'},
     {id:152,name:'Chikorita'},{id:155,name:'Cyndaquil'},{id:158,name:'Totodile'},
-    {id:161,name:'Sentret'},{id:163,name:'Hoothoot'},{id:165,name:'Ledyba'},
-    {id:167,name:'Spinarak'},{id:170,name:'Chinchou'},{id:172,name:'Pichu'},
-    {id:173,name:'Cleffa'},{id:174,name:'Igglybuff'},{id:175,name:'Togepi'},
-    {id:177,name:'Natu'},{id:179,name:'Mareep'},{id:183,name:'Marill'},
-    {id:185,name:'Sudowoodo'},{id:187,name:'Hoppip'},{id:190,name:'Aipom'},
-    {id:191,name:'Sunkern'},{id:193,name:'Yanma'},{id:194,name:'Wooper'},
-    {id:198,name:'Murkrow'},{id:200,name:'Misdreavus'},{id:204,name:'Pineco'},
-    {id:206,name:'Dunsparce'},{id:209,name:'Snubbull'},{id:213,name:'Shuckle'},
-    {id:215,name:'Sneasel'},{id:218,name:'Slugma'},{id:220,name:'Swinub'},
-    {id:222,name:'Corsola'},{id:223,name:'Remoraid'},{id:225,name:'Delibird'},
-    {id:228,name:'Houndour'},{id:231,name:'Phanpy'},{id:234,name:'Stantler'},
-    {id:236,name:'Tyrogue'},{id:238,name:'Smoochum'},{id:239,name:'Elekid'},
-    {id:240,name:'Magby'},{id:241,name:'Miltank'},{id:246,name:'Larvitar'},
+    {id:161,name:'Sentret'},{id:177,name:'Natu'},{id:179,name:'Mareep'},
+    {id:183,name:'Marill'},{id:187,name:'Hoppip'},{id:190,name:'Aipom'},
+    {id:193,name:'Yanma'},{id:194,name:'Wooper'},{id:198,name:'Murkrow'},
+    {id:209,name:'Snubbull'},{id:215,name:'Sneasel'},{id:220,name:'Swinub'},
+    {id:223,name:'Remoraid'},{id:228,name:'Houndour'},{id:231,name:'Phanpy'},
+    {id:246,name:'Larvitar'},
     {id:252,name:'Treecko'},{id:255,name:'Torchic'},{id:258,name:'Mudkip'},
-    {id:261,name:'Poochyena'},{id:263,name:'Zigzagoon'},{id:265,name:'Wurmple'},
-    {id:270,name:'Lotad'},{id:273,name:'Seedot'},{id:276,name:'Taillow'},
-    {id:278,name:'Wingull'},{id:280,name:'Ralts'},{id:283,name:'Surskit'},
-    {id:285,name:'Shroomish'},{id:287,name:'Slakoth'},{id:290,name:'Nincada'},
-    {id:293,name:'Whismur'},{id:296,name:'Makuhita'},{id:298,name:'Azurill'},
-    {id:299,name:'Nosepass'},{id:300,name:'Skitty'},{id:302,name:'Sableye'},
+    {id:261,name:'Poochyena'},{id:263,name:'Zigzagoon'},{id:270,name:'Lotad'},
+    {id:273,name:'Seedot'},{id:276,name:'Taillow'},{id:278,name:'Wingull'},
+    {id:280,name:'Ralts'},{id:285,name:'Shroomish'},{id:287,name:'Slakoth'},
+    {id:296,name:'Makuhita'},{id:299,name:'Nosepass'},{id:302,name:'Sableye'},
     {id:304,name:'Aron'},{id:307,name:'Meditite'},{id:309,name:'Electrike'},
-    {id:311,name:'Plusle'},{id:312,name:'Minun'},{id:313,name:'Volbeat'},
-    {id:314,name:'Illumise'},{id:315,name:'Roselia'},{id:316,name:'Gulpin'},
-    {id:318,name:'Carvanha'},{id:320,name:'Wailmer'},{id:322,name:'Numel'},
-    {id:324,name:'Torkoal'},{id:325,name:'Spoink'},{id:327,name:'Spinda'},
+    {id:311,name:'Plusle'},{id:312,name:'Minun'},{id:315,name:'Roselia'},
+    {id:318,name:'Carvanha'},{id:320,name:'Wailmer'},{id:325,name:'Spoink'},
     {id:328,name:'Trapinch'},{id:331,name:'Cacnea'},{id:333,name:'Swablu'},
-    {id:336,name:'Seviper'},{id:337,name:'Lunatone'},{id:338,name:'Solrock'},
-    {id:339,name:'Barboach'},{id:341,name:'Corphish'},{id:343,name:'Baltoy'},
-    {id:345,name:'Lileep'},{id:347,name:'Anorith'},{id:349,name:'Feebas'},
-    {id:351,name:'Castform'},{id:353,name:'Shuppet'},{id:355,name:'Duskull'},
-    {id:357,name:'Tropius'},{id:358,name:'Chimecho'},{id:359,name:'Absol'},
-    {id:361,name:'Snorunt'},{id:363,name:'Spheal'},{id:366,name:'Clamperl'},
-    {id:370,name:'Luvdisc'},{id:371,name:'Bagon'},{id:374,name:'Beldum'},
+    {id:339,name:'Barboach'},{id:341,name:'Corphish'},{id:349,name:'Feebas'},
+    {id:353,name:'Shuppet'},{id:355,name:'Duskull'},{id:357,name:'Tropius'},
+    {id:359,name:'Absol'},{id:361,name:'Snorunt'},{id:363,name:'Spheal'},
+    {id:371,name:'Bagon'},{id:374,name:'Beldum'},
+    {id:387,name:'Turtwig'},{id:390,name:'Chimchar'},{id:393,name:'Piplup'},
+    {id:396,name:'Starly'},{id:403,name:'Shinx'},{id:406,name:'Budew'},
+    {id:408,name:'Cranidos'},{id:410,name:'Shieldon'},{id:418,name:'Buizel'},
+    {id:422,name:'Shellos'},{id:427,name:'Buneary'},{id:434,name:'Stunky'},
+    {id:436,name:'Bronzor'},{id:443,name:'Gible'},{id:447,name:'Riolu'},
+    {id:449,name:'Hippopotas'},{id:451,name:'Skorupi'},{id:453,name:'Croagunk'},
+    {id:458,name:'Mantyke'},{id:495,name:'Snivy'},{id:498,name:'Tepig'},
+    {id:501,name:'Oshawott'},{id:504,name:'Patrat'},{id:506,name:'Lillipup'},
+    {id:509,name:'Purrloin'},{id:511,name:'Pansage'},{id:513,name:'Pansear'},
+    {id:515,name:'Panpour'},{id:519,name:'Pidove'},{id:524,name:'Roggenrola'},
+    {id:527,name:'Woobat'},{id:529,name:'Drilbur'},{id:531,name:'Audino'},
+    {id:532,name:'Timburr'},{id:535,name:'Tympole'},{id:538,name:'Throh'},
+    {id:539,name:'Sawk'},{id:540,name:'Sewaddle'},{id:543,name:'Venipede'},
+    {id:546,name:'Cottonee'},{id:548,name:'Petilil'},{id:551,name:'Sandile'},
+    {id:554,name:'Darumaka'},{id:556,name:'Maractus'},{id:557,name:'Dwebble'},
+    {id:559,name:'Scraggy'},{id:562,name:'Yamask'},{id:564,name:'Tirtouga'},
+    {id:566,name:'Archen'},{id:568,name:'Trubbish'},{id:570,name:'Zorua'},
+    {id:572,name:'Minccino'},{id:574,name:'Gothita'},{id:577,name:'Solosis'},
+    {id:580,name:'Ducklett'},{id:585,name:'Deerling'},{id:587,name:'Emolga'},
+    {id:592,name:'Frillish'},{id:595,name:'Joltik'},{id:597,name:'Ferroseed'},
+    {id:599,name:'Klink'},{id:602,name:'Tynamo'},{id:605,name:'Elgyem'},
+    {id:607,name:'Litwick'},{id:610,name:'Axew'},{id:613,name:'Cubchoo'},
+    {id:615,name:'Cryogonal'},{id:616,name:'Shelmet'},{id:618,name:'Stunfisk'},
+    {id:621,name:'Druddigon'},{id:624,name:'Pawniard'},{id:627,name:'Rufflet'},
+    {id:629,name:'Vullaby'},{id:632,name:'Durant'},{id:633,name:'Deino'},
   ];
 
   // ===== NEST STORAGE =====
@@ -515,6 +891,11 @@
     });
   }
 
+  function t(key) {
+    const lang = (typeof currentLang !== 'undefined') ? currentLang : 'en';
+    return (translations[lang] && translations[lang][key]) || (translations['en'] && translations['en'][key]) || key;
+  }
+
   function buildPopupContent(osmId, parkName) {
     const nest = nests[osmId];
     let currentHtml;
@@ -524,7 +905,7 @@
           <img src="${getPokemonSprite(nest.pokemonId)}" alt="${nest.pokemonName}" />
           <div class="nest-current-info">
             <strong>${nest.pokemonName}</strong>
-            <span>Reported by ${nest.reporter || 'Anonymous'}</span>
+            <span>${t('popup_reported_by')} ${nest.reporter || 'Anonymous'}</span>
           </div>
         </div>`;
     } else {
@@ -532,38 +913,60 @@
         <div class="nest-current">
           <span class="no-nest">\u2753</span>
           <div class="nest-current-info">
-            <strong>Unknown</strong>
-            <span>No nest reported yet</span>
+            <strong>${t('popup_no_nest')}</strong>
+            <span>${t('popup_no_nest_sub')}</span>
           </div>
         </div>`;
     }
+
+    // Build dropdown options (sorted alphabetically)
+    const sortedPokemon = [...POKEMON].sort((a,b) => a.name.localeCompare(b.name));
+    const dropdownOptions = sortedPokemon.map(p =>
+      `<option value="${p.id}" data-name="${p.name}">${p.name}</option>`
+    ).join('');
+
     return `
       <div class="nest-popup">
         <h3><i class="fa-solid fa-tree" style="color:var(--cyan);margin-right:6px;"></i>${parkName || 'Area'}</h3>
         ${currentHtml}
-        <label>Report nesting Pok\u00e9mon</label>
+        <label>${t('popup_report_label')}</label>
         <div class="poke-search-wrap">
-          <input type="text" id="poke-input-${osmId}" placeholder="Search Pok\u00e9mon\u2026" autocomplete="off" />
+          <input type="text" id="poke-input-${osmId}" placeholder="${t('popup_search_placeholder')}" autocomplete="off" />
           <div class="poke-suggestions" id="poke-suggestions-${osmId}"></div>
         </div>
-        <button class="btn-set-nest" id="btn-save-${osmId}" disabled>Set Nest</button>
-        <div class="nest-reporter">Data stored locally in your browser</div>
+        <div class="poke-dropdown-wrap">
+          <select class="poke-dropdown" id="poke-dropdown-${osmId}">
+            <option value="">${t('popup_dropdown_default')}</option>
+            ${dropdownOptions}
+          </select>
+        </div>
+        <button class="btn-set-nest" id="btn-save-${osmId}" disabled>${t('popup_set_nest')}</button>
+        <div class="nest-reporter">${t('popup_stored_locally')}</div>
       </div>`;
   }
 
   function attachPopupListeners(osmId, layer) {
     setTimeout(() => {
-      const input = document.getElementById(`poke-input-${osmId}`);
-      const sugg  = document.getElementById(`poke-suggestions-${osmId}`);
-      const btn   = document.getElementById(`btn-save-${osmId}`);
+      const input    = document.getElementById(`poke-input-${osmId}`);
+      const sugg     = document.getElementById(`poke-suggestions-${osmId}`);
+      const dropdown = document.getElementById(`poke-dropdown-${osmId}`);
+      const btn      = document.getElementById(`btn-save-${osmId}`);
       if (!input) return;
 
       let selectedPokemon = null;
 
+      function selectPokemon(id, name) {
+        selectedPokemon = { id: parseInt(id), name };
+        btn.disabled = false;
+      }
+
+      // ---- Text search ----
       input.addEventListener('input', () => {
         const q = input.value.trim().toLowerCase();
         selectedPokemon = null;
         btn.disabled = true;
+        // Clear dropdown selection
+        if (dropdown) dropdown.value = '';
         if (!q) { sugg.classList.remove('open'); sugg.innerHTML = ''; return; }
         const matches = POKEMON.filter(p => p.name.toLowerCase().startsWith(q)).slice(0, 8);
         if (!matches.length) { sugg.classList.remove('open'); return; }
@@ -577,16 +980,35 @@
         sugg.querySelectorAll('.poke-suggestion-item').forEach(el => {
           el.addEventListener('mousedown', e => {
             e.preventDefault();
-            selectedPokemon = { id: parseInt(el.dataset.id), name: el.dataset.name };
+            selectPokemon(el.dataset.id, el.dataset.name);
             input.value = el.dataset.name;
             sugg.classList.remove('open');
-            btn.disabled = false;
+            // Sync dropdown
+            if (dropdown) dropdown.value = el.dataset.id;
           });
         });
       });
 
       input.addEventListener('blur', () => setTimeout(() => sugg.classList.remove('open'), 150));
 
+      // ---- Dropdown ----
+      if (dropdown) {
+        dropdown.addEventListener('change', () => {
+          const opt = dropdown.options[dropdown.selectedIndex];
+          if (dropdown.value) {
+            selectPokemon(dropdown.value, opt.dataset.name);
+            // Sync text input
+            input.value = opt.dataset.name;
+            sugg.classList.remove('open');
+          } else {
+            selectedPokemon = null;
+            btn.disabled = true;
+            input.value = '';
+          }
+        });
+      }
+
+      // ---- Save ----
       btn.addEventListener('click', () => {
         if (!selectedPokemon) return;
         nests[osmId] = {
@@ -638,6 +1060,7 @@
   }
 
   // ===== OVERPASS FETCH =====
+  // NOTE: landuse=meadow and leisure=pitch have been intentionally removed.
   function fetchParks(bounds) {
     const s = bounds.getSouth().toFixed(5),
           w = bounds.getWest().toFixed(5),
@@ -650,20 +1073,16 @@
 (
   way["leisure"="park"](${bbox});
   way["leisure"="recreation_ground"](${bbox});
-  way["leisure"="pitch"](${bbox});
   way["leisure"="golf_course"](${bbox});
   way["leisure"="playground"](${bbox});
   way["landuse"="recreation_ground"](${bbox});
-  way["landuse"="meadow"](${bbox});
   way["landuse"="greenfield"](${bbox});
   way["landuse"="farmyard"](${bbox});
   relation["leisure"="park"](${bbox});
   relation["leisure"="recreation_ground"](${bbox});
-  relation["leisure"="pitch"](${bbox});
   relation["leisure"="golf_course"](${bbox});
   relation["leisure"="playground"](${bbox});
   relation["landuse"="recreation_ground"](${bbox});
-  relation["landuse"="meadow"](${bbox});
   relation["landuse"="greenfield"](${bbox});
   relation["landuse"="farmyard"](${bbox});
 );
@@ -700,7 +1119,6 @@ out body geom;`;
 
         renderPark({ id: osmId, tags: el.tags, geometry: geom }, center);
       });
-      // Hide loader only after all areas have been rendered to the map
       requestAnimationFrame(() => hideLoader());
     })
     .catch(() => hideLoader());
