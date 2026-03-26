@@ -654,7 +654,6 @@ out body geom;`;
     fetch(OVERPASS_API, { method: 'POST', body: query })
     .then(r => r.json())
     .then(data => {
-      hideLoader();
       data.elements.forEach(el => {
         const osmId = `${el.type}/${el.id}`;
         if (parkLayers[osmId]) return;
@@ -681,6 +680,8 @@ out body geom;`;
 
         renderPark({ id: osmId, tags: el.tags, geometry: geom }, center);
       });
+      // Hide loader only after all areas have been rendered to the map
+      requestAnimationFrame(() => hideLoader());
     })
     .catch(() => hideLoader());
   }
