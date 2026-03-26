@@ -8,10 +8,21 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- Flag Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css" />
   <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
+    .lang-btn .fi {
+      width: 20px;
+      height: 15px;
+      border-radius: 2px;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+
     /* ===== PAGE LAYOUT ===== */
     .nestmap-hero {
       padding: 60px 40px 30px;
@@ -311,12 +322,21 @@
 
   <!-- LANGUAGE SWITCHER -->
   <div class="lang-bar">
-    <span>🌐 Language:</span>
-    <button class="lang-btn active" data-lang="en">🇺🇸</button>
-    <button class="lang-btn" data-lang="es">🇪🇸</button>
-    <button class="lang-btn" data-lang="pt">🇵🇹</button>
-    <button class="lang-btn" data-lang="nl">🇳🇱</button>
-    <button class="lang-btn" data-lang="de">🇩🇪</button>
+    <span data-i18n="lang_label">🌐 Language:</span>
+    <button class="lang-btn active" data-lang="en"><span class="fi fi-us"></span></button>
+    <button class="lang-btn" data-lang="es"><span class="fi fi-es"></span></button>
+    <button class="lang-btn" data-lang="pt"><span class="fi fi-pt"></span></button>
+    <button class="lang-btn" data-lang="nl"><span class="fi fi-nl"></span></button>
+    <button class="lang-btn" data-lang="de"><span class="fi fi-de"></span></button>
+    <button class="lang-btn" data-lang="fr"><span class="fi fi-fr"></span></button>
+    <button class="lang-btn" data-lang="sv"><span class="fi fi-se"></span></button>
+    <button class="lang-btn" data-lang="ja"><span class="fi fi-jp"></span></button>
+    <button class="lang-btn" data-lang="pl"><span class="fi fi-pl"></span></button>
+    <button class="lang-btn" data-lang="no"><span class="fi fi-no"></span></button>
+    <button class="lang-btn" data-lang="fi"><span class="fi fi-fi"></span></button>
+    <button class="lang-btn" data-lang="da"><span class="fi fi-dk"></span></button>
+    <button class="lang-btn" data-lang="hi"><span class="fi fi-in"></span></button>
+    <button class="lang-btn" data-lang="tr"><span class="fi fi-tr"></span></button>
   </div>
 
   <!-- NAVBAR -->
