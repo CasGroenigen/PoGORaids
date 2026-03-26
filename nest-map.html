@@ -99,6 +99,55 @@
       z-index: 1;
     }
 
+    /* ===== ZOOM GUARD OVERLAY ===== */
+    .zoom-guard-overlay {
+      position: absolute;
+      inset: 0;
+      border-radius: 18px;
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10,10,20,0.62);
+      backdrop-filter: blur(4px);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .zoom-guard-overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .zoom-guard-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 28px 36px;
+      background: rgba(10,10,25,0.92);
+      border: 1px solid rgba(0,212,255,0.3);
+      border-radius: 18px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 20px rgba(0,212,255,0.08);
+      text-align: center;
+    }
+    .zoom-guard-box i {
+      font-size: 2rem;
+      color: var(--cyan);
+      margin-bottom: 4px;
+    }
+    .zoom-guard-box strong {
+      font-family: var(--font-alt);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+    .zoom-guard-box span {
+      font-size: 0.85rem;
+      color: var(--gray);
+      max-width: 240px;
+      line-height: 1.5;
+    }
+
     /* ===== CORNER LOADING INDICATOR ===== */
     .map-fetch-indicator {
       position: absolute;
@@ -437,6 +486,15 @@
   <div class="map-wrapper">
     <div id="nest-map"></div>
 
+    <!-- ZOOM GUARD OVERLAY -->
+    <div class="zoom-guard-overlay" id="zoom-guard">
+      <div class="zoom-guard-box">
+        <i class="fa-solid fa-magnifying-glass-plus"></i>
+        <strong data-i18n="zoom_guard_title">Zoom in to see nests</strong>
+        <span data-i18n="zoom_guard_sub">Zoom in a bit more to load nearby parks and Pokémon nests.</span>
+      </div>
+    </div>
+
     <!-- CORNER LOADING INDICATOR -->
     <div class="map-fetch-indicator hidden" id="fetch-indicator">
       <i class="fa-solid fa-spinner"></i>
@@ -467,6 +525,8 @@
       nestmap_sub: 'Discover Pokémon nests near you. Click any park to report or view what\'s currently nesting there.',
       nest_reset_label: 'Next Nest Reset:',
       map_loading: 'Loading areas…',
+      zoom_guard_title: 'Zoom in to see nests',
+      zoom_guard_sub: 'Zoom in a bit more to load nearby parks and Pokémon nests.',
       legend_title: 'Legend',
       legend_reported: 'Nest reported',
       legend_unknown: 'Unknown nest',
@@ -485,6 +545,8 @@
       nestmap_sub: 'Descubre nidos de Pokémon cerca de ti. Haz clic en cualquier parque para reportar o ver qué está anidando actualmente.',
       nest_reset_label: 'Próximo Reinicio de Nidos:',
       map_loading: 'Cargando áreas…',
+      zoom_guard_title: 'Acerca el mapa para ver nidos',
+      zoom_guard_sub: 'Acerca un poco más para cargar parques y nidos de Pokémon cercanos.',
       legend_title: 'Leyenda',
       legend_reported: 'Nido reportado',
       legend_unknown: 'Nido desconocido',
@@ -503,6 +565,8 @@
       nestmap_sub: 'Descubra ninhos de Pokémon perto de você. Clique em qualquer parque para reportar ou ver o que está aninhando atualmente.',
       nest_reset_label: 'Próxima Reinicialização de Ninhos:',
       map_loading: 'Carregando áreas…',
+      zoom_guard_title: 'Aproxime para ver ninhos',
+      zoom_guard_sub: 'Aproxime um pouco mais para carregar parques e ninhos de Pokémon próximos.',
       legend_title: 'Legenda',
       legend_reported: 'Ninho reportado',
       legend_unknown: 'Ninho desconhecido',
@@ -521,6 +585,8 @@
       nestmap_sub: 'Ontdek Pokémon-nesten bij jou in de buurt. Klik op een park om te melden of te bekijken wat er momenteel nestelt.',
       nest_reset_label: 'Volgende Nestreset:',
       map_loading: 'Gebieden laden…',
+      zoom_guard_title: 'Zoom in om nesten te zien',
+      zoom_guard_sub: 'Zoom iets verder in om nabijgelegen parken en Pokémon-nesten te laden.',
       legend_title: 'Legenda',
       legend_reported: 'Nest gemeld',
       legend_unknown: 'Onbekend nest',
@@ -539,6 +605,8 @@
       nestmap_sub: 'Entdecke Pokémon-Nester in deiner Nähe. Klicke auf einen Park, um zu melden oder zu sehen, was dort aktuell nistet.',
       nest_reset_label: 'Nächster Nester-Reset:',
       map_loading: 'Gebiete laden…',
+      zoom_guard_title: 'Reinzoomen um Nester zu sehen',
+      zoom_guard_sub: 'Zoome etwas weiter rein, um nahegelegene Parks und Pokémon-Nester zu laden.',
       legend_title: 'Legende',
       legend_reported: 'Nest gemeldet',
       legend_unknown: 'Unbekanntes Nest',
@@ -557,6 +625,8 @@
       nestmap_sub: 'Découvrez les nids de Pokémon près de chez vous. Cliquez sur un parc pour signaler ou voir ce qui s\'y niche actuellement.',
       nest_reset_label: 'Prochain Reset des Nids :',
       map_loading: 'Chargement des zones…',
+      zoom_guard_title: 'Zoomez pour voir les nids',
+      zoom_guard_sub: 'Zoomez un peu plus pour charger les parcs et nids de Pokémon à proximité.',
       legend_title: 'Légende',
       legend_reported: 'Nid signalé',
       legend_unknown: 'Nid inconnu',
@@ -575,6 +645,8 @@
       nestmap_sub: 'Hitta Pokémon-bon nära dig. Klicka på en park för att rapportera eller se vad som bor där nu.',
       nest_reset_label: 'Nästa Bo-återställning:',
       map_loading: 'Laddar områden…',
+      zoom_guard_title: 'Zooma in för att se bon',
+      zoom_guard_sub: 'Zooma in lite mer för att ladda närliggande parker och Pokémon-bon.',
       legend_title: 'Förklaring',
       legend_reported: 'Bo rapporterat',
       legend_unknown: 'Okänt bo',
@@ -593,6 +665,8 @@
       nestmap_sub: '近くのポケモンの巣を探そう。公園をクリックして巣を報告したり、現在何が巣にいるかを確認しましょう。',
       nest_reset_label: '次の巣リセット:',
       map_loading: 'エリア読み込み中…',
+      zoom_guard_title: '巣を見るにはズームイン',
+      zoom_guard_sub: '近くの公園と巣を読み込むため、もう少しズームインしてください。',
       legend_title: '凡例',
       legend_reported: '巣が報告済み',
       legend_unknown: '巣が不明',
@@ -611,6 +685,8 @@
       nestmap_sub: 'Odkryj gniazda Pokémonów w pobliżu. Kliknij na park, aby zgłosić lub sprawdzić, co tam teraz gniazdi.',
       nest_reset_label: 'Następny Reset Gniazd:',
       map_loading: 'Ładowanie obszarów…',
+      zoom_guard_title: 'Przybliż, aby zobaczyć gniazda',
+      zoom_guard_sub: 'Przybliż trochę bardziej, aby załadować pobliskie parki i gniazda Pokémonów.',
       legend_title: 'Legenda',
       legend_reported: 'Gniazdo zgłoszone',
       legend_unknown: 'Nieznane gniazdo',
@@ -629,6 +705,8 @@
       nestmap_sub: 'Oppdag Pokémon-reder nær deg. Klikk på en park for å rapportere eller se hva som reder seg der nå.',
       nest_reset_label: 'Neste Rede-tilbakestilling:',
       map_loading: 'Laster områder…',
+      zoom_guard_title: 'Zoom inn for å se reder',
+      zoom_guard_sub: 'Zoom litt mer inn for å laste inn nærliggende parker og Pokémon-reder.',
       legend_title: 'Forklaring',
       legend_reported: 'Rede rapportert',
       legend_unknown: 'Ukjent rede',
@@ -647,6 +725,8 @@
       nestmap_sub: 'Löydä Pokémon-pesiä läheltäsi. Napsauta puistoa ilmoittaaksesi tai nähdäksesi mitä siellä pesii juuri nyt.',
       nest_reset_label: 'Seuraava Pesien Nollaus:',
       map_loading: 'Ladataan alueita…',
+      zoom_guard_title: 'Lähennä nähdäksesi pesät',
+      zoom_guard_sub: 'Lähennä hieman lisää ladataksesi lähellä olevat puistot ja Pokémon-pesät.',
       legend_title: 'Selite',
       legend_reported: 'Pesä ilmoitettu',
       legend_unknown: 'Tuntematon pesä',
@@ -665,6 +745,8 @@
       nestmap_sub: 'Opdag Pokémon-reder tæt på dig. Klik på en park for at rapportere eller se hvad der reder sig der nu.',
       nest_reset_label: 'Næste Rede-nulstilling:',
       map_loading: 'Indlæser områder…',
+      zoom_guard_title: 'Zoom ind for at se reder',
+      zoom_guard_sub: 'Zoom lidt mere ind for at indlæse nærtliggende parker og Pokémon-reder.',
       legend_title: 'Forklaring',
       legend_reported: 'Rede rapporteret',
       legend_unknown: 'Ukendt rede',
@@ -683,6 +765,8 @@
       nestmap_sub: 'अपने आस-पास Pokémon नेस्ट खोजें। किसी पार्क पर क्लिक करके रिपोर्ट करें या देखें कि वहाँ अभी क्या नेस्टिंग कर रहा है।',
       nest_reset_label: 'अगला नेस्ट रीसेट:',
       map_loading: 'क्षेत्र लोड हो रहे हैं…',
+      zoom_guard_title: 'नेस्ट देखने के लिए ज़ूम इन करें',
+      zoom_guard_sub: 'नज़दीकी पार्क और नेस्ट लोड करने के लिए थोड़ा और ज़ूम इन करें।',
       legend_title: 'लीजेंड',
       legend_reported: 'नेस्ट रिपोर्ट किया',
       legend_unknown: 'अज्ञात नेस्ट',
@@ -701,6 +785,8 @@
       nestmap_sub: 'Yakınındaki Pokémon yuvalarını keşfet. Şu an ne yuvalandığını görmek veya bildirmek için herhangi bir parka tıkla.',
       nest_reset_label: 'Sonraki Yuva Sıfırlaması:',
       map_loading: 'Alanlar yükleniyor…',
+      zoom_guard_title: 'Yuvaları görmek için yaklaştır',
+      zoom_guard_sub: 'Yakındaki parkları ve Pokémon yuvalarını yüklemek için biraz daha yaklaştır.',
       legend_title: 'Açıklama',
       legend_reported: 'Yuva bildirildi',
       legend_unknown: 'Bilinmeyen yuva',
@@ -727,14 +813,9 @@
   applyTranslations(currentLang);
 
   // ===== NEST RESET COUNTDOWN =====
-  // Nests reset every 2 weeks on Wednesdays at 10:00 UTC
-  // Reference reset: 2026-03-25 10:00 UTC (Wednesday)
   function getNextNestReset() {
-    const RESET_HOUR_UTC = 10;
-    const RESET_DAY = 3; // Wednesday = 3
-    const PERIOD_MS = 14 * 24 * 60 * 60 * 1000; // 2 weeks
-
-    const anchor = new Date(Date.UTC(2026, 2, 25, RESET_HOUR_UTC, 0, 0)); // 2026-03-25
+    const PERIOD_MS = 14 * 24 * 60 * 60 * 1000;
+    const anchor = new Date(Date.UTC(2026, 2, 25, 10, 0, 0));
     const now = Date.now();
     let next = anchor.getTime();
     while (next <= now) next += PERIOD_MS;
@@ -761,10 +842,9 @@
   const OVERPASS_API = 'https://overpass-api.de/api/interpreter';
   const SPRITE_BASE  = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
   const STORAGE_KEY  = 'pogoraids_nests_v1';
+  const MIN_ZOOM     = 12; // Don't query Overpass below this zoom level
 
   // ===== POKÉMON LIST — nestable species only =====
-  // Based on The Silph Road nesting species list (common nesters, excludes legendaries,
-  // mythicals, babies, and species Niantic has confirmed do not nest).
   const POKEMON = [
     {id:1,name:'Bulbasaur'},{id:4,name:'Charmander'},{id:7,name:'Squirtle'},
     {id:25,name:'Pikachu'},{id:27,name:'Sandshrew'},{id:29,name:'Nidoran\u2640'},
@@ -856,6 +936,17 @@
     );
   }
 
+  // ===== ZOOM GUARD =====
+  const zoomGuard = document.getElementById('zoom-guard');
+
+  function updateZoomGuard() {
+    if (map.getZoom() < MIN_ZOOM) {
+      zoomGuard.classList.add('visible');
+    } else {
+      zoomGuard.classList.remove('visible');
+    }
+  }
+
   // ===== LOADING INDICATOR HELPERS =====
   const fetchIndicator = document.getElementById('fetch-indicator');
   let activeRequests = 0;
@@ -919,7 +1010,6 @@
         </div>`;
     }
 
-    // Build dropdown options (sorted alphabetically)
     const sortedPokemon = [...POKEMON].sort((a,b) => a.name.localeCompare(b.name));
     const dropdownOptions = sortedPokemon.map(p =>
       `<option value="${p.id}" data-name="${p.name}">${p.name}</option>`
@@ -960,12 +1050,10 @@
         btn.disabled = false;
       }
 
-      // ---- Text search ----
       input.addEventListener('input', () => {
         const q = input.value.trim().toLowerCase();
         selectedPokemon = null;
         btn.disabled = true;
-        // Clear dropdown selection
         if (dropdown) dropdown.value = '';
         if (!q) { sugg.classList.remove('open'); sugg.innerHTML = ''; return; }
         const matches = POKEMON.filter(p => p.name.toLowerCase().startsWith(q)).slice(0, 8);
@@ -983,7 +1071,6 @@
             selectPokemon(el.dataset.id, el.dataset.name);
             input.value = el.dataset.name;
             sugg.classList.remove('open');
-            // Sync dropdown
             if (dropdown) dropdown.value = el.dataset.id;
           });
         });
@@ -991,13 +1078,11 @@
 
       input.addEventListener('blur', () => setTimeout(() => sugg.classList.remove('open'), 150));
 
-      // ---- Dropdown ----
       if (dropdown) {
         dropdown.addEventListener('change', () => {
           const opt = dropdown.options[dropdown.selectedIndex];
           if (dropdown.value) {
             selectPokemon(dropdown.value, opt.dataset.name);
-            // Sync text input
             input.value = opt.dataset.name;
             sugg.classList.remove('open');
           } else {
@@ -1008,7 +1093,6 @@
         });
       }
 
-      // ---- Save ----
       btn.addEventListener('click', () => {
         if (!selectedPokemon) return;
         nests[osmId] = {
@@ -1062,6 +1146,13 @@
   // ===== OVERPASS FETCH =====
   // NOTE: landuse=meadow and leisure=pitch have been intentionally removed.
   function fetchParks(bounds) {
+    // ---- MINIMUM ZOOM GUARD ----
+    if (map.getZoom() < MIN_ZOOM) {
+      updateZoomGuard();
+      return;
+    }
+    updateZoomGuard();
+
     const s = bounds.getSouth().toFixed(5),
           w = bounds.getWest().toFixed(5),
           n = bounds.getNorth().toFixed(5),
@@ -1124,7 +1215,10 @@ out body geom;`;
     .catch(() => hideLoader());
   }
 
-  map.on('load moveend', () => fetchParks(map.getBounds()));
+  map.on('moveend zoomend', () => fetchParks(map.getBounds()));
+
+  // Run immediately — show guard right away if starting below MIN_ZOOM
+  updateZoomGuard();
   fetchParks(map.getBounds());
   </script>
 </body>
