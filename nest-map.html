@@ -53,26 +53,38 @@
       overflow: hidden;
       z-index: 1;
     }
-    .map-loading {
+
+    /* ===== CORNER LOADING INDICATOR ===== */
+    .map-fetch-indicator {
       position: absolute;
-      inset: 0;
+      top: 16px;
+      right: 40px;
+      z-index: 1000;
       display: flex;
       align-items: center;
-      justify-content: center;
-      background: rgba(10,10,18,0.85);
-      border-radius: 18px;
-      z-index: 10;
-      flex-direction: column;
-      gap: 16px;
+      gap: 8px;
+      background: rgba(10,10,25,0.88);
+      border: 1px solid rgba(0,212,255,0.3);
+      border-radius: 30px;
+      padding: 7px 14px 7px 10px;
       color: var(--cyan);
       font-family: var(--font-alt);
-      font-size: 1.1rem;
+      font-size: 0.82rem;
       font-weight: 600;
+      letter-spacing: 0.03em;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 12px rgba(0,212,255,0.12);
       pointer-events: none;
-      transition: opacity 0.4s;
+      opacity: 1;
+      transition: opacity 0.35s ease;
     }
-    .map-loading.hidden { opacity: 0; pointer-events: none; }
-    .map-loading i { font-size: 2rem; animation: spin 1.2s linear infinite; }
+    .map-fetch-indicator.hidden {
+      opacity: 0;
+    }
+    .map-fetch-indicator i {
+      font-size: 0.95rem;
+      animation: spin 1s linear infinite;
+    }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ===== LEAFLET OVERRIDES ===== */
@@ -291,6 +303,7 @@
       .nestmap-hero { padding: 40px 20px 20px; }
       .map-wrapper { padding: 0 12px 40px; }
       #nest-map { height: 55vh; }
+      .map-fetch-indicator { top: 12px; right: 24px; }
     }
   </style>
 </head>
@@ -329,12 +342,14 @@
 
   <!-- MAP -->
   <div class="map-wrapper">
-    <div id="nest-map">
-      <div class="map-loading" id="map-loading">
-        <i class="fa-solid fa-spinner"></i>
-        Loading parks from OpenStreetMap…
-      </div>
+    <div id="nest-map"></div>
+
+    <!-- CORNER LOADING INDICATOR -->
+    <div class="map-fetch-indicator hidden" id="fetch-indicator">
+      <i class="fa-solid fa-spinner"></i>
+      Loading parks…
     </div>
+
     <div class="map-legend">
       <span style="font-weight:700;color:var(--white);"><i class="fa-solid fa-circle-info" style="color:var(--cyan);margin-right:6px;"></i>Legend</span>
       <div class="legend-item"><div class="legend-dot known"></div><span>Nest reported</span></div>
@@ -379,7 +394,6 @@
     {id:132,name:'Ditto'},{id:133,name:'Eevee'},{id:137,name:'Porygon'},
     {id:138,name:'Omanyte'},{id:140,name:'Kabuto'},{id:143,name:'Snorlax'},
     {id:147,name:'Dratini'},
-    // Gen 2
     {id:152,name:'Chikorita'},{id:155,name:'Cyndaquil'},{id:158,name:'Totodile'},
     {id:161,name:'Sentret'},{id:163,name:'Hoothoot'},{id:165,name:'Ledyba'},
     {id:167,name:'Spinarak'},{id:170,name:'Chinchou'},{id:172,name:'Pichu'},
@@ -394,7 +408,6 @@
     {id:228,name:'Houndour'},{id:231,name:'Phanpy'},{id:234,name:'Stantler'},
     {id:236,name:'Tyrogue'},{id:238,name:'Smoochum'},{id:239,name:'Elekid'},
     {id:240,name:'Magby'},{id:241,name:'Miltank'},{id:246,name:'Larvitar'},
-    // Gen 3
     {id:252,name:'Treecko'},{id:255,name:'Torchic'},{id:258,name:'Mudkip'},
     {id:261,name:'Poochyena'},{id:263,name:'Zigzagoon'},{id:265,name:'Wurmple'},
     {id:270,name:'Lotad'},{id:273,name:'Seedot'},{id:276,name:'Taillow'},
@@ -417,7 +430,7 @@
     {id:370,name:'Luvdisc'},{id:371,name:'Bagon'},{id:374,name:'Beldum'},
   ];
 
-  // ===== NEST STORAGE (localStorage as simple backend) =====
+  // ===== NEST STORAGE =====
   function loadNests() {
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
     catch(e) { return {}; }
@@ -440,7 +453,6 @@
     maxZoom: 19
   }).addTo(map);
 
-  // Try to center on user location
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       pos => map.setView([pos.coords.latitude, pos.coords.longitude], 14),
@@ -448,8 +460,21 @@
     );
   }
 
+  // ===== LOADING INDICATOR HELPERS =====
+  const fetchIndicator = document.getElementById('fetch-indicator');
+  let activeRequests = 0;
+
+  function showLoader() {
+    activeRequests++;
+    fetchIndicator.classList.remove('hidden');
+  }
+  function hideLoader() {
+    activeRequests = Math.max(0, activeRequests - 1);
+    if (activeRequests === 0) fetchIndicator.classList.add('hidden');
+  }
+
   // ===== PARK LAYERS =====
-  let parkLayers = {}; // osmId -> { polygon, marker }
+  let parkLayers = {};
 
   function getPokemonSprite(id) {
     return SPRITE_BASE + id + '.png';
@@ -470,7 +495,7 @@
     });
   }
 
-  function buildPopupContent(osmId, parkName, coords) {
+  function buildPopupContent(osmId, parkName) {
     const nest = nests[osmId];
     let currentHtml;
     if (nest && nest.pokemonId) {
@@ -507,7 +532,6 @@
   }
 
   function attachPopupListeners(osmId, layer) {
-    // Wait for popup DOM to be ready
     setTimeout(() => {
       const input = document.getElementById(`poke-input-${osmId}`);
       const sugg  = document.getElementById(`poke-suggestions-${osmId}`);
@@ -552,15 +576,11 @@
           timestamp: Date.now()
         };
         saveNests(nests);
-        // Refresh marker icon
         if (parkLayers[osmId]) {
           parkLayers[osmId].marker.setIcon(buildLabelIcon(nests[osmId]));
         }
         layer.closePopup();
-        // Brief success feedback
-        setTimeout(() => {
-          layer.openPopup();
-        }, 200);
+        setTimeout(() => layer.openPopup(), 200);
       });
     }, 80);
   }
@@ -571,7 +591,6 @@
     const nest    = nests[osmId];
     const hasNest = !!(nest && nest.pokemonId);
 
-    // Polygon colour
     const poly = L.geoJSON({
       type: 'Feature',
       geometry: feature.geometry || { type: 'Point', coordinates: [center[1], center[0]] }
@@ -587,10 +606,9 @@
       }
     }).addTo(map);
 
-    // Marker at centroid
     const marker = L.marker(center, { icon: buildLabelIcon(nest), zIndexOffset: 10 }).addTo(map);
     marker.bindPopup(
-      () => buildPopupContent(osmId, name, center),
+      () => buildPopupContent(osmId, name),
       { maxWidth: 320, minWidth: 260, autoPan: true }
     );
     marker.on('popupopen', () => attachPopupListeners(osmId, marker));
@@ -613,21 +631,16 @@
 );
 out body geom;`;
 
-    const loader = document.getElementById('map-loading');
-    loader.classList.remove('hidden');
+    showLoader();
 
-    fetch(OVERPASS_API, {
-      method: 'POST',
-      body: query
-    })
+    fetch(OVERPASS_API, { method: 'POST', body: query })
     .then(r => r.json())
     .then(data => {
-      loader.classList.add('hidden');
+      hideLoader();
       data.elements.forEach(el => {
         const osmId = `${el.type}/${el.id}`;
-        if (parkLayers[osmId]) return; // already rendered
+        if (parkLayers[osmId]) return;
 
-        // Compute centroid from geometry
         let center;
         if (el.geometry && el.geometry.length) {
           const lats = el.geometry.map(p => p.lat);
@@ -640,7 +653,6 @@ out body geom;`;
           center = [el.center.lat, el.center.lon];
         } else return;
 
-        // Build GeoJSON geometry from way geometry
         let geom = null;
         if (el.geometry && el.geometry.length > 2) {
           geom = {
@@ -649,18 +661,12 @@ out body geom;`;
           };
         }
 
-        renderPark(
-          { id: osmId, tags: el.tags, geometry: geom },
-          center
-        );
+        renderPark({ id: osmId, tags: el.tags, geometry: geom }, center);
       });
     })
-    .catch(() => {
-      loader.classList.add('hidden');
-    });
+    .catch(() => hideLoader());
   }
 
-  // Fetch on load and when map moves significantly
   map.on('load moveend', () => fetchParks(map.getBounds()));
   fetchParks(map.getBounds());
   </script>
