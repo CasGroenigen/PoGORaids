@@ -766,7 +766,7 @@
       nest_reset_label: 'अगला नेस्ट रीसेट:',
       map_loading: 'क्षेत्र लोड हो रहे हैं…',
       zoom_guard_title: 'नेस्ट देखने के लिए ज़ूम इन करें',
-      zoom_guard_sub: 'नज़दीकी पार्क और नेस्ट लोड करने के लिए थोड़ा और ज़ूम इन करें।',
+      zoom_guard_sub: 'नज़दीकी पार्क और नेस्ट लोड करने के लिए थोड़ा और ज़ूम इन करें।',
       legend_title: 'लीजेंड',
       legend_reported: 'नेस्ट रिपोर्ट किया',
       legend_unknown: 'अज्ञात नेस्ट',
@@ -840,8 +840,8 @@
   const OVERPASS_API = 'https://overpass-api.de/api/interpreter';
   const SPRITE_BASE  = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
   const STORAGE_KEY  = 'pogoraids_nests_v1';
-  const MIN_ZOOM     = 12;
-  const DEBOUNCE_MS  = 500; // ms to wait after last map move/zoom before querying Overpass
+  const MIN_ZOOM     = 14; // raised from 12 — users must be zoomed in to neighbourhood level
+  const DEBOUNCE_MS  = 500;
 
   // ===== DEBOUNCE HELPER =====
   function debounce(fn, delay) {
@@ -853,7 +853,6 @@
   }
 
   // ===== FETCH WITH RETRY (exponential backoff) =====
-  // Retries on network errors, 429 (rate-limited), and 5xx server errors.
   async function fetchWithRetry(url, options = {}, retries = 2, backoffMs = 800) {
     try {
       const res = await fetch(url, options);
@@ -949,7 +948,7 @@
   // ===== MAP INIT =====
   const map = L.map('nest-map', {
     center: [52.3, 4.9],
-    zoom: 13,
+    zoom: 14,
     zoomControl: true,
     attributionControl: true
   });
@@ -961,7 +960,7 @@
 
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
-      pos => map.setView([pos.coords.latitude, pos.coords.longitude], 14),
+      pos => map.setView([pos.coords.latitude, pos.coords.longitude], 15),
       () => {}
     );
   }
