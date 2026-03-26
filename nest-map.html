@@ -110,7 +110,7 @@
       justify-content: center;
       background: rgba(10,10,20,0.62);
       backdrop-filter: blur(4px);
-      pointer-events: none; /* always passthrough — never blocks map interaction */
+      pointer-events: none;
       opacity: 0;
       transition: opacity 0.3s ease;
     }
@@ -841,6 +841,38 @@
   const SPRITE_BASE  = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
   const STORAGE_KEY  = 'pogoraids_nests_v1';
   const MIN_ZOOM     = 12;
+  const DEBOUNCE_MS  = 500; // ms to wait after last map move/zoom before querying Overpass
+
+  // ===== DEBOUNCE HELPER =====
+  function debounce(fn, delay) {
+    let timer;
+    return function (...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn.apply(this, args), delay);
+    };
+  }
+
+  // ===== FETCH WITH RETRY (exponential backoff) =====
+  // Retries on network errors, 429 (rate-limited), and 5xx server errors.
+  async function fetchWithRetry(url, options = {}, retries = 2, backoffMs = 800) {
+    try {
+      const res = await fetch(url, options);
+      if (!res.ok) {
+        if (retries > 0 && (res.status >= 500 || res.status === 429)) {
+          await new Promise(r => setTimeout(r, backoffMs));
+          return fetchWithRetry(url, options, retries - 1, backoffMs * 2);
+        }
+        throw new Error(`HTTP ${res.status}`);
+      }
+      return res;
+    } catch (err) {
+      if (retries > 0) {
+        await new Promise(r => setTimeout(r, backoffMs));
+        return fetchWithRetry(url, options, retries - 1, backoffMs * 2);
+      }
+      throw err;
+    }
+  }
 
   // ===== POKÉMON LIST — nestable species only =====
   const POKEMON = [
@@ -854,7 +886,7 @@
     {id:77,name:'Ponyta'},{id:79,name:'Slowpoke'},{id:84,name:'Doduo'},
     {id:90,name:'Shellder'},{id:95,name:'Onix'},{id:98,name:'Krabby'},
     {id:102,name:'Exeggcute'},{id:104,name:'Cubone'},{id:111,name:'Rhyhorn'},
-      {id:114,name:'Tangela'},{id:116,name:'Horsea'},{id:118,name:'Goldeen'},
+    {id:114,name:'Tangela'},{id:116,name:'Horsea'},{id:118,name:'Goldeen'},
     {id:123,name:'Scyther'},{id:127,name:'Pinsir'},{id:129,name:'Magikarp'},
     {id:133,name:'Eevee'},{id:147,name:'Dratini'},
     {id:152,name:'Chikorita'},{id:155,name:'Cyndaquil'},{id:158,name:'Totodile'},
@@ -1171,49 +1203,53 @@
   relation["leisure"="golf_course"](${bbox});
   relation["leisure"="playground"](${bbox});
   relation["landuse"="recreation_ground"](${bbox});
-  relation["landuse"="greenfield"](${bbox});
+  relation["leisure"="greenfield"](${bbox});
   relation["landuse"="farmyard"](${bbox});
 );
 out body geom;`;
 
     showLoader();
 
-    fetch(OVERPASS_API, { method: 'POST', body: query })
-    .then(r => r.json())
-    .then(data => {
-      data.elements.forEach(el => {
-        const osmId = `${el.type}/${el.id}`;
-        if (parkLayers[osmId]) return;
+    fetchWithRetry(OVERPASS_API, { method: 'POST', body: query })
+      .then(r => r.json())
+      .then(data => {
+        data.elements.forEach(el => {
+          const osmId = `${el.type}/${el.id}`;
+          if (parkLayers[osmId]) return;
 
-        let center;
-        if (el.geometry && el.geometry.length) {
-          const lats = el.geometry.map(p => p.lat);
-          const lons = el.geometry.map(p => p.lon);
-          center = [
-            lats.reduce((a,b)=>a+b,0)/lats.length,
-            lons.reduce((a,b)=>a+b,0)/lons.length
-          ];
-        } else if (el.center) {
-          center = [el.center.lat, el.center.lon];
-        } else return;
+          let center;
+          if (el.geometry && el.geometry.length) {
+            const lats = el.geometry.map(p => p.lat);
+            const lons = el.geometry.map(p => p.lon);
+            center = [
+              lats.reduce((a,b)=>a+b,0)/lats.length,
+              lons.reduce((a,b)=>a+b,0)/lons.length
+            ];
+          } else if (el.center) {
+            center = [el.center.lat, el.center.lon];
+          } else return;
 
-        let geom = null;
-        if (el.geometry && el.geometry.length > 2) {
-          geom = {
-            type: 'Polygon',
-            coordinates: [el.geometry.map(p => [p.lon, p.lat])]
-          };
-        }
+          let geom = null;
+          if (el.geometry && el.geometry.length > 2) {
+            geom = {
+              type: 'Polygon',
+              coordinates: [el.geometry.map(p => [p.lon, p.lat])]
+            };
+          }
 
-        renderPark({ id: osmId, tags: el.tags, geometry: geom }, center);
-      });
-      requestAnimationFrame(() => hideLoader());
-    })
-    .catch(() => hideLoader());
+          renderPark({ id: osmId, tags: el.tags, geometry: geom }, center);
+        });
+        requestAnimationFrame(() => hideLoader());
+      })
+      .catch(() => hideLoader());
   }
 
-  map.on('moveend zoomend', () => fetchParks(map.getBounds()));
+  // Debounced version for map interaction events
+  const debouncedFetchParks = debounce(() => fetchParks(map.getBounds()), DEBOUNCE_MS);
 
+  map.on('moveend zoomend', debouncedFetchParks);
+
+  // Initial load is immediate (no debounce needed on first paint)
   updateZoomGuard();
   fetchParks(map.getBounds());
   </script>
