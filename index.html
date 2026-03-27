@@ -9,25 +9,21 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css" />
   <style>
-    /* ═══════════════════════════════════════════════
-       RESET & BASE
-    ═══════════════════════════════════════════════ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --ink:       #0a0c10;
-      --surface:   #0f1117;
-      --panel:     #161a24;
-      --border:    rgba(255,255,255,0.08);
-      --gold:      #f5c842;
-      --gold-dim:  #c49a1a;
-      --red:       #e8304a;
-      --cyan:      #2dd4bf;
-      --text:      #e8eaf0;
-      --muted:     #7a82a0;
-      --font-head: 'Barlow Condensed', sans-serif;
-      --font-body: 'Barlow', sans-serif;
-      --font-mono: 'Space Mono', monospace;
+      --ink:        #08090f;
+      --panel:      #10121c;
+      --border:     rgba(80,140,255,0.12);
+      --cyan:       #3be8ff;
+      --cyan-dim:   #1ab8d4;
+      --purple:     #9b4dff;
+      --logo-grad:  linear-gradient(135deg, #3be8ff 0%, #7b3fff 55%, #b020ff 100%);
+      --text:       #e8eaf0;
+      --muted:      #7a82a0;
+      --font-head:  'Barlow Condensed', sans-serif;
+      --font-body:  'Barlow', sans-serif;
+      --font-mono:  'Space Mono', monospace;
     }
 
     html { scroll-behavior: smooth; }
@@ -42,24 +38,19 @@
 
     a { text-decoration: none; color: inherit; }
 
-    /* ═══════════════════════════════════════════════
-       BACKGROUND GRID + RADIAL GLOW
-    ═══════════════════════════════════════════════ */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
       background-image:
-        linear-gradient(rgba(245,200,66,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(245,200,66,0.03) 1px, transparent 1px);
+        linear-gradient(rgba(59,128,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59,128,255,0.04) 1px, transparent 1px);
       background-size: 60px 60px;
       pointer-events: none;
       z-index: 0;
     }
 
-    /* ═══════════════════════════════════════════════
-       LANGUAGE BAR
-    ═══════════════════════════════════════════════ */
+    /* ── LANGUAGE BAR ── */
     .lang-bar {
       position: relative;
       z-index: 100;
@@ -94,7 +85,7 @@
 
     .lang-btn:hover,
     .lang-btn.active {
-      border-color: var(--gold-dim);
+      border-color: var(--cyan-dim);
     }
 
     .lang-btn .fi {
@@ -103,14 +94,12 @@
       border-radius: 2px;
     }
 
-    /* ═══════════════════════════════════════════════
-       NAVBAR
-    ═══════════════════════════════════════════════ */
+    /* ── NAVBAR ── */
     .navbar {
       position: sticky;
       top: 0;
       z-index: 99;
-      background: rgba(10,12,16,0.92);
+      background: rgba(8,9,15,0.92);
       backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
       padding: 0 40px;
@@ -130,7 +119,7 @@
       width: 34px;
       height: 34px;
       object-fit: contain;
-      filter: drop-shadow(0 0 8px rgba(245,200,66,0.5));
+      filter: drop-shadow(0 0 8px rgba(123,63,255,0.6));
     }
 
     .nav-title {
@@ -139,7 +128,7 @@
       font-size: 22px;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      background: linear-gradient(135deg, var(--gold) 40%, #fff 100%);
+      background: var(--logo-grad);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -170,11 +159,11 @@
       left: 0;
       width: 0;
       height: 2px;
-      background: var(--gold);
+      background: var(--cyan);
       transition: width 0.25s;
     }
 
-    .nav-links a:hover { color: var(--gold); }
+    .nav-links a:hover { color: var(--cyan); }
     .nav-links a:hover::after { width: 100%; }
 
     .nav-discord {
@@ -189,9 +178,7 @@
     .nav-discord:hover { background: #4752c4 !important; }
     .nav-discord::after { display: none !important; }
 
-    /* ═══════════════════════════════════════════════
-       HERO
-    ═══════════════════════════════════════════════ */
+    /* ── HERO ── */
     .hero {
       position: relative;
       z-index: 1;
@@ -203,7 +190,6 @@
       padding: 80px 24px 60px;
     }
 
-    /* Animated radial glow orbs */
     .hero::before {
       content: '';
       position: absolute;
@@ -212,7 +198,7 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: radial-gradient(ellipse, rgba(245,200,66,0.12) 0%, transparent 65%);
+      background: radial-gradient(ellipse, rgba(123,63,255,0.14) 0%, transparent 65%);
       animation: pulse-orb 5s ease-in-out infinite;
       pointer-events: none;
     }
@@ -224,7 +210,7 @@
       height: 400px;
       top: 30%;
       right: 10%;
-      background: radial-gradient(ellipse, rgba(232,48,74,0.10) 0%, transparent 65%);
+      background: radial-gradient(ellipse, rgba(59,232,255,0.10) 0%, transparent 65%);
       animation: pulse-orb 7s ease-in-out infinite reverse;
       pointer-events: none;
     }
@@ -234,15 +220,44 @@
       50%       { transform: translate(-50%, -50%) scale(1.15); opacity: 0.7; }
     }
 
-    /* Diagonal accent stripe */
     .hero-stripe {
       position: absolute;
       top: 0; bottom: 0;
       left: -20%;
       width: 55%;
-      background: linear-gradient(135deg, rgba(245,200,66,0.04) 0%, transparent 60%);
+      background: linear-gradient(135deg, rgba(123,63,255,0.05) 0%, transparent 60%);
       transform: skewX(-8deg);
       pointer-events: none;
+    }
+
+    .hero-ball {
+      position: absolute;
+      bottom: -60px;
+      right: -80px;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      border: 2px solid rgba(123,63,255,0.08);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hero-ball::before {
+      content: '';
+      position: absolute;
+      inset: 20px;
+      border-radius: 50%;
+      border: 1px solid rgba(59,232,255,0.05);
+    }
+
+    .hero-ball::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0; right: 0;
+      height: 2px;
+      background: rgba(123,63,255,0.07);
+      transform: translateY(-50%);
     }
 
     .hero-content {
@@ -257,7 +272,7 @@
       font-size: 11px;
       letter-spacing: 0.25em;
       text-transform: uppercase;
-      color: var(--gold);
+      color: var(--cyan);
       margin-bottom: 20px;
       display: flex;
       align-items: center;
@@ -272,7 +287,7 @@
       content: '';
       width: 40px;
       height: 1px;
-      background: var(--gold-dim);
+      background: var(--cyan-dim);
     }
 
     .hero-logo {
@@ -280,7 +295,7 @@
       height: 110px;
       object-fit: contain;
       margin-bottom: 28px;
-      filter: drop-shadow(0 0 30px rgba(245,200,66,0.55));
+      filter: drop-shadow(0 0 30px rgba(123,63,255,0.6)) drop-shadow(0 0 60px rgba(59,232,255,0.25));
       animation: logo-float 4s ease-in-out infinite, fade-up 0.8s 0.1s both;
     }
 
@@ -303,7 +318,7 @@
 
     .hero-title .line1 {
       display: block;
-      background: linear-gradient(135deg, var(--gold) 0%, #ffe47a 60%, var(--gold-dim) 100%);
+      background: var(--logo-grad);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -319,8 +334,8 @@
     }
 
     .hero-title .highlight {
-      color: var(--gold);
-      -webkit-text-fill-color: var(--gold);
+      color: var(--cyan);
+      -webkit-text-fill-color: var(--cyan);
     }
 
     .hero-sub {
@@ -343,8 +358,8 @@
     }
 
     .btn-primary {
-      background: var(--gold);
-      color: var(--ink);
+      background: var(--logo-grad);
+      color: #fff;
       font-family: var(--font-head);
       font-weight: 700;
       font-size: 15px;
@@ -355,14 +370,14 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-      box-shadow: 0 4px 24px rgba(245,200,66,0.3);
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px rgba(123,63,255,0.4);
     }
 
     .btn-primary:hover {
-      background: #ffe47a;
+      opacity: 0.88;
       transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(245,200,66,0.45);
+      box-shadow: 0 8px 32px rgba(59,232,255,0.3);
     }
 
     .btn-secondary {
@@ -383,43 +398,11 @@
     }
 
     .btn-secondary:hover {
-      border-color: var(--gold-dim);
-      color: var(--gold);
+      border-color: var(--cyan-dim);
+      color: var(--cyan);
       transform: translateY(-2px);
     }
 
-    /* Pokéball decorative element */
-    .hero-ball {
-      position: absolute;
-      bottom: -60px;
-      right: -80px;
-      width: 340px;
-      height: 340px;
-      border-radius: 50%;
-      border: 2px solid rgba(245,200,66,0.06);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .hero-ball::before {
-      content: '';
-      position: absolute;
-      inset: 20px;
-      border-radius: 50%;
-      border: 1px solid rgba(245,200,66,0.04);
-    }
-
-    .hero-ball::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 0; right: 0;
-      height: 2px;
-      background: rgba(245,200,66,0.06);
-      transform: translateY(-50%);
-    }
-
-    /* Stats ticker */
     .hero-stats {
       display: flex;
       justify-content: center;
@@ -441,7 +424,7 @@
       font-family: var(--font-head);
       font-weight: 900;
       font-size: 34px;
-      color: var(--gold);
+      color: var(--cyan);
       letter-spacing: -0.01em;
       line-height: 1;
     }
@@ -460,9 +443,7 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ═══════════════════════════════════════════════
-       SECTION COMMONS
-    ═══════════════════════════════════════════════ */
+    /* ── SECTION COMMONS ── */
     .section-header {
       display: flex;
       align-items: flex-end;
@@ -475,7 +456,7 @@
       font-size: 10px;
       letter-spacing: 0.25em;
       text-transform: uppercase;
-      color: var(--gold);
+      color: var(--cyan);
       margin-bottom: 6px;
     }
 
@@ -488,9 +469,7 @@
       line-height: 1;
     }
 
-    /* ═══════════════════════════════════════════════
-       TOOLS SECTION
-    ═══════════════════════════════════════════════ */
+    /* ── TOOLS ── */
     .tools-section {
       position: relative;
       z-index: 1;
@@ -520,18 +499,16 @@
       margin: -1px 0 0 -1px;
     }
 
-    /* First column items get left border radius */
-    .tool-card:nth-child(1) { border-radius: 8px 0 0 0; }
-    .tool-card:nth-child(4) { border-radius: 0 8px 0 0; }
-    .tool-card:nth-child(5) { border-radius: 0; }
+    .tool-card:nth-child(1)      { border-radius: 8px 0 0 0; }
+    .tool-card:nth-child(4)      { border-radius: 0 8px 0 0; }
     .tool-card:nth-last-child(4) { border-radius: 0 0 0 8px; }
-    .tool-card:last-child { border-radius: 0 0 8px 0; }
+    .tool-card:last-child        { border-radius: 0 0 8px 0; }
 
     .tool-card::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, rgba(245,200,66,0.06) 0%, transparent 60%);
+      background: linear-gradient(135deg, rgba(123,63,255,0.07) 0%, rgba(59,232,255,0.03) 60%, transparent 100%);
       opacity: 0;
       transition: opacity 0.3s;
     }
@@ -543,20 +520,22 @@
       left: 0;
       width: 100%;
       height: 2px;
-      background: var(--gold);
+      background: var(--logo-grad);
       transform: scaleX(0);
       transform-origin: left;
       transition: transform 0.3s;
     }
 
     .tool-card:hover {
-      border-color: rgba(245,200,66,0.25);
+      border-color: rgba(123,63,255,0.3);
       transform: translateY(-3px);
       z-index: 2;
     }
 
     .tool-card:hover::before { opacity: 1; }
-    .tool-card:hover::after { transform: scaleX(1); }
+    .tool-card:hover::after  { transform: scaleX(1); }
+
+    .discord-card::after { background: #5865F2 !important; }
 
     .tool-number {
       font-family: var(--font-mono);
@@ -571,20 +550,20 @@
     .tool-icon {
       width: 44px;
       height: 44px;
-      background: rgba(245,200,66,0.08);
-      border: 1px solid rgba(245,200,66,0.15);
+      background: rgba(59,232,255,0.07);
+      border: 1px solid rgba(59,232,255,0.18);
       border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 18px;
-      color: var(--gold);
+      color: var(--cyan);
       transition: background 0.2s, transform 0.2s;
       flex-shrink: 0;
     }
 
     .tool-card:hover .tool-icon {
-      background: rgba(245,200,66,0.15);
+      background: rgba(59,232,255,0.14);
       transform: scale(1.08);
     }
 
@@ -594,11 +573,7 @@
       color: #7289da;
     }
 
-    .discord-card:hover .tool-icon {
-      background: rgba(88,101,242,0.2);
-    }
-
-    .discord-card::after { background: #5865F2; }
+    .discord-card:hover .tool-icon { background: rgba(88,101,242,0.2); }
 
     .tool-name {
       font-family: var(--font-head);
@@ -628,24 +603,21 @@
 
     .tool-card:hover .tool-arrow {
       opacity: 1;
-      color: var(--gold);
+      color: var(--cyan);
       transform: translateX(3px);
     }
 
-    /* ═══════════════════════════════════════════════
-       BANNER STRIP
-    ═══════════════════════════════════════════════ */
+    /* ── BANNER ── */
     .banner-strip {
       position: relative;
       z-index: 1;
-      background: var(--gold);
+      background: var(--logo-grad);
       overflow: hidden;
       padding: 18px 0;
     }
 
     .banner-track {
       display: flex;
-      gap: 0;
       width: max-content;
       animation: ticker 25s linear infinite;
     }
@@ -656,7 +628,7 @@
       font-size: 15px;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--ink);
+      color: rgba(255,255,255,0.92);
       padding: 0 40px;
       white-space: nowrap;
       display: flex;
@@ -667,7 +639,7 @@
     .banner-item .dot {
       width: 5px;
       height: 5px;
-      background: rgba(10,12,16,0.3);
+      background: rgba(255,255,255,0.4);
       border-radius: 50%;
     }
 
@@ -676,9 +648,7 @@
       to   { transform: translateX(-50%); }
     }
 
-    /* ═══════════════════════════════════════════════
-       NEWS SECTION
-    ═══════════════════════════════════════════════ */
+    /* ── NEWS ── */
     .news-section {
       position: relative;
       z-index: 1;
@@ -693,7 +663,6 @@
       gap: 16px;
     }
 
-    /* Placeholder news cards for demo */
     .news-card {
       background: var(--panel);
       border: 1px solid var(--border);
@@ -704,14 +673,14 @@
     }
 
     .news-card:hover {
-      border-color: rgba(245,200,66,0.3);
+      border-color: rgba(59,232,255,0.25);
       transform: translateY(-4px);
     }
 
     .news-thumb {
       width: 100%;
       height: 160px;
-      background: linear-gradient(135deg, #1a1f2e 0%, #12161f 100%);
+      background: linear-gradient(135deg, #141228 0%, #0e1020 100%);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -727,16 +696,14 @@
       background: linear-gradient(to bottom, transparent 40%, var(--panel) 100%);
     }
 
-    .news-body {
-      padding: 20px;
-    }
+    .news-body { padding: 20px; }
 
     .news-tag {
       font-family: var(--font-mono);
       font-size: 10px;
       letter-spacing: 0.15em;
       text-transform: uppercase;
-      color: var(--gold);
+      color: var(--cyan);
       margin-bottom: 8px;
     }
 
@@ -778,11 +745,11 @@
       font-weight: 700;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--gold-dim);
+      color: var(--cyan-dim);
       transition: color 0.2s;
     }
 
-    .news-card:hover .news-read { color: var(--gold); }
+    .news-card:hover .news-read { color: var(--cyan); }
 
     .news-more {
       margin-top: 36px;
@@ -806,13 +773,11 @@
     }
 
     .btn-outline:hover {
-      color: var(--gold);
-      border-color: var(--gold-dim);
+      color: var(--cyan);
+      border-color: var(--cyan-dim);
     }
 
-    /* ═══════════════════════════════════════════════
-       DISCORD SECTION
-    ═══════════════════════════════════════════════ */
+    /* ── DISCORD ── */
     .discord-section {
       position: relative;
       z-index: 1;
@@ -891,9 +856,7 @@
       box-shadow: 0 8px 30px rgba(88,101,242,0.5);
     }
 
-    /* ═══════════════════════════════════════════════
-       FOOTER
-    ═══════════════════════════════════════════════ */
+    /* ── FOOTER ── */
     .footer {
       position: relative;
       z-index: 1;
@@ -916,7 +879,10 @@
       font-size: 16px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--gold);
+      background: var(--logo-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .footer p {
@@ -926,25 +892,15 @@
       letter-spacing: 0.05em;
     }
 
-    /* ═══════════════════════════════════════════════
-       SCROLLBAR
-    ═══════════════════════════════════════════════ */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--ink); }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--cyan-dim); }
 
-    /* ═══════════════════════════════════════════════
-       RESPONSIVE
-    ═══════════════════════════════════════════════ */
+    /* ── RESPONSIVE ── */
     @media (max-width: 1024px) {
       .tools-grid { grid-template-columns: repeat(2, 1fr); }
-      .tool-card:nth-child(1) { border-radius: 8px 0 0 0; }
-      .tool-card:nth-child(2) { border-radius: 0 8px 0 0; }
-      .tool-card:nth-child(n) { border-radius: 0; }
-      .tool-card:nth-last-child(2) { border-radius: 0 0 0 8px; }
-      .tool-card:last-child { border-radius: 0 0 8px 0; }
-      .news-grid { grid-template-columns: 1fr 1fr; }
+      .news-grid  { grid-template-columns: 1fr 1fr; }
     }
 
     @media (max-width: 768px) {
@@ -953,9 +909,9 @@
       .hero { min-height: auto; padding: 60px 20px 50px; }
       .tools-section, .news-section, .discord-section { padding-left: 20px; padding-right: 20px; }
       .tools-grid { grid-template-columns: 1fr; }
-      .news-grid { grid-template-columns: 1fr; }
-      .hero-stats { gap: 0; flex-wrap: wrap; }
-      .stat-item { flex: 1 1 40%; }
+      .news-grid  { grid-template-columns: 1fr; }
+      .hero-stats { flex-wrap: wrap; }
+      .stat-item  { flex: 1 1 40%; }
       .discord-inner { flex-direction: column; padding: 40px 28px; }
       .btn-discord { margin-left: 0; }
       .footer { flex-direction: column; gap: 10px; text-align: center; }
@@ -1000,26 +956,20 @@
   <header class="hero">
     <div class="hero-stripe"></div>
     <div class="hero-ball"></div>
-
     <div class="hero-content">
       <div class="hero-eyebrow">Est. 2018 — Worldwide Trainer Network</div>
-
       <img src="assets/logo.png" alt="PoGORaids" class="hero-logo" onerror="this.style.display='none'" />
-
       <h1 class="hero-title">
         <span class="line1">PogoRaids</span>
         <span class="line2">The <span class="highlight">Trainer's</span> Toolkit</span>
       </h1>
-
       <p class="hero-sub" data-i18n="hero_sub">
         Tools, news, and community — all in one place for trainers worldwide. Raid smarter. Catch more. Win.
       </p>
-
       <div class="hero-cta">
         <a href="#tools" class="btn-primary"><i class="fa-solid fa-bolt"></i> Explore Tools</a>
         <a href="https://discord.gg/pogoraids" class="btn-secondary" target="_blank" rel="noopener"><i class="fa-brands fa-discord"></i> Join Discord</a>
       </div>
-
       <div class="hero-stats">
         <div class="stat-item">
           <div class="stat-num">350K+</div>
@@ -1071,9 +1021,7 @@
         <h2 class="section-title">Trainer Tools</h2>
       </div>
     </div>
-
     <div class="tools-grid">
-
       <a href="/leaderboards" class="tool-card">
         <span class="tool-number">01</span>
         <div class="tool-icon"><i class="fa-solid fa-trophy"></i></div>
@@ -1081,7 +1029,6 @@
         <span class="tool-desc">Compete globally and track your ranking.</span>
         <i class="fa-solid fa-arrow-right tool-arrow"></i>
       </a>
-
       <a href="/community-map" class="tool-card">
         <span class="tool-number">02</span>
         <div class="tool-icon"><i class="fa-solid fa-map-location-dot"></i></div>
@@ -1089,7 +1036,6 @@
         <span class="tool-desc">Find trainers and raids near you.</span>
         <i class="fa-solid fa-arrow-right tool-arrow"></i>
       </a>
-
       <a href="/vivillon" class="tool-card">
         <span class="tool-number">03</span>
         <div class="tool-icon"><i class="fa-solid fa-gift"></i></div>
@@ -1097,7 +1043,6 @@
         <span class="tool-desc">Trade gifts to complete your Vivillon collection.</span>
         <i class="fa-solid fa-arrow-right tool-arrow"></i>
       </a>
-
       <a href="nest-map.html" class="tool-card">
         <span class="tool-number">04</span>
         <div class="tool-icon"><i class="fa-solid fa-tree"></i></div>
@@ -1105,7 +1050,6 @@
         <span class="tool-desc">Discover nesting Pokémon in your area.</span>
         <i class="fa-solid fa-arrow-right tool-arrow"></i>
       </a>
-
       <a href="/events" class="tool-card">
         <span class="tool-number">05</span>
         <div class="tool-icon"><i class="fa-solid fa-calendar-days"></i></div>
@@ -1113,7 +1057,6 @@
         <span class="tool-desc">Never miss a Raid Day, Community Day, or Spotlight Hour.</span>
         <i class="fa-solid fa-arrow-right tool-arrow"></i>
       </a>
-
       <a href="/infographics" class="tool-card">
         <span class="tool-number">06</span>
         <div class="tool-icon"><i class="fa-solid fa-chart-bar"></i></div>
@@ -1121,7 +1064,6 @@
         <span class="tool-desc">Visual guides to master every raid and meta.</span>
         <i class="fa-solid fa-arrow-right tool-arrow"></i>
       </a>
-
       <a href="/news" class="tool-card">
         <span class="tool-number">07</span>
         <div class="tool-icon"><i class="fa-solid fa-newspaper"></i></div>
@@ -1129,7 +1071,6 @@
         <span class="tool-desc">Up-to-date GO news, patch notes, and research.</span>
         <i class="fa-solid fa-arrow-right tool-arrow"></i>
       </a>
-
       <a href="https://discord.gg/pogoraids" class="tool-card discord-card" target="_blank" rel="noopener">
         <span class="tool-number">08</span>
         <div class="tool-icon"><i class="fa-brands fa-discord"></i></div>
@@ -1137,7 +1078,6 @@
         <span class="tool-desc">Join our active server and raid with trainers globally.</span>
         <i class="fa-solid fa-arrow-right tool-arrow"></i>
       </a>
-
     </div>
   </section>
 
@@ -1150,8 +1090,6 @@
       </div>
       <a href="/news" class="btn-outline" data-i18n="news_more">All News <i class="fa-solid fa-arrow-right"></i></a>
     </div>
-
-    <!-- Static demo cards — replaced by news.js at runtime -->
     <div class="news-grid" id="news-grid">
       <div class="news-card">
         <div class="news-thumb">⚡</div>
@@ -1215,20 +1153,15 @@
     <p data-i18n="footer_text">© 2026 PoGORaids.net — Not affiliated with Niantic or Pokémon GO.</p>
   </footer>
 
-  <!-- Keep existing scripts -->
   <script src="i18n.js"></script>
   <script src="news.js"></script>
-
   <script>
-    // Language switcher active state
     document.querySelectorAll('.lang-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
       });
     });
-
-    // Smooth scroll
     document.querySelectorAll('a[href^="#"]').forEach(a => {
       a.addEventListener('click', e => {
         const id = a.getAttribute('href').slice(1);
