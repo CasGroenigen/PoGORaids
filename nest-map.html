@@ -4,131 +4,329 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Nest Map — PoGORaids</title>
-  <link rel="stylesheet" href="styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,900;1,700&family=Barlow:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <!-- Flag Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css" />
   <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
-    .lang-btn .fi {
-      width: 20px;
-      height: 15px;
-      border-radius: 2px;
-      display: inline-block;
-      vertical-align: middle;
-      line-height: 1;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:        #08090f;
+      --panel:      #10121c;
+      --border:     rgba(80,140,255,0.12);
+      --cyan:       #3be8ff;
+      --cyan-dim:   #1ab8d4;
+      --purple:     #9b4dff;
+      --logo-grad:  linear-gradient(135deg, #3be8ff 0%, #7b3fff 55%, #b020ff 100%);
+      --text:       #e8eaf0;
+      --muted:      #7a82a0;
+      --font-head:  'Barlow Condensed', sans-serif;
+      --font-body:  'Barlow', sans-serif;
+      --font-mono:  'Space Mono', monospace;
     }
 
-    /* ===== PAGE LAYOUT ===== */
-    .nestmap-hero {
-      padding: 60px 40px 30px;
-      text-align: center;
-      background: radial-gradient(ellipse at 50% 0%, rgba(155,48,217,0.15) 0%, transparent 70%), var(--bg);
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--ink);
+      color: var(--text);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
     }
-    .nestmap-hero h1 {
-      font-family: var(--font-alt);
-      font-size: clamp(1.8rem, 4vw, 3rem);
+
+    a { text-decoration: none; color: inherit; }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(59,128,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59,128,255,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── LANGUAGE BAR ── */
+    .lang-bar {
+      position: relative;
+      z-index: 100;
+      background: var(--ink);
+      border-bottom: 1px solid var(--border);
+      padding: 6px 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .lang-bar span {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-right: 4px;
+    }
+    .lang-btn {
+      background: none;
+      border: 1px solid transparent;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 3px;
+      transition: border-color 0.15s;
+      display: flex;
+      align-items: center;
+    }
+    .lang-btn:hover, .lang-btn.active { border-color: var(--cyan-dim); }
+    .lang-btn .fi { width: 20px; height: 14px; border-radius: 2px; }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 99;
+      background: rgba(8,9,15,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; }
+    .nav-logo-img {
+      width: 34px; height: 34px; object-fit: contain;
+      filter: drop-shadow(0 0 8px rgba(123,63,255,0.6));
+    }
+    .nav-title {
+      font-family: var(--font-head);
       font-weight: 900;
-      background: var(--gradient);
+      font-size: 22px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: var(--logo-grad);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      margin-bottom: 10px;
     }
-    .nestmap-hero p {
-      color: var(--gray);
-      font-size: 1rem;
-      max-width: 560px;
-      margin: 0 auto;
+    .nav-links { list-style: none; display: flex; gap: 32px; align-items: center; }
+    .nav-links a {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 2px;
+      background: var(--cyan);
+      transition: width 0.25s;
+    }
+    .nav-links a:hover { color: var(--cyan); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-discord {
+      color: var(--text) !important;
+      background: #5865F2;
+      padding: 6px 18px;
+      border-radius: 4px;
+      font-size: 13px !important;
+      transition: background 0.2s !important;
+    }
+    .nav-discord:hover { background: #4752c4 !important; }
+    .nav-discord::after { display: none !important; }
+
+    /* ── PAGE HERO ── */
+    .page-hero {
+      position: relative;
+      z-index: 1;
+      padding: 64px 40px 48px;
+      text-align: center;
+      overflow: hidden;
+    }
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(ellipse, rgba(123,63,255,0.10) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .page-hero-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .page-hero-eyebrow::before, .page-hero-eyebrow::after {
+      content: ''; width: 36px; height: 1px; background: var(--cyan-dim);
+    }
+    .page-hero h1 {
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: clamp(44px, 7vw, 80px);
+      line-height: 0.95;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      background: var(--logo-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .page-hero p {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 500px;
+      margin: 0 auto 28px;
+      line-height: 1.7;
     }
 
-    /* ===== NEST RESET TIMER ===== */
+    /* ── NEST RESET TIMER ── */
     .nest-reset-timer {
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      margin-top: 18px;
-      padding: 10px 20px;
-      background: rgba(10,10,25,0.7);
-      border: 1px solid rgba(0,212,255,0.25);
-      border-radius: 30px;
-      font-family: var(--font-alt);
-      font-size: 0.9rem;
-      color: var(--gray);
-      backdrop-filter: blur(8px);
-    }
-    .nest-reset-timer .timer-label {
-      color: var(--gray);
-      font-weight: 600;
-      letter-spacing: 0.04em;
+      padding: 10px 22px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      font-size: 0.75rem;
+      color: var(--muted);
     }
-    .nest-reset-timer .timer-value {
+    .nest-reset-timer i { color: var(--cyan); }
+    .timer-label { color: var(--muted); }
+    .timer-value {
       color: var(--cyan);
-      font-size: 1.05rem;
+      font-size: 13px;
       font-weight: 700;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.1em;
       font-variant-numeric: tabular-nums;
     }
-    .nest-reset-timer i {
-      color: var(--cyan);
-      font-size: 1rem;
-    }
 
-    /* ===== MAP WRAPPER ===== */
-    .map-wrapper {
+    /* ── MAP SECTION ── */
+    .map-section {
       position: relative;
-      width: 100%;
+      z-index: 1;
       max-width: 1400px;
       margin: 0 auto;
-      padding: 0 24px 60px;
+      padding: 0 40px 80px;
+    }
+
+    /* ── MAP CHROME ── */
+    .map-chrome {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .map-chrome-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(8,9,15,0.6);
+    }
+    .map-chrome-dots {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+    }
+    .map-chrome-dots span {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+    .map-chrome-dots span:nth-child(1) { background: rgba(255,90,90,0.5); }
+    .map-chrome-dots span:nth-child(2) { background: rgba(255,190,50,0.5); }
+    .map-chrome-dots span:nth-child(3) { background: rgba(50,220,100,0.5); }
+    .map-chrome-title {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .map-chrome-badge {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      border: 1px solid rgba(59,232,255,0.25);
+      padding: 2px 8px;
+      border-radius: 3px;
+    }
+
+    /* ── MAP WRAPPER (relative for overlays) ── */
+    .map-wrapper {
+      position: relative;
     }
     #nest-map {
       width: 100%;
       height: 70vh;
       min-height: 480px;
-      border-radius: 18px;
-      border: 1.5px solid rgba(0,212,255,0.2);
-      box-shadow: 0 0 40px rgba(0,212,255,0.08), 0 0 0 1px rgba(155,48,217,0.1);
-      overflow: hidden;
-      z-index: 1;
+      display: block;
     }
 
-    /* ===== ZOOM GUARD OVERLAY ===== */
+    /* ── ZOOM GUARD OVERLAY ── */
     .zoom-guard-overlay {
       position: absolute;
       inset: 0;
-      border-radius: 18px;
       z-index: 500;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(10,10,20,0.62);
-      backdrop-filter: blur(4px);
+      background: rgba(8,9,15,0.72);
+      backdrop-filter: blur(6px);
       pointer-events: none;
       opacity: 0;
       transition: opacity 0.3s ease;
     }
-    .zoom-guard-overlay.visible {
-      opacity: 1;
-    }
+    .zoom-guard-overlay.visible { opacity: 1; }
     .zoom-guard-box {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 10px;
-      padding: 28px 36px;
-      background: rgba(10,10,25,0.92);
-      border: 1px solid rgba(0,212,255,0.3);
-      border-radius: 18px;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 20px rgba(0,212,255,0.08);
+      padding: 32px 44px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 6px;
       text-align: center;
       pointer-events: none;
+      position: relative;
+      overflow: hidden;
+    }
+    .zoom-guard-box::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--logo-grad);
     }
     .zoom-guard-box i {
       font-size: 2rem;
@@ -136,191 +334,165 @@
       margin-bottom: 4px;
     }
     .zoom-guard-box strong {
-      font-family: var(--font-alt);
-      font-size: 1.1rem;
+      font-family: var(--font-head);
+      font-size: 1.3rem;
       font-weight: 700;
-      color: var(--white);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text);
     }
     .zoom-guard-box span {
-      font-size: 0.85rem;
-      color: var(--gray);
+      font-size: 0.82rem;
+      color: var(--muted);
       max-width: 240px;
       line-height: 1.5;
     }
 
-    /* ===== CORNER LOADING INDICATOR ===== */
+    /* ── CORNER LOADING INDICATOR ── */
     .map-fetch-indicator {
       position: absolute;
-      top: 16px;
-      right: 40px;
+      top: 14px;
+      right: 14px;
       z-index: 1000;
       display: flex;
       align-items: center;
       gap: 8px;
-      background: rgba(10,10,25,0.88);
-      border: 1px solid rgba(0,212,255,0.3);
-      border-radius: 30px;
-      padding: 7px 14px 7px 10px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 6px 14px 6px 10px;
       color: var(--cyan);
-      font-family: var(--font-alt);
-      font-size: 0.82rem;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 12px rgba(0,212,255,0.12);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
       pointer-events: none;
       opacity: 1;
       transition: opacity 0.35s ease;
     }
-    .map-fetch-indicator.hidden {
-      opacity: 0;
-    }
-    .map-fetch-indicator i {
-      font-size: 0.95rem;
-      animation: spin 1s linear infinite;
-    }
+    .map-fetch-indicator.hidden { opacity: 0; }
+    .map-fetch-indicator i { font-size: 0.85rem; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ===== LEAFLET OVERRIDES ===== */
-    .leaflet-container { background: #0a0a12 !important; }
+    /* ── LEAFLET OVERRIDES ── */
+    .leaflet-container { background: #08090f !important; }
     .leaflet-popup-content-wrapper {
-      background: #13132a !important;
-      border: 1px solid rgba(0,212,255,0.25) !important;
-      border-radius: 14px !important;
-      color: #f0f0ff !important;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+      background: var(--panel) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 6px !important;
+      color: var(--text) !important;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.6) !important;
       padding: 0 !important;
     }
     .leaflet-popup-content { margin: 0 !important; width: auto !important; }
-    .leaflet-popup-tip { background: #13132a !important; }
-    .leaflet-popup-close-button { color: rgba(0,212,255,0.6) !important; font-size: 1.2rem !important; top: 10px !important; right: 12px !important; }
-    .leaflet-popup-close-button:hover { color: #00d4ff !important; }
+    .leaflet-popup-tip { background: var(--panel) !important; }
+    .leaflet-popup-close-button { color: var(--muted) !important; font-size: 1.1rem !important; top: 10px !important; right: 12px !important; }
+    .leaflet-popup-close-button:hover { color: var(--cyan) !important; }
     .leaflet-control-zoom a {
-      background: #13132a !important;
-      color: #00d4ff !important;
-      border-color: rgba(0,212,255,0.2) !important;
+      background: var(--panel) !important;
+      color: var(--cyan) !important;
+      border-color: var(--border) !important;
+      font-family: var(--font-head) !important;
     }
-    .leaflet-control-zoom a:hover { background: #1a1a3a !important; }
+    .leaflet-control-zoom a:hover { background: rgba(59,232,255,0.08) !important; }
     .leaflet-attribution-flag { display: none !important; }
     .leaflet-control-attribution {
-      background: rgba(10,10,18,0.8) !important;
-      color: var(--gray) !important;
-      font-size: 0.7rem !important;
+      background: rgba(8,9,15,0.85) !important;
+      color: var(--muted) !important;
+      font-size: 0.68rem !important;
+      font-family: var(--font-mono) !important;
     }
-    .leaflet-control-attribution a { color: rgba(0,212,255,0.6) !important; }
+    .leaflet-control-attribution a { color: var(--cyan-dim) !important; }
 
-    /* ===== PARK LABEL (icon on polygon) ===== */
-    .park-label {
-      background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-    }
+    /* ── PARK LABEL ── */
+    .park-label { background: transparent !important; border: none !important; box-shadow: none !important; }
     .park-label-inner {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: rgba(10,10,25,0.82);
-      border: 2px solid rgba(0,212,255,0.5);
-      box-shadow: 0 0 12px rgba(0,212,255,0.25);
+      width: 44px; height: 44px;
+      border-radius: 4px;
+      background: var(--panel);
+      border: 1px solid var(--border);
       overflow: hidden;
       cursor: pointer;
+      transition: border-color 0.2s;
     }
-    .park-label-inner img {
-      width: 36px;
-      height: 36px;
-      object-fit: contain;
-      image-rendering: pixelated;
-    }
+    .park-label-inner:hover { border-color: var(--cyan-dim); }
+    .park-label-inner img { width: 34px; height: 34px; object-fit: contain; image-rendering: pixelated; }
     .park-label-inner .nest-unknown {
-      font-size: 1.4rem;
-      color: var(--gray);
+      font-size: 1.2rem;
+      color: var(--muted);
       font-weight: 700;
       line-height: 1;
     }
 
-    /* ===== POPUP CONTENT ===== */
-    .nest-popup {
-      padding: 20px 22px 18px;
-      min-width: 240px;
-      max-width: 300px;
-    }
+    /* ── POPUP ── */
+    .nest-popup { padding: 20px 22px 18px; min-width: 240px; max-width: 300px; }
     .nest-popup h3 {
-      font-family: var(--font-alt);
-      font-size: 1.15rem;
+      font-family: var(--font-head);
+      font-size: 1.2rem;
       font-weight: 700;
-      color: var(--white);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text);
       margin-bottom: 4px;
     }
     .nest-popup .nest-current {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin: 14px 0;
+      margin: 12px 0;
       padding: 10px 12px;
-      background: rgba(0,212,255,0.07);
-      border: 1px solid rgba(0,212,255,0.15);
-      border-radius: 10px;
+      background: rgba(59,232,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 4px;
     }
-    .nest-popup .nest-current img {
-      width: 44px;
-      height: 44px;
-      object-fit: contain;
-      image-rendering: pixelated;
-    }
-    .nest-popup .nest-current .no-nest {
-      font-size: 1.8rem;
-      width: 44px;
-      text-align: center;
-    }
+    .nest-popup .nest-current img { width: 40px; height: 40px; object-fit: contain; image-rendering: pixelated; }
+    .nest-popup .nest-current .no-nest { font-size: 1.6rem; width: 40px; text-align: center; }
     .nest-popup .nest-current-info strong {
       display: block;
-      font-family: var(--font-alt);
+      font-family: var(--font-head);
       font-size: 1rem;
       font-weight: 700;
-      color: var(--white);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text);
     }
-    .nest-popup .nest-current-info span {
-      font-size: 0.78rem;
-      color: var(--gray);
-    }
+    .nest-popup .nest-current-info span { font-size: 0.76rem; color: var(--muted); }
     .nest-popup label {
       display: block;
-      font-size: 0.82rem;
-      color: var(--gray);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--muted);
       margin-bottom: 6px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
     }
-    .nest-popup .poke-search-wrap {
-      position: relative;
-      margin-bottom: 8px;
-    }
+    .nest-popup .poke-search-wrap { position: relative; margin-bottom: 8px; }
     .nest-popup input[type=text] {
       width: 100%;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(0,212,255,0.25);
-      border-radius: 8px;
-      padding: 9px 12px;
-      color: var(--white);
-      font-family: var(--font-main);
-      font-size: 0.9rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 8px 12px;
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 0.88rem;
       outline: none;
       transition: border-color 0.2s;
       box-sizing: border-box;
     }
-    .nest-popup input[type=text]:focus { border-color: var(--cyan); }
-    .nest-popup input[type=text]::placeholder { color: var(--gray); }
+    .nest-popup input[type=text]:focus { border-color: var(--cyan-dim); }
+    .nest-popup input[type=text]::placeholder { color: var(--muted); }
     .poke-suggestions {
       position: absolute;
       top: calc(100% + 4px);
       left: 0; right: 0;
-      background: #1a1a2e;
-      border: 1px solid rgba(0,212,255,0.2);
-      border-radius: 8px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px;
       max-height: 160px;
       overflow-y: auto;
       z-index: 9999;
@@ -333,111 +505,145 @@
       gap: 8px;
       padding: 8px 12px;
       cursor: pointer;
-      font-size: 0.88rem;
-      color: var(--white);
+      font-size: 0.86rem;
+      color: var(--text);
       transition: background 0.15s;
     }
-    .poke-suggestion-item:hover { background: rgba(0,212,255,0.1); }
-    .poke-suggestion-item img { width: 28px; height: 28px; object-fit: contain; image-rendering: pixelated; }
+    .poke-suggestion-item:hover { background: rgba(59,232,255,0.06); }
+    .poke-suggestion-item img { width: 26px; height: 26px; object-fit: contain; image-rendering: pixelated; }
 
-    /* ===== DROPDOWN ===== */
-    .nest-popup .poke-dropdown-wrap {
-      margin-bottom: 10px;
-    }
+    /* Dropdown */
+    .nest-popup .poke-dropdown-wrap { margin-bottom: 10px; }
     .nest-popup select.poke-dropdown {
       width: 100%;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(0,212,255,0.25);
-      border-radius: 8px;
-      padding: 9px 12px;
-      color: var(--white);
-      font-family: var(--font-main);
-      font-size: 0.88rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 8px 12px;
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 0.86rem;
       outline: none;
       cursor: pointer;
       transition: border-color 0.2s;
       box-sizing: border-box;
       appearance: none;
       -webkit-appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2300d4ff' d='M0 0l6 8 6-8z'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%233be8ff' d='M0 0l6 8 6-8z'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 12px center;
-      background-size: 10px;
+      background-size: 9px;
     }
-    .nest-popup select.poke-dropdown:focus { border-color: var(--cyan); }
-    .nest-popup select.poke-dropdown option {
-      background: #1a1a2e;
-      color: var(--white);
-    }
+    .nest-popup select.poke-dropdown:focus { border-color: var(--cyan-dim); }
+    .nest-popup select.poke-dropdown option { background: var(--panel); color: var(--text); }
 
     .nest-popup .btn-set-nest {
       width: 100%;
-      padding: 10px;
-      background: linear-gradient(135deg, var(--blue), var(--purple));
+      padding: 9px;
+      background: var(--logo-grad);
       border: none;
-      border-radius: 8px;
+      border-radius: 4px;
       color: #fff;
-      font-family: var(--font-main);
+      font-family: var(--font-head);
       font-weight: 700;
-      font-size: 0.9rem;
+      font-size: 14px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
       cursor: pointer;
-      letter-spacing: 0.04em;
-      transition: all 0.2s;
+      transition: opacity 0.2s, transform 0.15s;
       margin-top: 4px;
     }
-    .nest-popup .btn-set-nest:hover {
-      box-shadow: 0 0 18px rgba(0,212,255,0.3);
-      transform: translateY(-1px);
-    }
-    .nest-popup .btn-set-nest:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-      transform: none;
-    }
+    .nest-popup .btn-set-nest:hover { opacity: 0.88; transform: translateY(-1px); }
+    .nest-popup .btn-set-nest:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
     .nest-popup .nest-reporter {
-      font-size: 0.72rem;
-      color: var(--gray);
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--muted);
       text-align: center;
       margin-top: 8px;
+      letter-spacing: 0.05em;
     }
 
-    /* ===== LEGEND ===== */
-    .map-legend {
+    /* ── MAP FOOTER BAR (legend) ── */
+    .map-footer-bar {
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 24px;
       flex-wrap: wrap;
-      justify-content: center;
-      padding: 16px 24px;
-      background: var(--card-bg);
-      border: 1px solid rgba(0,212,255,0.12);
-      border-radius: 12px;
-      margin-top: 16px;
-      font-size: 0.82rem;
-      color: var(--gray);
+      padding: 14px 18px;
+      border-top: 1px solid var(--border);
+      background: rgba(8,9,15,0.5);
     }
-    .legend-item { display: flex; align-items: center; gap: 8px; }
+    .legend-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-right: 4px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); }
     .legend-dot {
-      width: 14px; height: 14px;
-      border-radius: 50%;
-      border: 2px solid;
+      width: 12px; height: 12px;
+      border-radius: 2px;
+      border: 1px solid;
+      flex-shrink: 0;
     }
-    .legend-dot.known { background: rgba(0,212,255,0.25); border-color: rgba(0,212,255,0.6); }
-    .legend-dot.unknown { background: rgba(155,48,217,0.2); border-color: rgba(155,48,217,0.5); }
+    .legend-dot.known  { background: rgba(59,232,255,0.15); border-color: rgba(59,232,255,0.5); }
+    .legend-dot.unknown { background: rgba(155,77,255,0.15); border-color: rgba(155,77,255,0.4); }
 
+    /* ── FOOTER ── */
+    .footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 28px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-left { display: flex; align-items: center; gap: 12px; }
+    .footer-logo-text {
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: 16px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: var(--logo-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .footer p {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+    .footer p a { color: var(--cyan-dim); }
+    .footer p a:hover { color: var(--cyan); }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--ink); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--cyan-dim); }
+
+    /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
-      .nestmap-hero { padding: 40px 20px 20px; }
-      .map-wrapper { padding: 0 12px 40px; }
-      #nest-map { height: 55vh; }
-      .map-fetch-indicator { top: 12px; right: 24px; }
+      .navbar { padding: 0 20px; }
+      .nav-links { gap: 16px; }
+      .page-hero { padding: 44px 20px 32px; }
+      .map-section { padding: 0 12px 60px; }
+      .footer { flex-direction: column; gap: 10px; text-align: center; padding: 20px; }
+      .map-footer-bar { gap: 14px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- LANGUAGE SWITCHER -->
+  <!-- LANGUAGE BAR -->
   <div class="lang-bar">
-    <span data-i18n="lang_label">🌐 Language:</span>
+    <span>🌐 Language:</span>
     <button class="lang-btn active" data-lang="en"><span class="fi fi-us"></span></button>
     <button class="lang-btn" data-lang="es"><span class="fi fi-es"></span></button>
     <button class="lang-btn" data-lang="pt"><span class="fi fi-pt"></span></button>
@@ -457,8 +663,8 @@
   <!-- NAVBAR -->
   <nav class="navbar">
     <div class="nav-logo">
-      <a href="/" style="display:flex;align-items:center;gap:12px;">
-        <img src="assets/logo.png" alt="PoGORaids Logo" class="nav-logo-img" />
+      <a href="/" style="display:flex;align-items:center;gap:10px;">
+        <img src="assets/logo.png" alt="PoGORaids Logo" class="nav-logo-img" onerror="this.style.display='none'" />
         <span class="nav-title">PoGORaids</span>
       </a>
     </div>
@@ -469,12 +675,11 @@
     </ul>
   </nav>
 
-  <!-- HERO -->
-  <div class="nestmap-hero">
-    <h1><i class="fa-solid fa-tree" style="margin-right:12px;"></i><span data-i18n="nestmap_title">Nest Map</span></h1>
-    <p data-i18n="nestmap_sub">Discover Pokémon nests near you. Click any park to report or view what's currently nesting there.</p>
-
-    <!-- NEST RESET COUNTDOWN -->
+  <!-- PAGE HERO -->
+  <div class="page-hero">
+    <div class="page-hero-eyebrow">// Trainer Tools</div>
+    <h1 data-i18n="nestmap_title">Nest Map</h1>
+    <p data-i18n="nestmap_sub">Discover Pokémon nests near you. Click any park to report or view what’s currently nesting there.</p>
     <div class="nest-reset-timer">
       <i class="fa-solid fa-clock-rotate-left"></i>
       <span class="timer-label" data-i18n="nest_reset_label">Next Nest Reset:</span>
@@ -483,38 +688,56 @@
   </div>
 
   <!-- MAP -->
-  <div class="map-wrapper">
-    <div id="nest-map"></div>
-
-    <!-- ZOOM GUARD OVERLAY -->
-    <div class="zoom-guard-overlay" id="zoom-guard">
-      <div class="zoom-guard-box">
-        <i class="fa-solid fa-magnifying-glass-plus"></i>
-        <strong data-i18n="zoom_guard_title">Zoom in to see nests</strong>
-        <span data-i18n="zoom_guard_sub">Zoom in a bit more to load nearby parks and Pokémon nests.</span>
+  <div class="map-section">
+    <div class="map-chrome">
+      <!-- Chrome bar -->
+      <div class="map-chrome-bar">
+        <div class="map-chrome-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <span class="map-chrome-title">OpenStreetMap — Live Nest Data</span>
+        <span class="map-chrome-badge">OSM</span>
       </div>
-    </div>
 
-    <!-- CORNER LOADING INDICATOR -->
-    <div class="map-fetch-indicator hidden" id="fetch-indicator">
-      <i class="fa-solid fa-spinner"></i>
-      <span data-i18n="map_loading">Loading areas…</span>
-    </div>
+      <!-- Map itself -->
+      <div class="map-wrapper">
+        <div id="nest-map"></div>
 
-    <div class="map-legend">
-      <span style="font-weight:700;color:var(--white);"><i class="fa-solid fa-circle-info" style="color:var(--cyan);margin-right:6px;"></i><span data-i18n="legend_title">Legend</span></span>
-      <div class="legend-item"><div class="legend-dot known"></div><span data-i18n="legend_reported">Nest reported</span></div>
-      <div class="legend-item"><div class="legend-dot unknown"></div><span data-i18n="legend_unknown">Unknown nest</span></div>
-      <div class="legend-item"><i class="fa-solid fa-hand-pointer" style="color:var(--cyan);"></i><span data-i18n="legend_click">Click a park to report</span></div>
+        <!-- Zoom guard -->
+        <div class="zoom-guard-overlay" id="zoom-guard">
+          <div class="zoom-guard-box">
+            <i class="fa-solid fa-magnifying-glass-plus"></i>
+            <strong data-i18n="zoom_guard_title">Zoom in to see nests</strong>
+            <span data-i18n="zoom_guard_sub">Zoom in further to load nearby parks and Pokémon nests.</span>
+          </div>
+        </div>
+
+        <!-- Loading indicator -->
+        <div class="map-fetch-indicator hidden" id="fetch-indicator">
+          <i class="fa-solid fa-spinner"></i>
+          <span data-i18n="map_loading">Loading…</span>
+        </div>
+      </div>
+
+      <!-- Legend footer bar -->
+      <div class="map-footer-bar">
+        <span class="legend-label">Legend</span>
+        <div class="legend-item"><div class="legend-dot known"></div><span data-i18n="legend_reported">Nest reported</span></div>
+        <div class="legend-item"><div class="legend-dot unknown"></div><span data-i18n="legend_unknown">Unknown nest</span></div>
+        <div class="legend-item"><i class="fa-solid fa-hand-pointer" style="color:var(--cyan);font-size:11px;"></i><span data-i18n="legend_click">Click a park to report</span></div>
+      </div>
     </div>
   </div>
 
   <!-- FOOTER -->
   <footer class="footer">
-    <p data-i18n="footer_text">© 2026 PoGORaids.net — Not affiliated with Niantic or Pokémon GO. Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" style="color:var(--cyan);">OpenStreetMap</a> contributors.</p>
+    <div class="footer-left">
+      <span class="footer-logo-text">PoGORaids</span>
+    </div>
+    <p data-i18n="footer_text">© 2026 PoGORaids.net — Not affiliated with Niantic or Pokémon GO. Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors.</p>
   </footer>
 
-  <!-- i18n (must load before inline script so applyTranslations is available) -->
+  <!-- i18n -->
   <script src="i18n.js"></script>
 
   <script>
@@ -524,10 +747,9 @@
       nestmap_title: 'Nest Map',
       nestmap_sub: 'Discover Pokémon nests near you. Click any park to report or view what\'s currently nesting there.',
       nest_reset_label: 'Next Nest Reset:',
-      map_loading: 'Loading areas…',
+      map_loading: 'Loading…',
       zoom_guard_title: 'Zoom in to see nests',
-      zoom_guard_sub: 'Zoom in a bit more to load nearby parks and Pokémon nests.',
-      legend_title: 'Legend',
+      zoom_guard_sub: 'Zoom in further to load nearby parks and Pokémon nests.',
       legend_reported: 'Nest reported',
       legend_unknown: 'Unknown nest',
       legend_click: 'Click a park to report',
@@ -544,10 +766,9 @@
       nestmap_title: 'Mapa de Nidos',
       nestmap_sub: 'Descubre nidos de Pokémon cerca de ti. Haz clic en cualquier parque para reportar o ver qué está anidando actualmente.',
       nest_reset_label: 'Próximo Reinicio de Nidos:',
-      map_loading: 'Cargando áreas…',
+      map_loading: 'Cargando…',
       zoom_guard_title: 'Acerca el mapa para ver nidos',
       zoom_guard_sub: 'Acerca un poco más para cargar parques y nidos de Pokémon cercanos.',
-      legend_title: 'Leyenda',
       legend_reported: 'Nido reportado',
       legend_unknown: 'Nido desconocido',
       legend_click: 'Haz clic en un parque para reportar',
@@ -564,10 +785,9 @@
       nestmap_title: 'Mapa de Ninhos',
       nestmap_sub: 'Descubra ninhos de Pokémon perto de você. Clique em qualquer parque para reportar ou ver o que está aninhando atualmente.',
       nest_reset_label: 'Próxima Reinicialização de Ninhos:',
-      map_loading: 'Carregando áreas…',
+      map_loading: 'Carregando…',
       zoom_guard_title: 'Aproxime para ver ninhos',
       zoom_guard_sub: 'Aproxime um pouco mais para carregar parques e ninhos de Pokémon próximos.',
-      legend_title: 'Legenda',
       legend_reported: 'Ninho reportado',
       legend_unknown: 'Ninho desconhecido',
       legend_click: 'Clique em um parque para reportar',
@@ -584,10 +804,9 @@
       nestmap_title: 'Nestenkaart',
       nestmap_sub: 'Ontdek Pokémon-nesten bij jou in de buurt. Klik op een park om te melden of te bekijken wat er momenteel nestelt.',
       nest_reset_label: 'Volgende Nestreset:',
-      map_loading: 'Gebieden laden…',
+      map_loading: 'Laden…',
       zoom_guard_title: 'Zoom in om nesten te zien',
       zoom_guard_sub: 'Zoom iets verder in om nabijgelegen parken en Pokémon-nesten te laden.',
-      legend_title: 'Legenda',
       legend_reported: 'Nest gemeld',
       legend_unknown: 'Onbekend nest',
       legend_click: 'Klik op een park om te melden',
@@ -604,10 +823,9 @@
       nestmap_title: 'Nesterkarte',
       nestmap_sub: 'Entdecke Pokémon-Nester in deiner Nähe. Klicke auf einen Park, um zu melden oder zu sehen, was dort aktuell nistet.',
       nest_reset_label: 'Nächster Nester-Reset:',
-      map_loading: 'Gebiete laden…',
+      map_loading: 'Laden…',
       zoom_guard_title: 'Reinzoomen um Nester zu sehen',
       zoom_guard_sub: 'Zoome etwas weiter rein, um nahegelegene Parks und Pokémon-Nester zu laden.',
-      legend_title: 'Legende',
       legend_reported: 'Nest gemeldet',
       legend_unknown: 'Unbekanntes Nest',
       legend_click: 'Park anklicken zum Melden',
@@ -623,11 +841,10 @@
     fr: {
       nestmap_title: 'Carte des nids',
       nestmap_sub: 'Découvrez les nids de Pokémon près de chez vous. Cliquez sur un parc pour signaler ou voir ce qui s\'y niche actuellement.',
-      nest_reset_label: 'Prochain Reset des Nids :',
-      map_loading: 'Chargement des zones…',
+      nest_reset_label: 'Prochain Reset des Nids :',
+      map_loading: 'Chargement…',
       zoom_guard_title: 'Zoomez pour voir les nids',
       zoom_guard_sub: 'Zoomez un peu plus pour charger les parcs et nids de Pokémon à proximité.',
-      legend_title: 'Légende',
       legend_reported: 'Nid signalé',
       legend_unknown: 'Nid inconnu',
       legend_click: 'Cliquez sur un parc pour signaler',
@@ -644,10 +861,9 @@
       nestmap_title: 'Bo-karta',
       nestmap_sub: 'Hitta Pokémon-bon nära dig. Klicka på en park för att rapportera eller se vad som bor där nu.',
       nest_reset_label: 'Nästa Bo-återställning:',
-      map_loading: 'Laddar områden…',
+      map_loading: 'Laddar…',
       zoom_guard_title: 'Zooma in för att se bon',
       zoom_guard_sub: 'Zooma in lite mer för att ladda närliggande parker och Pokémon-bon.',
-      legend_title: 'Förklaring',
       legend_reported: 'Bo rapporterat',
       legend_unknown: 'Okänt bo',
       legend_click: 'Klicka på en park för att rapportera',
@@ -664,10 +880,9 @@
       nestmap_title: '巣マップ',
       nestmap_sub: '近くのポケモンの巣を探そう。公園をクリックして巣を報告したり、現在何が巣にいるかを確認しましょう。',
       nest_reset_label: '次の巣リセット:',
-      map_loading: 'エリア読み込み中…',
+      map_loading: '読み込み中…',
       zoom_guard_title: '巣を見るにはズームイン',
       zoom_guard_sub: '近くの公園と巣を読み込むため、もう少しズームインしてください。',
-      legend_title: '凡例',
       legend_reported: '巣が報告済み',
       legend_unknown: '巣が不明',
       legend_click: '公園をクリックして報告',
@@ -684,10 +899,9 @@
       nestmap_title: 'Mapa gniazd',
       nestmap_sub: 'Odkryj gniazda Pokémonów w pobliżu. Kliknij na park, aby zgłosić lub sprawdzić, co tam teraz gniazdi.',
       nest_reset_label: 'Następny Reset Gniazd:',
-      map_loading: 'Ładowanie obszarów…',
+      map_loading: 'Ładowanie…',
       zoom_guard_title: 'Przybliż, aby zobaczyć gniazda',
       zoom_guard_sub: 'Przybliż trochę bardziej, aby załadować pobliskie parki i gniazda Pokémonów.',
-      legend_title: 'Legenda',
       legend_reported: 'Gniazdo zgłoszone',
       legend_unknown: 'Nieznane gniazdo',
       legend_click: 'Kliknij park, aby zgłosić',
@@ -704,10 +918,9 @@
       nestmap_title: 'Rede-kart',
       nestmap_sub: 'Oppdag Pokémon-reder nær deg. Klikk på en park for å rapportere eller se hva som reder seg der nå.',
       nest_reset_label: 'Neste Rede-tilbakestilling:',
-      map_loading: 'Laster områder…',
+      map_loading: 'Laster…',
       zoom_guard_title: 'Zoom inn for å se reder',
       zoom_guard_sub: 'Zoom litt mer inn for å laste inn nærliggende parker og Pokémon-reder.',
-      legend_title: 'Forklaring',
       legend_reported: 'Rede rapportert',
       legend_unknown: 'Ukjent rede',
       legend_click: 'Klikk en park for å rapportere',
@@ -724,10 +937,9 @@
       nestmap_title: 'Pesäkartta',
       nestmap_sub: 'Löydä Pokémon-pesiä läheltäsi. Napsauta puistoa ilmoittaaksesi tai nähdäksesi mitä siellä pesii juuri nyt.',
       nest_reset_label: 'Seuraava Pesien Nollaus:',
-      map_loading: 'Ladataan alueita…',
+      map_loading: 'Ladataan…',
       zoom_guard_title: 'Lähennä nähdäksesi pesät',
       zoom_guard_sub: 'Lähennä hieman lisää ladataksesi lähellä olevat puistot ja Pokémon-pesät.',
-      legend_title: 'Selite',
       legend_reported: 'Pesä ilmoitettu',
       legend_unknown: 'Tuntematon pesä',
       legend_click: 'Napsauta puistoa ilmoittaaksesi',
@@ -744,10 +956,9 @@
       nestmap_title: 'Redekort',
       nestmap_sub: 'Opdag Pokémon-reder tæt på dig. Klik på en park for at rapportere eller se hvad der reder sig der nu.',
       nest_reset_label: 'Næste Rede-nulstilling:',
-      map_loading: 'Indlæser områder…',
+      map_loading: 'Indlæser…',
       zoom_guard_title: 'Zoom ind for at se reder',
       zoom_guard_sub: 'Zoom lidt mere ind for at indlæse nærtliggende parker og Pokémon-reder.',
-      legend_title: 'Forklaring',
       legend_reported: 'Rede rapporteret',
       legend_unknown: 'Ukendt rede',
       legend_click: 'Klik en park for at rapportere',
@@ -764,10 +975,9 @@
       nestmap_title: 'नेस्ट मैप',
       nestmap_sub: 'अपने आस-पास Pokémon नेस्ट खोजें। किसी पार्क पर क्लिक करके रिपोर्ट करें या देखें कि वहाँ अभी क्या नेस्टिंग कर रहा है।',
       nest_reset_label: 'अगला नेस्ट रीसेट:',
-      map_loading: 'क्षेत्र लोड हो रहे हैं…',
+      map_loading: 'लोड हो रहा है…',
       zoom_guard_title: 'नेस्ट देखने के लिए ज़ूम इन करें',
       zoom_guard_sub: 'नज़दीकी पार्क और नेस्ट लोड करने के लिए थोड़ा और ज़ूम इन करें।',
-      legend_title: 'लीजेंड',
       legend_reported: 'नेस्ट रिपोर्ट किया',
       legend_unknown: 'अज्ञात नेस्ट',
       legend_click: 'रिपोर्ट करने के लिए पार्क पर क्लिक करें',
@@ -784,10 +994,9 @@
       nestmap_title: 'Yuva Haritası',
       nestmap_sub: 'Yakınındaki Pokémon yuvalarını keşfet. Şu an ne yuvalandığını görmek veya bildirmek için herhangi bir parka tıkla.',
       nest_reset_label: 'Sonraki Yuva Sıfırlaması:',
-      map_loading: 'Alanlar yükleniyor…',
+      map_loading: 'Yükleniyor…',
       zoom_guard_title: 'Yuvaları görmek için yaklaştır',
       zoom_guard_sub: 'Yakındaki parkları ve Pokémon yuvalarını yüklemek için biraz daha yaklaştır.',
-      legend_title: 'Açıklama',
       legend_reported: 'Yuva bildirildi',
       legend_unknown: 'Bilinmeyen yuva',
       legend_click: 'Bildirmek için bir parka tıkla',
@@ -803,11 +1012,8 @@
   };
 
   Object.keys(nestMapTranslations).forEach(lang => {
-    if (translations[lang]) {
-      Object.assign(translations[lang], nestMapTranslations[lang]);
-    }
+    if (translations[lang]) Object.assign(translations[lang], nestMapTranslations[lang]);
   });
-
   applyTranslations(currentLang);
 
   // ===== NEST RESET COUNTDOWN =====
@@ -819,7 +1025,6 @@
     while (next <= now) next += PERIOD_MS;
     return next;
   }
-
   function updateCountdown() {
     const el = document.getElementById('nest-countdown');
     if (!el) return;
@@ -840,10 +1045,9 @@
   const OVERPASS_API = 'https://overpass-api.de/api/interpreter';
   const SPRITE_BASE  = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
   const STORAGE_KEY  = 'pogoraids_nests_v1';
-  const MIN_ZOOM     = 14; // raised from 12 — users must be zoomed in to neighbourhood level
+  const MIN_ZOOM     = 14;
   const DEBOUNCE_MS  = 500;
 
-  // ===== DEBOUNCE HELPER =====
   function debounce(fn, delay) {
     let timer;
     return function (...args) {
@@ -852,7 +1056,6 @@
     };
   }
 
-  // ===== FETCH WITH RETRY (exponential backoff) =====
   async function fetchWithRetry(url, options = {}, retries = 2, backoffMs = 800) {
     try {
       const res = await fetch(url, options);
@@ -873,7 +1076,7 @@
     }
   }
 
-  // ===== POKÉMON LIST — nestable species only =====
+  // ===== POKÉMON LIST =====
   const POKEMON = [
     {id:1,name:'Bulbasaur'},{id:4,name:'Charmander'},{id:7,name:'Squirtle'},
     {id:25,name:'Pikachu'},{id:27,name:'Sandshrew'},{id:29,name:'Nidoran\u2640'},
@@ -940,9 +1143,7 @@
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
     catch(e) { return {}; }
   }
-  function saveNests(data) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  }
+  function saveNests(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
   let nests = loadNests();
 
   // ===== MAP INIT =====
@@ -967,23 +1168,14 @@
 
   // ===== ZOOM GUARD =====
   const zoomGuard = document.getElementById('zoom-guard');
-
   function updateZoomGuard() {
-    if (map.getZoom() < MIN_ZOOM) {
-      zoomGuard.classList.add('visible');
-    } else {
-      zoomGuard.classList.remove('visible');
-    }
+    zoomGuard.classList.toggle('visible', map.getZoom() < MIN_ZOOM);
   }
 
-  // ===== LOADING INDICATOR HELPERS =====
+  // ===== LOADING INDICATOR =====
   const fetchIndicator = document.getElementById('fetch-indicator');
   let activeRequests = 0;
-
-  function showLoader() {
-    activeRequests++;
-    fetchIndicator.classList.remove('hidden');
-  }
+  function showLoader() { activeRequests++; fetchIndicator.classList.remove('hidden'); }
   function hideLoader() {
     activeRequests = Math.max(0, activeRequests - 1);
     if (activeRequests === 0) fetchIndicator.classList.add('hidden');
@@ -992,9 +1184,7 @@
   // ===== PARK LAYERS =====
   let parkLayers = {};
 
-  function getPokemonSprite(id) {
-    return SPRITE_BASE + id + '.png';
-  }
+  function getPokemonSprite(id) { return SPRITE_BASE + id + '.png'; }
 
   function buildLabelIcon(nestData) {
     let inner;
@@ -1006,8 +1196,8 @@
     return L.divIcon({
       className: 'park-label',
       html: `<div class="park-label-inner">${inner}</div>`,
-      iconSize: [48, 48],
-      iconAnchor: [24, 24]
+      iconSize: [44, 44],
+      iconAnchor: [22, 22]
     });
   }
 
@@ -1031,19 +1221,17 @@
     } else {
       currentHtml = `
         <div class="nest-current">
-          <span class="no-nest">\u2753</span>
+          <span class="no-nest">❓</span>
           <div class="nest-current-info">
             <strong>${t('popup_no_nest')}</strong>
             <span>${t('popup_no_nest_sub')}</span>
           </div>
         </div>`;
     }
-
     const sortedPokemon = [...POKEMON].sort((a,b) => a.name.localeCompare(b.name));
     const dropdownOptions = sortedPokemon.map(p =>
       `<option value="${p.id}" data-name="${p.name}">${p.name}</option>`
     ).join('');
-
     return `
       <div class="nest-popup">
         <h3><i class="fa-solid fa-tree" style="color:var(--cyan);margin-right:6px;"></i>${parkName || 'Area'}</h3>
@@ -1071,26 +1259,18 @@
       const dropdown = document.getElementById(`poke-dropdown-${osmId}`);
       const btn      = document.getElementById(`btn-save-${osmId}`);
       if (!input) return;
-
       let selectedPokemon = null;
-
-      function selectPokemon(id, name) {
-        selectedPokemon = { id: parseInt(id), name };
-        btn.disabled = false;
-      }
-
+      function selectPokemon(id, name) { selectedPokemon = { id: parseInt(id), name }; btn.disabled = false; }
       input.addEventListener('input', () => {
         const q = input.value.trim().toLowerCase();
-        selectedPokemon = null;
-        btn.disabled = true;
+        selectedPokemon = null; btn.disabled = true;
         if (dropdown) dropdown.value = '';
         if (!q) { sugg.classList.remove('open'); sugg.innerHTML = ''; return; }
         const matches = POKEMON.filter(p => p.name.toLowerCase().startsWith(q)).slice(0, 8);
         if (!matches.length) { sugg.classList.remove('open'); return; }
         sugg.innerHTML = matches.map(p =>
           `<div class="poke-suggestion-item" data-id="${p.id}" data-name="${p.name}">
-            <img src="${getPokemonSprite(p.id)}" alt="${p.name}" />
-            ${p.name}
+            <img src="${getPokemonSprite(p.id)}" alt="${p.name}" />${p.name}
           </div>`
         ).join('');
         sugg.classList.add('open');
@@ -1104,9 +1284,7 @@
           });
         });
       });
-
       input.addEventListener('blur', () => setTimeout(() => sugg.classList.remove('open'), 150));
-
       if (dropdown) {
         dropdown.addEventListener('change', () => {
           const opt = dropdown.options[dropdown.selectedIndex];
@@ -1115,25 +1293,15 @@
             input.value = opt.dataset.name;
             sugg.classList.remove('open');
           } else {
-            selectedPokemon = null;
-            btn.disabled = true;
-            input.value = '';
+            selectedPokemon = null; btn.disabled = true; input.value = '';
           }
         });
       }
-
       btn.addEventListener('click', () => {
         if (!selectedPokemon) return;
-        nests[osmId] = {
-          pokemonId: selectedPokemon.id,
-          pokemonName: selectedPokemon.name,
-          reporter: 'You',
-          timestamp: Date.now()
-        };
+        nests[osmId] = { pokemonId: selectedPokemon.id, pokemonName: selectedPokemon.name, reporter: 'You', timestamp: Date.now() };
         saveNests(nests);
-        if (parkLayers[osmId]) {
-          parkLayers[osmId].marker.setIcon(buildLabelIcon(nests[osmId]));
-        }
+        if (parkLayers[osmId]) parkLayers[osmId].marker.setIcon(buildLabelIcon(nests[osmId]));
         layer.closePopup();
         setTimeout(() => layer.openPopup(), 200);
       });
@@ -1145,49 +1313,31 @@
     const name    = (feature.tags && feature.tags.name) || 'Unnamed Area';
     const nest    = nests[osmId];
     const hasNest = !!(nest && nest.pokemonId);
-
     const poly = L.geoJSON({
       type: 'Feature',
       geometry: feature.geometry || { type: 'Point', coordinates: [center[1], center[0]] }
     }, {
       style: {
-        color:       hasNest ? 'rgba(0,212,255,0.7)'  : 'rgba(155,48,217,0.6)',
-        weight:      2,
-        fillColor:   hasNest ? 'rgba(0,212,255,0.12)' : 'rgba(155,48,217,0.1)',
+        color:       hasNest ? 'rgba(59,232,255,0.7)'  : 'rgba(155,77,255,0.55)',
+        weight:      1.5,
+        fillColor:   hasNest ? 'rgba(59,232,255,0.10)' : 'rgba(155,77,255,0.08)',
         fillOpacity: 1
       },
-      onEachFeature: (f, l) => {
-        l.on('click', () => marker.openPopup());
-      }
+      onEachFeature: (f, l) => { l.on('click', () => marker.openPopup()); }
     }).addTo(map);
-
     const marker = L.marker(center, { icon: buildLabelIcon(nest), zIndexOffset: 10 }).addTo(map);
-    marker.bindPopup(
-      () => buildPopupContent(osmId, name),
-      { maxWidth: 320, minWidth: 260, autoPan: true }
-    );
+    marker.bindPopup(() => buildPopupContent(osmId, name), { maxWidth: 320, minWidth: 260, autoPan: true });
     marker.on('popupopen', () => attachPopupListeners(osmId, marker));
     marker.on('click', () => marker.openPopup());
-
     parkLayers[osmId] = { polygon: poly, marker };
   }
 
-  // ===== OVERPASS FETCH =====
-  // NOTE: landuse=meadow and leisure=pitch have been intentionally removed.
   function fetchParks(bounds) {
-    if (map.getZoom() < MIN_ZOOM) {
-      updateZoomGuard();
-      return;
-    }
+    if (map.getZoom() < MIN_ZOOM) { updateZoomGuard(); return; }
     updateZoomGuard();
-
-    const s = bounds.getSouth().toFixed(5),
-          w = bounds.getWest().toFixed(5),
-          n = bounds.getNorth().toFixed(5),
-          e = bounds.getEast().toFixed(5);
-
+    const s = bounds.getSouth().toFixed(5), w = bounds.getWest().toFixed(5),
+          n = bounds.getNorth().toFixed(5), e = bounds.getEast().toFixed(5);
     const bbox = `${s},${w},${n},${e}`;
-
     const query = `[out:json][timeout:60];
 (
   way["leisure"="park"](${bbox});
@@ -1206,36 +1356,25 @@
   relation["landuse"="farmyard"](${bbox});
 );
 out body geom;`;
-
     showLoader();
-
     fetchWithRetry(OVERPASS_API, { method: 'POST', body: query })
       .then(r => r.json())
       .then(data => {
         data.elements.forEach(el => {
           const osmId = `${el.type}/${el.id}`;
           if (parkLayers[osmId]) return;
-
           let center;
           if (el.geometry && el.geometry.length) {
             const lats = el.geometry.map(p => p.lat);
             const lons = el.geometry.map(p => p.lon);
-            center = [
-              lats.reduce((a,b)=>a+b,0)/lats.length,
-              lons.reduce((a,b)=>a+b,0)/lons.length
-            ];
+            center = [lats.reduce((a,b)=>a+b,0)/lats.length, lons.reduce((a,b)=>a+b,0)/lons.length];
           } else if (el.center) {
             center = [el.center.lat, el.center.lon];
           } else return;
-
           let geom = null;
           if (el.geometry && el.geometry.length > 2) {
-            geom = {
-              type: 'Polygon',
-              coordinates: [el.geometry.map(p => [p.lon, p.lat])]
-            };
+            geom = { type: 'Polygon', coordinates: [el.geometry.map(p => [p.lon, p.lat])] };
           }
-
           renderPark({ id: osmId, tags: el.tags, geometry: geom }, center);
         });
         requestAnimationFrame(() => hideLoader());
@@ -1243,12 +1382,8 @@ out body geom;`;
       .catch(() => hideLoader());
   }
 
-  // Debounced version for map interaction events
   const debouncedFetchParks = debounce(() => fetchParks(map.getBounds()), DEBOUNCE_MS);
-
   map.on('moveend zoomend', debouncedFetchParks);
-
-  // Initial load is immediate (no debounce needed on first paint)
   updateZoomGuard();
   fetchParks(map.getBounds());
   </script>
