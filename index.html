@@ -3,29 +3,970 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PoGORaids - Pokémon GO Tools & Community</title>
-  <link rel="stylesheet" href="styles.css" />
+  <title>PoGORaids — The Trainer's Toolkit</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,900;1,700&family=Barlow:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <!-- Flag Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css" />
   <style>
+    /* ═══════════════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:       #0a0c10;
+      --surface:   #0f1117;
+      --panel:     #161a24;
+      --border:    rgba(255,255,255,0.08);
+      --gold:      #f5c842;
+      --gold-dim:  #c49a1a;
+      --red:       #e8304a;
+      --cyan:      #2dd4bf;
+      --text:      #e8eaf0;
+      --muted:     #7a82a0;
+      --font-head: 'Barlow Condensed', sans-serif;
+      --font-body: 'Barlow', sans-serif;
+      --font-mono: 'Space Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--ink);
+      color: var(--text);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ═══════════════════════════════════════════════
+       BACKGROUND GRID + RADIAL GLOW
+    ═══════════════════════════════════════════════ */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(245,200,66,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(245,200,66,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ═══════════════════════════════════════════════
+       LANGUAGE BAR
+    ═══════════════════════════════════════════════ */
+    .lang-bar {
+      position: relative;
+      z-index: 100;
+      background: var(--ink);
+      border-bottom: 1px solid var(--border);
+      padding: 6px 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .lang-bar span {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-right: 4px;
+    }
+
+    .lang-btn {
+      background: none;
+      border: 1px solid transparent;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 3px;
+      transition: border-color 0.15s;
+      display: flex;
+      align-items: center;
+    }
+
+    .lang-btn:hover,
+    .lang-btn.active {
+      border-color: var(--gold-dim);
+    }
+
     .lang-btn .fi {
       width: 20px;
-      height: 15px;
+      height: 14px;
       border-radius: 2px;
-      display: inline-block;
-      vertical-align: middle;
+    }
+
+    /* ═══════════════════════════════════════════════
+       NAVBAR
+    ═══════════════════════════════════════════════ */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 99;
+      background: rgba(10,12,16,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-logo-img {
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 8px rgba(245,200,66,0.5));
+    }
+
+    .nav-title {
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: 22px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, var(--gold) 40%, #fff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--gold);
+      transition: width 0.25s;
+    }
+
+    .nav-links a:hover { color: var(--gold); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-discord {
+      color: var(--text) !important;
+      background: #5865F2;
+      padding: 6px 18px;
+      border-radius: 4px;
+      font-size: 13px !important;
+      transition: background 0.2s !important;
+    }
+
+    .nav-discord:hover { background: #4752c4 !important; }
+    .nav-discord::after { display: none !important; }
+
+    /* ═══════════════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════════════ */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 88vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 80px 24px 60px;
+    }
+
+    /* Animated radial glow orbs */
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 700px;
+      height: 700px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(ellipse, rgba(245,200,66,0.12) 0%, transparent 65%);
+      animation: pulse-orb 5s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      top: 30%;
+      right: 10%;
+      background: radial-gradient(ellipse, rgba(232,48,74,0.10) 0%, transparent 65%);
+      animation: pulse-orb 7s ease-in-out infinite reverse;
+      pointer-events: none;
+    }
+
+    @keyframes pulse-orb {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+      50%       { transform: translate(-50%, -50%) scale(1.15); opacity: 0.7; }
+    }
+
+    /* Diagonal accent stripe */
+    .hero-stripe {
+      position: absolute;
+      top: 0; bottom: 0;
+      left: -20%;
+      width: 55%;
+      background: linear-gradient(135deg, rgba(245,200,66,0.04) 0%, transparent 60%);
+      transform: skewX(-8deg);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 900px;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      opacity: 0;
+      animation: fade-up 0.6s 0.2s forwards;
+    }
+
+    .hero-eyebrow::before,
+    .hero-eyebrow::after {
+      content: '';
+      width: 40px;
+      height: 1px;
+      background: var(--gold-dim);
+    }
+
+    .hero-logo {
+      width: 110px;
+      height: 110px;
+      object-fit: contain;
+      margin-bottom: 28px;
+      filter: drop-shadow(0 0 30px rgba(245,200,66,0.55));
+      animation: logo-float 4s ease-in-out infinite, fade-up 0.8s 0.1s both;
+    }
+
+    @keyframes logo-float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-12px); }
+    }
+
+    .hero-title {
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: clamp(52px, 9vw, 96px);
+      line-height: 0.95;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      opacity: 0;
+      animation: fade-up 0.8s 0.35s forwards;
+    }
+
+    .hero-title .line1 {
+      display: block;
+      background: linear-gradient(135deg, var(--gold) 0%, #ffe47a 60%, var(--gold-dim) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-title .line2 {
+      display: block;
+      font-style: italic;
+      color: var(--text);
+      font-size: 0.58em;
+      letter-spacing: 0.04em;
+      -webkit-text-fill-color: var(--text);
+    }
+
+    .hero-title .highlight {
+      color: var(--gold);
+      -webkit-text-fill-color: var(--gold);
+    }
+
+    .hero-sub {
+      font-size: 18px;
+      color: var(--muted);
+      max-width: 520px;
+      margin: 20px auto 40px;
+      line-height: 1.7;
+      opacity: 0;
+      animation: fade-up 0.8s 0.55s forwards;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fade-up 0.8s 0.7s forwards;
+    }
+
+    .btn-primary {
+      background: var(--gold);
+      color: var(--ink);
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 14px 36px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px rgba(245,200,66,0.3);
+    }
+
+    .btn-primary:hover {
+      background: #ffe47a;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(245,200,66,0.45);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 13px 32px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: border-color 0.2s, color 0.2s, transform 0.15s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--gold-dim);
+      color: var(--gold);
+      transform: translateY(-2px);
+    }
+
+    /* Pokéball decorative element */
+    .hero-ball {
+      position: absolute;
+      bottom: -60px;
+      right: -80px;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      border: 2px solid rgba(245,200,66,0.06);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hero-ball::before {
+      content: '';
+      position: absolute;
+      inset: 20px;
+      border-radius: 50%;
+      border: 1px solid rgba(245,200,66,0.04);
+    }
+
+    .hero-ball::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0; right: 0;
+      height: 2px;
+      background: rgba(245,200,66,0.06);
+      transform: translateY(-50%);
+    }
+
+    /* Stats ticker */
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      margin-top: 56px;
+      opacity: 0;
+      animation: fade-up 0.8s 0.9s forwards;
+    }
+
+    .stat-item {
+      padding: 20px 40px;
+      border-left: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .stat-item:last-child { border-right: 1px solid var(--border); }
+
+    .stat-num {
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: 34px;
+      color: var(--gold);
+      letter-spacing: -0.01em;
       line-height: 1;
+    }
+
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ═══════════════════════════════════════════════
+       SECTION COMMONS
+    ═══════════════════════════════════════════════ */
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 36px;
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: clamp(36px, 5vw, 52px);
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+      line-height: 1;
+    }
+
+    /* ═══════════════════════════════════════════════
+       TOOLS SECTION
+    ═══════════════════════════════════════════════ */
+    .tools-section {
+      position: relative;
+      z-index: 1;
+      padding: 100px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+    }
+
+    .tool-card {
+      position: relative;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 36px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+      margin: -1px 0 0 -1px;
+    }
+
+    /* First column items get left border radius */
+    .tool-card:nth-child(1) { border-radius: 8px 0 0 0; }
+    .tool-card:nth-child(4) { border-radius: 0 8px 0 0; }
+    .tool-card:nth-child(5) { border-radius: 0; }
+    .tool-card:nth-last-child(4) { border-radius: 0 0 0 8px; }
+    .tool-card:last-child { border-radius: 0 0 8px 0; }
+
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(245,200,66,0.06) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .tool-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s;
+    }
+
+    .tool-card:hover {
+      border-color: rgba(245,200,66,0.25);
+      transform: translateY(-3px);
+      z-index: 2;
+    }
+
+    .tool-card:hover::before { opacity: 1; }
+    .tool-card:hover::after { transform: scaleX(1); }
+
+    .tool-number {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      position: absolute;
+      top: 16px;
+      right: 18px;
+    }
+
+    .tool-icon {
+      width: 44px;
+      height: 44px;
+      background: rgba(245,200,66,0.08);
+      border: 1px solid rgba(245,200,66,0.15);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: var(--gold);
+      transition: background 0.2s, transform 0.2s;
+      flex-shrink: 0;
+    }
+
+    .tool-card:hover .tool-icon {
+      background: rgba(245,200,66,0.15);
+      transform: scale(1.08);
+    }
+
+    .discord-card .tool-icon {
+      background: rgba(88,101,242,0.12);
+      border-color: rgba(88,101,242,0.25);
+      color: #7289da;
+    }
+
+    .discord-card:hover .tool-icon {
+      background: rgba(88,101,242,0.2);
+    }
+
+    .discord-card::after { background: #5865F2; }
+
+    .tool-name {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .tool-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .tool-arrow {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      color: var(--muted);
+      font-size: 12px;
+      transition: color 0.2s, transform 0.2s;
+      opacity: 0;
+    }
+
+    .tool-card:hover .tool-arrow {
+      opacity: 1;
+      color: var(--gold);
+      transform: translateX(3px);
+    }
+
+    /* ═══════════════════════════════════════════════
+       BANNER STRIP
+    ═══════════════════════════════════════════════ */
+    .banner-strip {
+      position: relative;
+      z-index: 1;
+      background: var(--gold);
+      overflow: hidden;
+      padding: 18px 0;
+    }
+
+    .banner-track {
+      display: flex;
+      gap: 0;
+      width: max-content;
+      animation: ticker 25s linear infinite;
+    }
+
+    .banner-item {
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: 15px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink);
+      padding: 0 40px;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .banner-item .dot {
+      width: 5px;
+      height: 5px;
+      background: rgba(10,12,16,0.3);
+      border-radius: 50%;
+    }
+
+    @keyframes ticker {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ═══════════════════════════════════════════════
+       NEWS SECTION
+    ═══════════════════════════════════════════════ */
+    .news-section {
+      position: relative;
+      z-index: 1;
+      padding: 100px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    /* Placeholder news cards for demo */
+    .news-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+
+    .news-card:hover {
+      border-color: rgba(245,200,66,0.3);
+      transform: translateY(-4px);
+    }
+
+    .news-thumb {
+      width: 100%;
+      height: 160px;
+      background: linear-gradient(135deg, #1a1f2e 0%, #12161f 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .news-thumb::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 40%, var(--panel) 100%);
+    }
+
+    .news-body {
+      padding: 20px;
+    }
+
+    .news-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .news-title-text {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 18px;
+      text-transform: uppercase;
+      line-height: 1.2;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+
+    .news-excerpt {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .news-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .news-date {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .news-read {
+      font-family: var(--font-head);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      transition: color 0.2s;
+    }
+
+    .news-card:hover .news-read { color: var(--gold); }
+
+    .news-more {
+      margin-top: 36px;
+      text-align: center;
+    }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 13px 32px;
+      border-radius: 4px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .btn-outline:hover {
+      color: var(--gold);
+      border-color: var(--gold-dim);
+    }
+
+    /* ═══════════════════════════════════════════════
+       DISCORD SECTION
+    ═══════════════════════════════════════════════ */
+    .discord-section {
+      position: relative;
+      z-index: 1;
+      padding: 40px 40px 100px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .discord-inner {
+      background: linear-gradient(135deg, #1e2235 0%, #1a1d2e 100%);
+      border: 1px solid rgba(88,101,242,0.3);
+      border-radius: 10px;
+      padding: 60px 56px;
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .discord-inner::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(ellipse, rgba(88,101,242,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .discord-big-icon {
+      font-size: 64px;
+      color: #7289da;
+      flex-shrink: 0;
+      filter: drop-shadow(0 0 20px rgba(88,101,242,0.4));
+    }
+
+    .discord-text h2 {
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: clamp(32px, 4vw, 48px);
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+
+    .discord-text p {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 440px;
+    }
+
+    .btn-discord {
+      margin-left: auto;
+      flex-shrink: 0;
+      background: #5865F2;
+      color: #fff;
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 16px 36px;
+      border-radius: 5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(88,101,242,0.3);
+    }
+
+    .btn-discord:hover {
+      background: #4752c4;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(88,101,242,0.5);
+    }
+
+    /* ═══════════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════════ */
+    .footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 28px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer-logo-text {
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: 16px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    .footer p {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    /* ═══════════════════════════════════════════════
+       SCROLLBAR
+    ═══════════════════════════════════════════════ */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--ink); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
+
+    /* ═══════════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      .tools-grid { grid-template-columns: repeat(2, 1fr); }
+      .tool-card:nth-child(1) { border-radius: 8px 0 0 0; }
+      .tool-card:nth-child(2) { border-radius: 0 8px 0 0; }
+      .tool-card:nth-child(n) { border-radius: 0; }
+      .tool-card:nth-last-child(2) { border-radius: 0 0 0 8px; }
+      .tool-card:last-child { border-radius: 0 0 8px 0; }
+      .news-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .navbar { padding: 0 20px; }
+      .nav-links { gap: 16px; }
+      .hero { min-height: auto; padding: 60px 20px 50px; }
+      .tools-section, .news-section, .discord-section { padding-left: 20px; padding-right: 20px; }
+      .tools-grid { grid-template-columns: 1fr; }
+      .news-grid { grid-template-columns: 1fr; }
+      .hero-stats { gap: 0; flex-wrap: wrap; }
+      .stat-item { flex: 1 1 40%; }
+      .discord-inner { flex-direction: column; padding: 40px 28px; }
+      .btn-discord { margin-left: 0; }
+      .footer { flex-direction: column; gap: 10px; text-align: center; }
     }
   </style>
 </head>
 <body>
 
-  <!-- LANGUAGE SWITCHER -->
+  <!-- LANGUAGE BAR -->
   <div class="lang-bar">
-    <span data-i18n="lang_label">🌐 Language:</span>
+    <span>🌐 Language:</span>
     <button class="lang-btn active" data-lang="en"><span class="fi fi-us"></span></button>
     <button class="lang-btn" data-lang="es"><span class="fi fi-es"></span></button>
     <button class="lang-btn" data-lang="pt"><span class="fi fi-pt"></span></button>
@@ -45,7 +986,7 @@
   <!-- NAVBAR -->
   <nav class="navbar">
     <div class="nav-logo">
-      <img src="assets/logo.png" alt="PoGORaids Logo" class="nav-logo-img" />
+      <img src="assets/logo.png" alt="PoGORaids Logo" class="nav-logo-img" onerror="this.style.display='none'" />
       <span class="nav-title">PoGORaids</span>
     </div>
     <ul class="nav-links">
@@ -57,89 +998,244 @@
 
   <!-- HERO -->
   <header class="hero">
-    <div class="hero-glow"></div>
+    <div class="hero-stripe"></div>
+    <div class="hero-ball"></div>
+
     <div class="hero-content">
-      <img src="assets/logo.png" alt="PoGORaids" class="hero-logo" />
-      <h1 class="hero-title" data-i18n="hero_title">Your Pokémon GO Hub</h1>
-      <p class="hero-sub" data-i18n="hero_sub">Tools, news, and community — all in one place for trainers worldwide.</p>
+      <div class="hero-eyebrow">Est. 2018 — Worldwide Trainer Network</div>
+
+      <img src="assets/logo.png" alt="PoGORaids" class="hero-logo" onerror="this.style.display='none'" />
+
+      <h1 class="hero-title">
+        <span class="line1">PogoRaids</span>
+        <span class="line2">The <span class="highlight">Trainer's</span> Toolkit</span>
+      </h1>
+
+      <p class="hero-sub" data-i18n="hero_sub">
+        Tools, news, and community — all in one place for trainers worldwide. Raid smarter. Catch more. Win.
+      </p>
+
+      <div class="hero-cta">
+        <a href="#tools" class="btn-primary"><i class="fa-solid fa-bolt"></i> Explore Tools</a>
+        <a href="https://discord.gg/pogoraids" class="btn-secondary" target="_blank" rel="noopener"><i class="fa-brands fa-discord"></i> Join Discord</a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num">350K+</div>
+          <div class="stat-label">Active Trainers</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">14+</div>
+          <div class="stat-label">Languages</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">24/7</div>
+          <div class="stat-label">Community</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">Global</div>
+          <div class="stat-label">Network</div>
+        </div>
+      </div>
     </div>
   </header>
 
-  <!-- TOOLS GRID -->
+  <!-- TICKER BANNER -->
+  <div class="banner-strip" aria-hidden="true">
+    <div class="banner-track">
+      <span class="banner-item">Raid Tracker<span class="dot"></span></span>
+      <span class="banner-item">Nest Map<span class="dot"></span></span>
+      <span class="banner-item">Leaderboards<span class="dot"></span></span>
+      <span class="banner-item">Vivillon Exchange<span class="dot"></span></span>
+      <span class="banner-item">Event Calendar<span class="dot"></span></span>
+      <span class="banner-item">Community Map<span class="dot"></span></span>
+      <span class="banner-item">Infographics<span class="dot"></span></span>
+      <span class="banner-item">Breaking News<span class="dot"></span></span>
+      <span class="banner-item">Raid Tracker<span class="dot"></span></span>
+      <span class="banner-item">Nest Map<span class="dot"></span></span>
+      <span class="banner-item">Leaderboards<span class="dot"></span></span>
+      <span class="banner-item">Vivillon Exchange<span class="dot"></span></span>
+      <span class="banner-item">Event Calendar<span class="dot"></span></span>
+      <span class="banner-item">Community Map<span class="dot"></span></span>
+      <span class="banner-item">Infographics<span class="dot"></span></span>
+      <span class="banner-item">Breaking News<span class="dot"></span></span>
+    </div>
+  </div>
+
+  <!-- TOOLS -->
   <section class="tools-section" id="tools">
-    <h2 class="section-title" data-i18n="tools_title">Trainer Tools</h2>
+    <div class="section-header">
+      <div>
+        <div class="section-label">// Essential Tools</div>
+        <h2 class="section-title">Trainer Tools</h2>
+      </div>
+    </div>
+
     <div class="tools-grid">
 
       <a href="/leaderboards" class="tool-card">
+        <span class="tool-number">01</span>
         <div class="tool-icon"><i class="fa-solid fa-trophy"></i></div>
         <span class="tool-name" data-i18n="tool_leaderboards">Leaderboards</span>
+        <span class="tool-desc">Compete globally and track your ranking.</span>
+        <i class="fa-solid fa-arrow-right tool-arrow"></i>
       </a>
 
       <a href="/community-map" class="tool-card">
+        <span class="tool-number">02</span>
         <div class="tool-icon"><i class="fa-solid fa-map-location-dot"></i></div>
         <span class="tool-name" data-i18n="tool_community_map">Community Map</span>
+        <span class="tool-desc">Find trainers and raids near you.</span>
+        <i class="fa-solid fa-arrow-right tool-arrow"></i>
       </a>
 
       <a href="/vivillon" class="tool-card">
+        <span class="tool-number">03</span>
         <div class="tool-icon"><i class="fa-solid fa-gift"></i></div>
-        <span class="tool-name" data-i18n="tool_vivillon">Vivillon Gift Exchange</span>
+        <span class="tool-name" data-i18n="tool_vivillon">Vivillon Exchange</span>
+        <span class="tool-desc">Trade gifts to complete your Vivillon collection.</span>
+        <i class="fa-solid fa-arrow-right tool-arrow"></i>
       </a>
 
       <a href="nest-map.html" class="tool-card">
+        <span class="tool-number">04</span>
         <div class="tool-icon"><i class="fa-solid fa-tree"></i></div>
         <span class="tool-name" data-i18n="tool_nest_map">Nest Map</span>
+        <span class="tool-desc">Discover nesting Pokémon in your area.</span>
+        <i class="fa-solid fa-arrow-right tool-arrow"></i>
       </a>
 
       <a href="/events" class="tool-card">
+        <span class="tool-number">05</span>
         <div class="tool-icon"><i class="fa-solid fa-calendar-days"></i></div>
         <span class="tool-name" data-i18n="tool_events">Event Calendar</span>
+        <span class="tool-desc">Never miss a Raid Day, Community Day, or Spotlight Hour.</span>
+        <i class="fa-solid fa-arrow-right tool-arrow"></i>
       </a>
 
       <a href="/infographics" class="tool-card">
+        <span class="tool-number">06</span>
         <div class="tool-icon"><i class="fa-solid fa-chart-bar"></i></div>
         <span class="tool-name" data-i18n="tool_infographics">Infographics</span>
+        <span class="tool-desc">Visual guides to master every raid and meta.</span>
+        <i class="fa-solid fa-arrow-right tool-arrow"></i>
       </a>
 
       <a href="/news" class="tool-card">
+        <span class="tool-number">07</span>
         <div class="tool-icon"><i class="fa-solid fa-newspaper"></i></div>
         <span class="tool-name" data-i18n="tool_news">News</span>
+        <span class="tool-desc">Up-to-date GO news, patch notes, and research.</span>
+        <i class="fa-solid fa-arrow-right tool-arrow"></i>
       </a>
 
       <a href="https://discord.gg/pogoraids" class="tool-card discord-card" target="_blank" rel="noopener">
+        <span class="tool-number">08</span>
         <div class="tool-icon"><i class="fa-brands fa-discord"></i></div>
         <span class="tool-name" data-i18n="tool_discord">Discord</span>
+        <span class="tool-desc">Join our active server and raid with trainers globally.</span>
+        <i class="fa-solid fa-arrow-right tool-arrow"></i>
       </a>
 
     </div>
   </section>
 
-  <!-- NEWS SECTION -->
+  <!-- NEWS -->
   <section class="news-section" id="news">
-    <h2 class="section-title" data-i18n="news_title">Latest News</h2>
-    <div class="news-grid" id="news-grid"></div>
-    <div class="news-more">
-      <a href="/news" class="btn-outline" data-i18n="news_more">View All News</a>
+    <div class="section-header">
+      <div>
+        <div class="section-label">// Stay Informed</div>
+        <h2 class="section-title" data-i18n="news_title">Latest News</h2>
+      </div>
+      <a href="/news" class="btn-outline" data-i18n="news_more">All News <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+
+    <!-- Static demo cards — replaced by news.js at runtime -->
+    <div class="news-grid" id="news-grid">
+      <div class="news-card">
+        <div class="news-thumb">⚡</div>
+        <div class="news-body">
+          <div class="news-tag">Event</div>
+          <div class="news-title-text">Raid Weekend Returns with Legendary Lineup</div>
+          <div class="news-excerpt">The biggest raid weekend of the season is here. New legendary encounters, boosted shiny rates, and more.</div>
+          <div class="news-meta">
+            <span class="news-date">Mar 26, 2026</span>
+            <span class="news-read">Read →</span>
+          </div>
+        </div>
+      </div>
+      <div class="news-card">
+        <div class="news-thumb">🌸</div>
+        <div class="news-body">
+          <div class="news-tag">Season</div>
+          <div class="news-title-text">Season of Blossoms — Full Feature Breakdown</div>
+          <div class="news-excerpt">Everything new in the latest GO season: spawns, bonuses, featured Pokémon, and GO Battle League.</div>
+          <div class="news-meta">
+            <span class="news-date">Mar 22, 2026</span>
+            <span class="news-read">Read →</span>
+          </div>
+        </div>
+      </div>
+      <div class="news-card">
+        <div class="news-thumb">🏆</div>
+        <div class="news-body">
+          <div class="news-tag">Update</div>
+          <div class="news-title-text">PvP Meta Shifts After Balance Update</div>
+          <div class="news-excerpt">Major move rebalances shake up GO Battle League. We break down what changed and who benefits.</div>
+          <div class="news-meta">
+            <span class="news-date">Mar 18, 2026</span>
+            <span class="news-read">Read →</span>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- DISCORD CTA -->
+  <!-- DISCORD -->
   <section class="discord-section" id="discord">
     <div class="discord-inner">
       <i class="fa-brands fa-discord discord-big-icon"></i>
       <div class="discord-text">
         <h2 data-i18n="discord_title">Join Our Community</h2>
-        <p data-i18n="discord_sub">Connect with thousands of Pokémon GO trainers, share raids, and stay up to date.</p>
+        <p data-i18n="discord_sub">Connect with thousands of Pokémon GO trainers, coordinate raids in real time, and never miss a spawn.</p>
       </div>
-      <a href="https://discord.gg/pogoraids" class="btn-discord" target="_blank" rel="noopener" data-i18n="discord_btn">Join Discord</a>
+      <a href="https://discord.gg/pogoraids" class="btn-discord" target="_blank" rel="noopener">
+        <i class="fa-brands fa-discord"></i>
+        <span data-i18n="discord_btn">Join Discord</span>
+      </a>
     </div>
   </section>
 
   <!-- FOOTER -->
   <footer class="footer">
+    <div class="footer-left">
+      <span class="footer-logo-text">PoGORaids</span>
+    </div>
     <p data-i18n="footer_text">© 2026 PoGORaids.net — Not affiliated with Niantic or Pokémon GO.</p>
   </footer>
 
+  <!-- Keep existing scripts -->
   <script src="i18n.js"></script>
   <script src="news.js"></script>
+
+  <script>
+    // Language switcher active state
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const id = a.getAttribute('href').slice(1);
+        const el = document.getElementById(id);
+        if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      });
+    });
+  </script>
 </body>
 </html>
