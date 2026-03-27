@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Community Map — PoGORaids</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,900;1,700&family=Barlow:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ink:       #08090f;
+      --panel:     #10121c;
+      --border:    rgba(80,140,255,0.12);
+      --cyan:      #3be8ff;
+      --cyan-dim:  #1ab8d4;
+      --purple:    #9b4dff;
+      --logo-grad: linear-gradient(135deg,#3be8ff 0%,#7b3fff 55%,#b020ff 100%);
+      --text:      #e8eaf0;
+      --muted:     #7a82a0;
+      --font-head: 'Barlow Condensed',sans-serif;
+      --font-body: 'Barlow',sans-serif;
+      --font-mono: 'Space Mono',monospace;
+      /* platform colours */
+      --discord:   #5865F2;
+      --telegram:  #2AABEE;
+      --whatsapp:  #25D366;
+      --facebook:  #1877F2;
+      --reddit:    #FF4500;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--ink);
+      color: var(--text);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    a { text-decoration: none; color: inherit; }
+    body::before {
+      content:'';
+      position:fixed; inset:0;
+      background-image:
+        linear-gradient(rgba(59,128,255,.04) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(59,128,255,.04) 1px,transparent 1px);
+      background-size:60px 60px;
+      pointer-events:none; z-index:0;
+    }
+
+    /* ── LANG BAR ── */
+    .lang-bar {
+      position:relative; z-index:100;
+      background:var(--ink);
+      border-bottom:1px solid var(--border);
+      padding:6px 24px;
+      display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    }
+    .lang-bar span { font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-right:4px; }
+    .lang-btn { background:none;border:1px solid transparent;cursor:pointer;padding:2px 4px;border-radius:3px;transition:border-color .15s;display:flex;align-items:center; }
+    .lang-btn:hover,.lang-btn.active { border-color:var(--cyan-dim); }
+    .lang-btn .fi { width:20px;height:14px;border-radius:2px; }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      position:sticky;top:0;z-index:99;
+      background:rgba(8,9,15,.92);
+      backdrop-filter:blur(16px);
+      border-bottom:1px solid var(--border);
+      padding:0 40px;height:64px;
+      display:flex;align-items:center;justify-content:space-between;
+    }
+    .nav-logo { display:flex;align-items:center;gap:10px; }
+    .nav-logo-img { width:34px;height:34px;object-fit:contain;filter:drop-shadow(0 0 8px rgba(123,63,255,.6)); }
+    .nav-title {
+      font-family:var(--font-head);font-weight:900;font-size:22px;letter-spacing:.06em;text-transform:uppercase;
+      background:var(--logo-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .nav-links { list-style:none;display:flex;gap:32px;align-items:center; }
+    .nav-links a {
+      font-family:var(--font-head);font-weight:700;font-size:15px;letter-spacing:.12em;text-transform:uppercase;
+      color:var(--muted);transition:color .2s;position:relative;
+    }
+    .nav-links a::after { content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--cyan);transition:width .25s; }
+    .nav-links a:hover { color:var(--cyan); }
+    .nav-links a:hover::after { width:100%; }
+    .nav-discord { color:var(--text)!important;background:#5865F2;padding:6px 18px;border-radius:4px;font-size:13px!important;transition:background .2s!important; }
+    .nav-discord:hover { background:#4752c4!important; }
+    .nav-discord::after { display:none!important; }
+
+    /* ── PAGE HERO ── */
+    .page-hero {
+      position:relative;z-index:1;
+      padding:64px 40px 48px;
+      text-align:center;overflow:hidden;
+    }
+    .page-hero::before {
+      content:'';position:absolute;width:600px;height:600px;top:50%;left:50%;
+      transform:translate(-50%,-50%);
+      background:radial-gradient(ellipse,rgba(123,63,255,.10) 0%,transparent 65%);
+      pointer-events:none;
+    }
+    .page-hero-eyebrow {
+      font-family:var(--font-mono);font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--cyan);
+      margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:12px;
+    }
+    .page-hero-eyebrow::before,.page-hero-eyebrow::after { content:'';width:36px;height:1px;background:var(--cyan-dim); }
+    .page-hero h1 {
+      font-family:var(--font-head);font-weight:900;font-size:clamp(44px,7vw,80px);
+      line-height:.95;letter-spacing:-.01em;text-transform:uppercase;margin-bottom:16px;
+      background:var(--logo-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .page-hero p { font-size:16px;color:var(--muted);max-width:520px;margin:0 auto 28px;line-height:1.7; }
+    .hero-cta { display:flex;gap:14px;justify-content:center;flex-wrap:wrap;position:relative;z-index:2; }
+    .btn-primary {
+      background:var(--logo-grad);color:#fff;
+      font-family:var(--font-head);font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;
+      padding:14px 36px;border-radius:4px;
+      display:inline-flex;align-items:center;gap:8px;
+      border:none;cursor:pointer;
+      transition:opacity .2s,transform .15s,box-shadow .2s;
+      box-shadow:0 4px 24px rgba(123,63,255,.4);
+    }
+    .btn-primary:hover { opacity:.88;transform:translateY(-2px);box-shadow:0 8px 32px rgba(59,232,255,.3); }
+
+    /* ── STATS ROW ── */
+    .hero-stats {
+      display:flex;justify-content:center;gap:0;
+      margin-top:44px;position:relative;z-index:2;
+    }
+    .stat-item { padding:18px 36px;border-left:1px solid var(--border);text-align:center; }
+    .stat-item:last-child { border-right:1px solid var(--border); }
+    .stat-num { font-family:var(--font-head);font-weight:900;font-size:32px;color:var(--cyan);letter-spacing:-.01em;line-height:1; }
+    .stat-label { font-family:var(--font-mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-top:4px; }
+
+    /* ── MAP SECTION ── */
+    .map-section { position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 40px 80px; }
+    .map-chrome { background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden; }
+    .map-chrome-bar {
+      display:flex;align-items:center;justify-content:space-between;
+      padding:12px 18px;border-bottom:1px solid var(--border);background:rgba(8,9,15,.6);
+    }
+    .map-chrome-dots { display:flex;gap:7px;align-items:center; }
+    .map-chrome-dots span { width:10px;height:10px;border-radius:50%;background:var(--border); }
+    .map-chrome-dots span:nth-child(1) { background:rgba(255,90,90,.5); }
+    .map-chrome-dots span:nth-child(2) { background:rgba(255,190,50,.5); }
+    .map-chrome-dots span:nth-child(3) { background:rgba(50,220,100,.5); }
+    .map-chrome-title { font-family:var(--font-mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted); }
+    .map-chrome-actions { display:flex;gap:8px;align-items:center; }
+    .map-chrome-badge {
+      font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+      color:var(--cyan);border:1px solid rgba(59,232,255,.25);padding:2px 8px;border-radius:3px;
+    }
+    .map-filter-btn {
+      font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+      color:var(--muted);border:1px solid var(--border);padding:3px 10px;border-radius:3px;
+      background:none;cursor:pointer;transition:color .15s,border-color .15s;
+      display:flex;align-items:center;gap:5px;
+    }
+    .map-filter-btn.active,.map-filter-btn:hover { color:var(--cyan);border-color:rgba(59,232,255,.35); }
+    .map-filter-btn[data-platform="discord"].active  { color:var(--discord);border-color:var(--discord); }
+    .map-filter-btn[data-platform="telegram"].active { color:var(--telegram);border-color:var(--telegram); }
+    .map-filter-btn[data-platform="whatsapp"].active { color:var(--whatsapp);border-color:var(--whatsapp); }
+    .map-filter-btn[data-platform="facebook"].active { color:var(--facebook);border-color:var(--facebook); }
+    .map-filter-btn[data-platform="reddit"].active   { color:var(--reddit);border-color:var(--reddit); }
+
+    /* map itself */
+    .map-wrapper { position:relative; }
+    #community-map { width:100%;height:72vh;min-height:520px;display:block; }
+
+    /* ── LOADING INDICATOR ── */
+    .map-fetch-indicator {
+      position:absolute;top:14px;right:14px;z-index:1000;
+      display:flex;align-items:center;gap:8px;
+      background:var(--panel);border:1px solid var(--border);border-radius:4px;
+      padding:6px 14px 6px 10px;color:var(--cyan);
+      font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+      pointer-events:none;opacity:1;transition:opacity .35s ease;
+    }
+    .map-fetch-indicator.hidden { opacity:0; }
+    .map-fetch-indicator i { font-size:.85rem;animation:spin 1s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* ── LEAFLET OVERRIDES ── */
+    .leaflet-container { background:#08090f!important; }
+    .leaflet-popup-content-wrapper {
+      background:var(--panel)!important;border:1px solid var(--border)!important;
+      border-radius:6px!important;color:var(--text)!important;
+      box-shadow:0 8px 40px rgba(0,0,0,.6)!important;padding:0!important;
+    }
+    .leaflet-popup-content { margin:0!important;width:auto!important; }
+    .leaflet-popup-tip { background:var(--panel)!important; }
+    .leaflet-popup-close-button { color:var(--muted)!important;font-size:1.1rem!important;top:10px!important;right:12px!important; }
+    .leaflet-popup-close-button:hover { color:var(--cyan)!important; }
+    .leaflet-control-zoom a { background:var(--panel)!important;color:var(--cyan)!important;border-color:var(--border)!important;font-family:var(--font-head)!important; }
+    .leaflet-control-zoom a:hover { background:rgba(59,232,255,.08)!important; }
+    .leaflet-control-attribution { background:rgba(8,9,15,.85)!important;color:var(--muted)!important;font-size:.68rem!important;font-family:var(--font-mono)!important; }
+    .leaflet-control-attribution a { color:var(--cyan-dim)!important; }
+
+    /* ── COMMUNITY PIN ── */
+    .community-pin { background:transparent!important;border:none!important;box-shadow:none!important; }
+    .community-pin-inner {
+      width:46px;height:46px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      font-size:18px;color:#fff;
+      border:2px solid rgba(255,255,255,.2);
+      box-shadow:0 4px 16px rgba(0,0,0,.4);
+      cursor:pointer;
+      transition:transform .15s,box-shadow .15s;
+    }
+    .community-pin-inner:hover { transform:scale(1.15);box-shadow:0 6px 24px rgba(0,0,0,.5); }
+    .pin-discord  { background:var(--discord); }
+    .pin-telegram { background:var(--telegram); }
+    .pin-whatsapp { background:var(--whatsapp); }
+    .pin-facebook { background:var(--facebook); }
+    .pin-reddit   { background:var(--reddit); }
+
+    /* ── POPUP ── */
+    .community-popup { padding:22px 24px 18px;min-width:260px;max-width:320px; }
+    .community-popup-header { display:flex;align-items:center;gap:12px;margin-bottom:14px; }
+    .community-popup-icon {
+      width:40px;height:40px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      font-size:17px;color:#fff;flex-shrink:0;
+    }
+    .community-popup h3 {
+      font-family:var(--font-head);font-size:1.15rem;font-weight:700;
+      letter-spacing:.04em;text-transform:uppercase;color:var(--text);line-height:1.2;
+    }
+    .community-popup .popup-platform {
+      font-family:var(--font-mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+      color:var(--muted);margin-top:1px;
+    }
+    .community-popup .popup-desc {
+      font-size:.84rem;color:var(--muted);line-height:1.55;margin-bottom:12px;
+    }
+    .community-popup .popup-stats {
+      display:flex;gap:16px;padding:10px 12px;
+      background:rgba(59,232,255,.04);border:1px solid var(--border);border-radius:4px;
+      margin-bottom:14px;
+    }
+    .community-popup .popup-stat { text-align:center; }
+    .community-popup .popup-stat strong {
+      display:block;font-family:var(--font-head);font-size:1.1rem;font-weight:700;color:var(--cyan);line-height:1;
+    }
+    .community-popup .popup-stat span {
+      font-family:var(--font-mono);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+    }
+    .community-popup .btn-join {
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      width:100%;padding:9px;
+      border:none;border-radius:4px;cursor:pointer;
+      font-family:var(--font-head);font-weight:700;font-size:14px;letter-spacing:.1em;text-transform:uppercase;
+      color:#fff;transition:opacity .2s,transform .15s;
+    }
+    .community-popup .btn-join:hover { opacity:.88;transform:translateY(-1px); }
+
+    /* ── MAP FOOTER BAR ── */
+    .map-footer-bar {
+      display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+      padding:14px 18px;border-top:1px solid var(--border);background:rgba(8,9,15,.5);
+    }
+    .legend-label { font-family:var(--font-mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-right:4px; }
+    .legend-item { display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted); }
+    .legend-dot { width:12px;height:12px;border-radius:50%;flex-shrink:0; }
+
+    /* ── SUBMIT SECTION ── */
+    .submit-section { position:relative;z-index:1;max-width:900px;margin:0 auto;padding:0 40px 100px; }
+    .submit-card {
+      background:var(--panel);border:1px solid var(--border);border-radius:8px;
+      padding:48px 52px;position:relative;overflow:hidden;
+    }
+    .submit-card::after {
+      content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+      background:var(--logo-grad);
+    }
+    .submit-card::before {
+      content:'';position:absolute;top:-80px;right:-80px;width:300px;height:300px;
+      background:radial-gradient(ellipse,rgba(123,63,255,.08) 0%,transparent 70%);
+      pointer-events:none;
+    }
+    .submit-eyebrow {
+      font-family:var(--font-mono);font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--cyan);
+      margin-bottom:8px;
+    }
+    .submit-card h2 {
+      font-family:var(--font-head);font-weight:900;font-size:clamp(28px,4vw,42px);
+      text-transform:uppercase;letter-spacing:-.01em;margin-bottom:8px;
+    }
+    .submit-card > p { font-size:14px;color:var(--muted);margin-bottom:32px;max-width:580px;line-height:1.6; }
+    .form-grid { display:grid;grid-template-columns:1fr 1fr;gap:16px; }
+    .form-group { display:flex;flex-direction:column;gap:6px; }
+    .form-group.full { grid-column:1/-1; }
+    .form-group label {
+      font-family:var(--font-mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+    }
+    .form-group input,.form-group select,.form-group textarea {
+      background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:4px;
+      padding:10px 14px;color:var(--text);font-family:var(--font-body);font-size:.9rem;
+      outline:none;transition:border-color .2s;width:100%;
+    }
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus { border-color:var(--cyan-dim); }
+    .form-group input::placeholder,.form-group textarea::placeholder { color:var(--muted); }
+    .form-group select {
+      appearance:none;-webkit-appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%233be8ff' d='M0 0l6 8 6-8z'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;background-position:right 14px center;background-size:9px;
+      background-color:rgba(255,255,255,.04);
+    }
+    .form-group select option { background:var(--panel);color:var(--text); }
+    .form-group textarea { resize:vertical;min-height:80px; }
+    .submit-card .submit-notice {
+      display:flex;align-items:flex-start;gap:10px;
+      padding:12px 16px;background:rgba(155,77,255,.07);border:1px solid rgba(155,77,255,.2);border-radius:4px;
+      margin:20px 0;
+      font-size:.82rem;color:var(--muted);line-height:1.5;
+    }
+    .submit-card .submit-notice i { color:var(--purple);flex-shrink:0;margin-top:2px; }
+    .form-submit-row { display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:8px; }
+    .btn-submit-community {
+      background:var(--logo-grad);color:#fff;
+      font-family:var(--font-head);font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;
+      padding:13px 36px;border-radius:4px;border:none;cursor:pointer;
+      display:inline-flex;align-items:center;gap:8px;
+      transition:opacity .2s,transform .15s,box-shadow .2s;
+      box-shadow:0 4px 24px rgba(123,63,255,.4);
+    }
+    .btn-submit-community:hover { opacity:.88;transform:translateY(-2px); }
+    .btn-submit-community:disabled { opacity:.35;cursor:not-allowed;transform:none; }
+    .form-legal { font-family:var(--font-mono);font-size:.68rem;color:var(--muted);letter-spacing:.04em;max-width:400px; }
+
+    /* ── SUCCESS / ERROR BANNERS ── */
+    .form-banner {
+      display:none;align-items:center;gap:12px;
+      padding:14px 18px;border-radius:4px;margin-bottom:20px;
+      font-size:.88rem;line-height:1.5;
+    }
+    .form-banner.visible { display:flex; }
+    .form-banner.success { background:rgba(50,220,100,.08);border:1px solid rgba(50,220,100,.25);color:#50e090; }
+    .form-banner.error   { background:rgba(255,80,80,.08);border:1px solid rgba(255,80,80,.2);color:#ff7070; }
+
+    /* ── HOW IT WORKS ── */
+    .how-section { position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 40px 80px; }
+    .section-label { font-family:var(--font-mono);font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--cyan);margin-bottom:6px; }
+    .section-title { font-family:var(--font-head);font-weight:900;font-size:clamp(32px,5vw,48px);text-transform:uppercase;letter-spacing:-.01em;line-height:1;margin-bottom:36px; }
+    .steps-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:2px; }
+    .step-card {
+      background:var(--panel);border:1px solid var(--border);padding:32px 24px;
+      position:relative;overflow:hidden;margin:-1px 0 0 -1px;
+      transition:border-color .2s;
+    }
+    .step-card:nth-child(1) { border-radius:8px 0 0 8px; }
+    .step-card:last-child   { border-radius:0 8px 8px 0; }
+    .step-card::after { content:'';position:absolute;bottom:0;left:0;width:100%;height:2px;background:var(--logo-grad);transform:scaleX(0);transform-origin:left;transition:transform .3s; }
+    .step-card:hover { border-color:rgba(123,63,255,.3); }
+    .step-card:hover::after { transform:scaleX(1); }
+    .step-num { font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:.1em;margin-bottom:16px; }
+    .step-icon { font-size:22px;color:var(--cyan);margin-bottom:14px; }
+    .step-title { font-family:var(--font-head);font-weight:700;font-size:18px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px; }
+    .step-desc { font-size:13px;color:var(--muted);line-height:1.55; }
+
+    /* ── FOOTER ── */
+    .footer {
+      position:relative;z-index:1;
+      border-top:1px solid var(--border);padding:28px 40px;
+      display:flex;align-items:center;justify-content:space-between;
+    }
+    .footer-left { display:flex;align-items:center;gap:12px; }
+    .footer-logo-text {
+      font-family:var(--font-head);font-weight:900;font-size:16px;letter-spacing:.08em;text-transform:uppercase;
+      background:var(--logo-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .footer p { font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:.05em; }
+    ::-webkit-scrollbar { width:6px; }
+    ::-webkit-scrollbar-track { background:var(--ink); }
+    ::-webkit-scrollbar-thumb { background:var(--border);border-radius:3px; }
+    ::-webkit-scrollbar-thumb:hover { background:var(--cyan-dim); }
+
+    @media(max-width:1024px) { .steps-grid { grid-template-columns:repeat(2,1fr); } .step-card:nth-child(1) { border-radius:8px 0 0 0; } .step-card:nth-child(2) { border-radius:0 8px 0 0; } .step-card:nth-child(3) { border-radius:0 0 0 8px; } .step-card:last-child { border-radius:0 0 8px 0; } }
+    @media(max-width:768px) {
+      .navbar { padding:0 20px; } .nav-links { gap:16px; }
+      .page-hero { padding:44px 20px 32px; }
+      .map-section,.submit-section,.how-section { padding-left:16px;padding-right:16px; }
+      .form-grid { grid-template-columns:1fr; }
+      .steps-grid { grid-template-columns:1fr; }
+      .step-card:nth-child(1),.step-card:last-child,.step-card:nth-child(2),.step-card:nth-child(3) { border-radius:0; }
+      .hero-stats { flex-wrap:wrap; } .stat-item { flex:1 1 40%; }
+      .submit-card { padding:28px 20px; }
+      .footer { flex-direction:column;gap:10px;text-align:center;padding:20px; }
+      .map-chrome-bar { flex-wrap:wrap;gap:8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LANG BAR -->
+  <div class="lang-bar">
+    <span>🌐 Language:</span>
+    <button class="lang-btn active" data-lang="en"><span class="fi fi-us"></span></button>
+    <button class="lang-btn" data-lang="es"><span class="fi fi-es"></span></button>
+    <button class="lang-btn" data-lang="pt"><span class="fi fi-pt"></span></button>
+    <button class="lang-btn" data-lang="nl"><span class="fi fi-nl"></span></button>
+    <button class="lang-btn" data-lang="de"><span class="fi fi-de"></span></button>
+    <button class="lang-btn" data-lang="fr"><span class="fi fi-fr"></span></button>
+    <button class="lang-btn" data-lang="sv"><span class="fi fi-se"></span></button>
+    <button class="lang-btn" data-lang="ja"><span class="fi fi-jp"></span></button>
+    <button class="lang-btn" data-lang="pl"><span class="fi fi-pl"></span></button>
+    <button class="lang-btn" data-lang="no"><span class="fi fi-no"></span></button>
+    <button class="lang-btn" data-lang="fi"><span class="fi fi-fi"></span></button>
+    <button class="lang-btn" data-lang="da"><span class="fi fi-dk"></span></button>
+    <button class="lang-btn" data-lang="hi"><span class="fi fi-in"></span></button>
+    <button class="lang-btn" data-lang="tr"><span class="fi fi-tr"></span></button>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="/" class="nav-logo">
+      <img src="assets/logo.png" alt="PoGORaids Logo" class="nav-logo-img" onerror="this.style.display='none'" />
+      <span class="nav-title">PoGORaids</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/#tools">Tools</a></li>
+      <li><a href="/#news">News</a></li>
+      <li><a href="https://discord.gg/pogoraids" class="nav-discord" target="_blank" rel="noopener">Discord</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <div class="page-hero">
+    <div class="page-hero-eyebrow">// Trainer Tools</div>
+    <h1>Community Map</h1>
+    <p>Find and join local Pokémon GO communities near you — Discord servers, Telegram groups, WhatsApp chats, Facebook groups &amp; subreddits, all on one map.</p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="document.getElementById('submit-section').scrollIntoView({behavior:'smooth'})">
+        <i class="fa-solid fa-plus"></i> Add Your Community
+      </button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num" id="stat-total">0</div>
+        <div class="stat-label">Communities</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="stat-countries">0</div>
+        <div class="stat-label">Countries</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="stat-members">0</div>
+        <div class="stat-label">Members</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">5</div>
+        <div class="stat-label">Platforms</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAP -->
+  <div class="map-section">
+    <div class="map-chrome">
+      <div class="map-chrome-bar">
+        <div class="map-chrome-dots"><span></span><span></span><span></span></div>
+        <span class="map-chrome-title">Live Community Map</span>
+        <div class="map-chrome-actions">
+          <button class="map-filter-btn active" data-platform="all"><i class="fa-solid fa-globe"></i> All</button>
+          <button class="map-filter-btn" data-platform="discord"><i class="fa-brands fa-discord"></i> Discord</button>
+          <button class="map-filter-btn" data-platform="telegram"><i class="fa-brands fa-telegram"></i> Telegram</button>
+          <button class="map-filter-btn" data-platform="whatsapp"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+          <button class="map-filter-btn" data-platform="facebook"><i class="fa-brands fa-facebook-f"></i> Facebook</button>
+          <button class="map-filter-btn" data-platform="reddit"><i class="fa-brands fa-reddit-alien"></i> Reddit</button>
+          <span class="map-chrome-badge">LIVE</span>
+        </div>
+      </div>
+      <div class="map-wrapper">
+        <div id="community-map"></div>
+        <div class="map-fetch-indicator hidden" id="fetch-indicator">
+          <i class="fa-solid fa-spinner"></i> Loading…
+        </div>
+      </div>
+      <div class="map-footer-bar">
+        <span class="legend-label">Legend</span>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--discord)"></div>Discord</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--telegram)"></div>Telegram</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--whatsapp)"></div>WhatsApp</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--facebook)"></div>Facebook</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--reddit)"></div>Reddit</div>
+        <div class="legend-item" style="margin-left:auto">
+          <i class="fa-solid fa-circle-check" style="color:var(--cyan);font-size:11px;"></i>
+          <span>Admin‑approved only</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="how-section">
+    <div class="section-label">// How It Works</div>
+    <div class="section-title">Get Your Community Listed</div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-icon"><i class="fa-solid fa-link"></i></div>
+        <div class="step-title">Submit a Link</div>
+        <div class="step-desc">Fill in your community name, platform, invite link, and location below.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="step-title">Admin Review</div>
+        <div class="step-desc">Our team checks submissions for quality and relevance to Pokémon GO.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-icon"><i class="fa-solid fa-map-pin"></i></div>
+        <div class="step-title">Pinned on Map</div>
+        <div class="step-desc">Approved communities appear as a coloured pin on the community map.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">04</div>
+        <div class="step-icon"><i class="fa-solid fa-users"></i></div>
+        <div class="step-title">Trainers Find You</div>
+        <div class="step-desc">Thousands of trainers worldwide browse the map to find local groups.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBMIT FORM -->
+  <div class="submit-section" id="submit-section">
+    <div class="submit-card">
+      <div class="submit-eyebrow">// Add Your Community</div>
+      <h2>Submit Your Group</h2>
+      <p>All submissions are reviewed by our admin team before going live on the map. Typically approved within 24–48 hours.</p>
+
+      <div class="form-banner" id="form-success">
+        <i class="fa-solid fa-circle-check" style="font-size:1.2rem;flex-shrink:0"></i>
+        <div><strong>Submission received!</strong> Your community is pending admin review and will appear on the map once approved.</div>
+      </div>
+      <div class="form-banner" id="form-error">
+        <i class="fa-solid fa-triangle-exclamation" style="font-size:1.2rem;flex-shrink:0"></i>
+        <div id="form-error-msg">Something went wrong. Please check your inputs and try again.</div>
+      </div>
+
+      <form id="community-form" novalidate>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Community Name *</label>
+            <input type="text" id="f-name" placeholder="e.g. Amsterdam Raids" maxlength="80" required />
+          </div>
+          <div class="form-group">
+            <label>Platform *</label>
+            <select id="f-platform" required>
+              <option value="">Select platform…</option>
+              <option value="discord">Discord</option>
+              <option value="telegram">Telegram</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="facebook">Facebook (Group or Messenger)</option>
+              <option value="reddit">Reddit (Subreddit)</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>Invite / Group Link *</label>
+            <input type="url" id="f-link" placeholder="https://…" required />
+          </div>
+          <div class="form-group">
+            <label>City / Region *</label>
+            <input type="text" id="f-city" placeholder="e.g. Amsterdam, NL" required />
+          </div>
+          <div class="form-group">
+            <label>Member Count <span style="color:var(--muted);font-size:.9em">(optional)</span></label>
+            <input type="number" id="f-members" placeholder="e.g. 450" min="1" />
+          </div>
+          <div class="form-group full">
+            <label>Short Description <span style="color:var(--muted);font-size:.9em">(optional, max 160 chars)</span></label>
+            <textarea id="f-desc" placeholder="What makes your community great?" maxlength="160"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Your Contact (for review) *</label>
+            <input type="text" id="f-contact" placeholder="Discord tag, e-mail, etc." required />
+          </div>
+          <div class="form-group">
+            <label>Language(s)</label>
+            <input type="text" id="f-lang" placeholder="e.g. English, Dutch" />
+          </div>
+        </div>
+
+        <div class="submit-notice">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>Submissions are stored for admin review. Only approved communities will be shown publicly. We never share your contact details.</span>
+        </div>
+
+        <div class="form-submit-row">
+          <p class="form-legal">By submitting you confirm this is a genuine Pokémon GO community and agree to our community guidelines.</p>
+          <button type="submit" class="btn-submit-community" id="submit-btn">
+            <i class="fa-solid fa-paper-plane"></i> Submit for Review
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-left"><span class="footer-logo-text">PoGORaids</span></div>
+    <p>© 2026 PoGORaids.net — Not affiliated with Niantic or Pokémon GO.</p>
+  </footer>
+
+  <script src="i18n.js"></script>
+  <script>
+  // ============================================================
+  // STORAGE KEYS
+  // ============================================================
+  const APPROVED_KEY = 'pogoraids_communities_approved_v1';
+  const PENDING_KEY  = 'pogoraids_communities_pending_v1';
+
+  function loadApproved() { try { return JSON.parse(localStorage.getItem(APPROVED_KEY)) || []; } catch(e){ return []; } }
+  function loadPending()  { try { return JSON.parse(localStorage.getItem(PENDING_KEY))  || []; } catch(e){ return []; } }
+  function savePending(data) { localStorage.setItem(PENDING_KEY, JSON.stringify(data)); }
+
+  // ============================================================
+  // PLATFORM CONFIG
+  // ============================================================
+  const PLATFORM = {
+    discord:  { label:'Discord',  icon:'fa-brands fa-discord',    color:'#5865F2', class:'pin-discord'  },
+    telegram: { label:'Telegram', icon:'fa-brands fa-telegram',   color:'#2AABEE', class:'pin-telegram' },
+    whatsapp: { label:'WhatsApp', icon:'fa-brands fa-whatsapp',   color:'#25D366', class:'pin-whatsapp' },
+    facebook: { label:'Facebook', icon:'fa-brands fa-facebook-f', color:'#1877F2', class:'pin-facebook' },
+    reddit:   { label:'Reddit',   icon:'fa-brands fa-reddit-alien',color:'#FF4500', class:'pin-reddit'  },
+  };
+
+  // ============================================================
+  // SEEDED DEMO DATA
+  // ============================================================
+  const DEMO_COMMUNITIES = [
+    { id:'d1', name:'Amsterdam GO Raids', platform:'discord',  lat:52.3702, lng:4.8952,  members:1240, desc:'The biggest Amsterdam Pok\u00e9mon GO Discord. Raids 24/7.', link:'https://discord.gg/example', lang:'Dutch / English', approved:true },
+    { id:'d2', name:'London Trainers',    platform:'telegram', lat:51.5074, lng:-0.1278, members:3800, desc:'All London raids, nests and events.', link:'https://t.me/example', lang:'English', approved:true },
+    { id:'d3', name:'Berlin PokGo',       platform:'whatsapp', lat:52.5200, lng:13.4050, members:620,  desc:'Berlin area WhatsApp raiding group.', link:'https://chat.whatsapp.com/example', lang:'German', approved:true },
+    { id:'d4', name:'Paris Pok\u00e9GO',  platform:'facebook', lat:48.8566, lng:2.3522,  members:5400, desc:'Biggest French Pok\u00e9mon GO Facebook group.', link:'https://facebook.com/groups/example', lang:'French', approved:true },
+    { id:'d5', name:'r/NYCPokemonGO',     platform:'reddit',   lat:40.7128, lng:-74.0060,members:28000,desc:'NYC subreddit for all things Pok\u00e9mon GO.', link:'https://reddit.com/r/NYCPokemonGO', lang:'English', approved:true },
+    { id:'d6', name:'Tokyo Raids JP',     platform:'discord',  lat:35.6762, lng:139.6503,members:910,  desc:'Tokyo-based raids Discord server.', link:'https://discord.gg/example2', lang:'Japanese', approved:true },
+    { id:'d7', name:'Sydney Pokies',      platform:'telegram', lat:-33.8688,lng:151.2093, members:770,  desc:'Sydney Telegram raid coordination.', link:'https://t.me/example2', lang:'English', approved:true },
+    { id:'d8', name:'S\u00e3o Paulo GO',  platform:'whatsapp', lat:-23.5505,lng:-46.6333, members:2200, desc:'S\u00e3o Paulo WhatsApp PoGO group.', link:'https://chat.whatsapp.com/example2', lang:'Portuguese', approved:true },
+  ];
+
+  // Seed demo data if storage is empty
+  if (!localStorage.getItem(APPROVED_KEY)) {
+    localStorage.setItem(APPROVED_KEY, JSON.stringify(DEMO_COMMUNITIES));
+  }
+
+  // ============================================================
+  // STATS
+  // ============================================================
+  function updateStats(communities) {
+    const total   = communities.length;
+    const members = communities.reduce((s,c) => s + (c.members||0), 0);
+    // crude country count from unique lat/lng grid cells of 10deg
+    const cells   = new Set(communities.map(c => `${Math.round(c.lat/10)},${Math.round(c.lng/10)}`));
+    document.getElementById('stat-total').textContent    = total;
+    document.getElementById('stat-members').textContent  = members >= 1000 ? (members/1000).toFixed(1)+'K' : members;
+    document.getElementById('stat-countries').textContent = cells.size;
+  }
+
+  // ============================================================
+  // MAP
+  // ============================================================
+  const map = L.map('community-map', { center:[20,10], zoom:2, zoomControl:true, attributionControl:true });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution:'\u00a9 <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom:19
+  }).addTo(map);
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      pos => map.setView([pos.coords.latitude, pos.coords.longitude], 10),
+      () => {}
+    );
+  }
+
+  let allMarkers = [];
+  let activeFilter = 'all';
+
+  function makePinIcon(platform) {
+    const p = PLATFORM[platform] || PLATFORM.discord;
+    return L.divIcon({
+      className: 'community-pin',
+      html: `<div class="community-pin-inner ${p.class}"><i class="${p.icon}"></i></div>`,
+      iconSize: [46,46],
+      iconAnchor: [23,23],
+      popupAnchor: [0,-26]
+    });
+  }
+
+  function buildPopup(c) {
+    const p = PLATFORM[c.platform] || PLATFORM.discord;
+    const memberStr = c.members ? c.members.toLocaleString() : '—';
+    const descHtml  = c.desc ? `<p class="popup-desc">${c.desc}</p>` : '';
+    const langHtml  = c.lang ? `<div class="popup-stat"><strong>${c.lang}</strong><span>Language</span></div>` : '';
+    return `
+      <div class="community-popup">
+        <div class="community-popup-header">
+          <div class="community-popup-icon" style="background:${p.color}">
+            <i class="${p.icon}"></i>
+          </div>
+          <div>
+            <h3>${c.name}</h3>
+            <div class="popup-platform">${p.label}</div>
+          </div>
+        </div>
+        ${descHtml}
+        <div class="popup-stats">
+          <div class="popup-stat"><strong>${memberStr}</strong><span>Members</span></div>
+          ${langHtml}
+        </div>
+        <a href="${c.link}" target="_blank" rel="noopener noreferrer">
+          <button class="btn-join" style="background:${p.color}">
+            <i class="${p.icon}"></i> Join ${p.label}
+          </button>
+        </a>
+      </div>`;
+  }
+
+  function renderMarkers(communities) {
+    allMarkers.forEach(m => map.removeLayer(m));
+    allMarkers = [];
+    communities.forEach(c => {
+      if (!c.approved) return;
+      if (activeFilter !== 'all' && c.platform !== activeFilter) return;
+      const m = L.marker([c.lat, c.lng], { icon: makePinIcon(c.platform) }).addTo(map);
+      m.bindPopup(buildPopup(c), { maxWidth:340, minWidth:270, autoPan:true });
+      m._communityPlatform = c.platform;
+      allMarkers.push(m);
+    });
+    updateStats(communities.filter(c => c.approved));
+  }
+
+  // initial render
+  renderMarkers(loadApproved());
+
+  // platform filter
+  document.querySelectorAll('.map-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.map-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.platform;
+      renderMarkers(loadApproved());
+    });
+  });
+
+  // ============================================================
+  // SUBMIT FORM
+  // ============================================================
+  function showBanner(id) {
+    document.getElementById('form-success').classList.remove('visible');
+    document.getElementById('form-error').classList.remove('visible');
+    document.getElementById(id).classList.add('visible');
+  }
+
+  function geocodeCity(city) {
+    return fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1`)
+      .then(r => r.json())
+      .then(data => {
+        if (data && data.length) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+        return null;
+      });
+  }
+
+  document.getElementById('community-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('submit-btn');
+    const name     = document.getElementById('f-name').value.trim();
+    const platform = document.getElementById('f-platform').value;
+    const link     = document.getElementById('f-link').value.trim();
+    const city     = document.getElementById('f-city').value.trim();
+    const members  = parseInt(document.getElementById('f-members').value) || 0;
+    const desc     = document.getElementById('f-desc').value.trim();
+    const contact  = document.getElementById('f-contact').value.trim();
+    const lang     = document.getElementById('f-lang').value.trim();
+
+    // Validate
+    if (!name || !platform || !link || !city || !contact) {
+      document.getElementById('form-error-msg').textContent = 'Please fill in all required fields.';
+      showBanner('form-error');
+      return;
+    }
+    try { new URL(link); } catch(_) {
+      document.getElementById('form-error-msg').textContent = 'Please enter a valid invite URL.';
+      showBanner('form-error');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting…';
+
+    // Geocode city
+    let coords = null;
+    try { coords = await geocodeCity(city); } catch(_) {}
+
+    const submission = {
+      id:       'pending_' + Date.now(),
+      name, platform, link, city, members, desc, contact, lang,
+      lat:      coords ? coords.lat : null,
+      lng:      coords ? coords.lng : null,
+      approved: false,
+      submittedAt: new Date().toISOString()
+    };
+
+    const pending = loadPending();
+    pending.push(submission);
+    savePending(pending);
+
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit for Review';
+    document.getElementById('community-form').reset();
+    showBanner('form-success');
+    document.getElementById('submit-section').scrollIntoView({ behavior:'smooth' });
+  });
+
+  // lang bar
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+  </script>
+</body>
+</html>
