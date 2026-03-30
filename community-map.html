@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <!-- Marker Cluster CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -174,19 +173,10 @@
 
     /* ── CAMPFIRE BADGE ── */
     .campfire-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-family: var(--font-mono);
-      font-size: 9px;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      color: var(--campfire);
-      border: 1px solid rgba(255,106,0,.3);
-      background: rgba(255,106,0,.07);
-      padding: 2px 8px;
-      border-radius: 3px;
-      margin-top: 6px;
+      display: inline-flex; align-items: center; gap: 5px;
+      font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--campfire); border: 1px solid rgba(255,106,0,.3); background: rgba(255,106,0,.07);
+      padding: 2px 8px; border-radius: 3px; margin-top: 6px;
     }
 
     /* ── MAP FOOTER ── */
@@ -216,145 +206,33 @@
 
     /* ── CAMPFIRE LINK HINT ── */
     .campfire-hint {
-      display: none;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 14px;
-      background: rgba(255,106,0,.06);
-      border: 1px solid rgba(255,106,0,.2);
-      border-radius: 4px;
-      font-size: .82rem;
-      color: var(--muted);
-      line-height: 1.5;
-      margin-top: 6px;
+      display: none; align-items: center; gap: 8px; padding: 10px 14px;
+      background: rgba(255,106,0,.06); border: 1px solid rgba(255,106,0,.2); border-radius: 4px;
+      font-size: .82rem; color: var(--muted); line-height: 1.5; margin-top: 6px;
     }
     .campfire-hint.visible { display: flex; }
     .campfire-hint i { color: var(--campfire); flex-shrink: 0; }
 
     /* ── PIN PICKER ── */
-    .pin-picker-wrap {
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .pin-picker-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 14px;
-      background: rgba(0,0,0,0.3);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .pin-picker-label {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: .15em;
-      text-transform: uppercase;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
-
+    .pin-picker-wrap { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; position: relative; }
+    .pin-picker-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--border); }
+    .pin-picker-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 7px; }
     .pin-picker-label i { color: var(--cyan); }
-
-    .pin-picker-coords {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: .06em;
-      color: var(--cyan);
-      background: rgba(59,232,255,0.08);
-      border: 1px solid rgba(59,232,255,0.2);
-      padding: 3px 10px;
-      border-radius: 3px;
-      display: none;
-    }
-
+    .pin-picker-coords { font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em; color: var(--cyan); background: rgba(59,232,255,0.08); border: 1px solid rgba(59,232,255,0.2); padding: 3px 10px; border-radius: 3px; display: none; }
     .pin-picker-coords.visible { display: block; }
-
-    #pin-picker-map {
-      width: 100%;
-      height: 260px;
-      display: block;
-      cursor: crosshair;
-    }
-
-    .pin-picker-hint {
-      padding: 8px 14px;
-      background: rgba(59,232,255,0.04);
-      border-top: 1px solid var(--border);
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: .08em;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
+    #pin-picker-map { width: 100%; height: 260px; display: block; cursor: crosshair; }
+    .pin-picker-hint { padding: 8px 14px; background: rgba(59,232,255,0.04); border-top: 1px solid var(--border); font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; color: var(--muted); display: flex; align-items: center; gap: 8px; }
     .pin-picker-hint i { color: var(--cyan-dim); flex-shrink: 0; }
-
-    .pin-picker-hint.has-pin {
-      color: var(--text);
-      background: rgba(34,212,122,0.05);
-      border-top-color: rgba(34,212,122,0.2);
-    }
-
+    .pin-picker-hint.has-pin { color: var(--text); background: rgba(34,212,122,0.05); border-top-color: rgba(34,212,122,0.2); }
     .pin-picker-hint.has-pin i { color: #22d47a; }
-
-    .btn-clear-pin {
-      margin-left: auto;
-      font-family: var(--font-head);
-      font-weight: 700;
-      font-size: 11px;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      background: rgba(255,77,106,0.08);
-      border: 1px solid rgba(255,77,106,0.2);
-      color: #ff4d6a;
-      padding: 4px 10px;
-      border-radius: 3px;
-      cursor: pointer;
-      display: none;
-      transition: background .15s;
-    }
-
+    .btn-clear-pin { margin-left: auto; font-family: var(--font-head); font-weight: 700; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; background: rgba(255,77,106,0.08); border: 1px solid rgba(255,77,106,0.2); color: #ff4d6a; padding: 4px 10px; border-radius: 3px; cursor: pointer; display: none; transition: background .15s; }
     .btn-clear-pin.visible { display: inline-flex; align-items: center; gap: 5px; }
     .btn-clear-pin:hover { background: rgba(255,77,106,0.15); }
-
-    /* Geocode helper row */
-    .geocode-row {
-      display: flex;
-      gap: 8px;
-      align-items: flex-end;
-    }
+    .geocode-row { display: flex; gap: 8px; align-items: flex-end; }
     .geocode-row .form-group { flex: 1; }
-    .btn-geocode {
-      background: rgba(59,232,255,0.08);
-      border: 1px solid rgba(59,232,255,0.25);
-      color: var(--cyan);
-      font-family: var(--font-head);
-      font-weight: 700;
-      font-size: 12px;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      padding: 10px 14px;
-      border-radius: 4px;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background .15s;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-shrink: 0;
-    }
+    .btn-geocode { background: rgba(59,232,255,0.08); border: 1px solid rgba(59,232,255,0.25); color: var(--cyan); font-family: var(--font-head); font-weight: 700; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; padding: 10px 14px; border-radius: 4px; cursor: pointer; white-space: nowrap; transition: background .15s; height: 40px; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
     .btn-geocode:hover { background: rgba(59,232,255,0.14); }
     .btn-geocode i { font-size: 11px; }
-
     .submit-notice { display:flex; align-items:flex-start; gap:10px; padding:12px 16px; background:rgba(155,77,255,.07); border:1px solid rgba(155,77,255,.2); border-radius:4px; margin:20px 0; font-size:.82rem; color:var(--muted); line-height:1.5; }
     .submit-notice i { color:var(--purple); flex-shrink:0; margin-top:2px; }
     .form-submit-row { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-top:8px; }
@@ -362,8 +240,6 @@
     .btn-submit-community:hover { opacity:.88; transform:translateY(-2px); }
     .btn-submit-community:disabled { opacity:.35; cursor:not-allowed; transform:none; }
     .form-legal { font-family:var(--font-mono); font-size:.68rem; color:var(--muted); letter-spacing:.04em; max-width:400px; }
-
-    /* ── BANNERS ── */
     .form-banner { display:none; align-items:center; gap:12px; padding:14px 18px; border-radius:4px; margin-bottom:20px; font-size:.88rem; line-height:1.5; }
     .form-banner.visible { display:flex; }
     .form-banner.success { background:rgba(50,220,100,.08); border:1px solid rgba(50,220,100,.25); color:#50e090; }
@@ -455,9 +331,9 @@
       </button>
     </div>
     <div class="hero-stats">
-      <div class="stat-item"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Communities</div></div>
-      <div class="stat-item"><div class="stat-num" id="stat-countries">0</div><div class="stat-label">Countries</div></div>
-      <div class="stat-item"><div class="stat-num" id="stat-members">0</div><div class="stat-label">Members</div></div>
+      <div class="stat-item"><div class="stat-num" id="stat-total">—</div><div class="stat-label">Communities</div></div>
+      <div class="stat-item"><div class="stat-num" id="stat-countries">—</div><div class="stat-label">Countries</div></div>
+      <div class="stat-item"><div class="stat-num" id="stat-members">—</div><div class="stat-label">Members</div></div>
       <div class="stat-item"><div class="stat-num">6</div><div class="stat-label">Platforms</div></div>
     </div>
   </div>
@@ -481,7 +357,7 @@
       </div>
       <div class="map-wrapper">
         <div id="community-map"></div>
-        <div class="map-fetch-indicator hidden" id="fetch-indicator">
+        <div class="map-fetch-indicator" id="fetch-indicator">
           <i class="fa-solid fa-spinner"></i> Loading…
         </div>
       </div>
@@ -552,11 +428,10 @@
             <input type="url" id="f-link" placeholder="https://…" required />
             <div class="campfire-hint" id="campfire-hint">
               <i class="fa-solid fa-fire"></i>
-              <span>To share your Campfire group, open the group in the Campfire app, tap <strong>Share</strong>, and copy the invite link (starts with <code>campfire.nianticlabs.com</code> or <code>nianticlabs.com/campfire</code>).</span>
+              <span>To share your Campfire group, open the group in the Campfire app, tap <strong>Share</strong>, and copy the invite link.</span>
             </div>
           </div>
 
-          <!-- Location row: city geocode + pin picker -->
           <div class="form-group full">
             <label>Location *</label>
             <div class="geocode-row">
@@ -569,15 +444,11 @@
             </div>
           </div>
 
-          <!-- Pin Picker Map -->
           <div class="form-group full">
             <label>Pin Your Exact Location <span style="color:var(--muted);font-size:.85em">(click the map to place pin)</span></label>
             <div class="pin-picker-wrap">
               <div class="pin-picker-header">
-                <div class="pin-picker-label">
-                  <i class="fa-solid fa-map-pin"></i>
-                  Location Pin
-                </div>
+                <div class="pin-picker-label"><i class="fa-solid fa-map-pin"></i> Location Pin</div>
                 <div class="pin-picker-coords" id="pin-coords">0.0000, 0.0000</div>
               </div>
               <div id="pin-picker-map"></div>
@@ -611,7 +482,7 @@
 
         <div class="submit-notice">
           <i class="fa-solid fa-circle-info"></i>
-          <span>Submissions are stored for admin review. Only approved communities will be shown publicly. We never share your contact details.</span>
+          <span>Submissions are reviewed before going live. Only approved communities are shown publicly. We never share your contact details.</span>
         </div>
 
         <div class="form-submit-row">
@@ -633,13 +504,30 @@
   <script src="i18n.js"></script>
   <script>
   // ============================================================
-  // STORAGE
+  // SUPABASE CONFIG
   // ============================================================
-  const APPROVED_KEY = 'pogoraids_communities_approved_v1';
-  const PENDING_KEY  = 'pogoraids_communities_pending_v1';
-  function loadApproved() { try { return JSON.parse(localStorage.getItem(APPROVED_KEY)) || []; } catch(e){ return []; } }
-  function loadPending()  { try { return JSON.parse(localStorage.getItem(PENDING_KEY))  || []; } catch(e){ return []; } }
-  function savePending(data) { localStorage.setItem(PENDING_KEY, JSON.stringify(data)); }
+  const SUPABASE_URL     = 'https://vxmroxsxxdzlphxtfiwh.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ4bXJveHN4eGR6bHBoeHRmaXdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3NDAxNDUsImV4cCI6MjA5MDMxNjE0NX0.oTlAOX44GjgHr9L7BphIXt842uOS8oSljY4OrNYEmD0';
+
+  async function sbFetch(path, options = {}) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+      ...options,
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': options.prefer || '',
+        ...options.headers,
+      },
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || `HTTP ${res.status}`);
+    }
+    // 204 No Content
+    if (res.status === 204) return null;
+    return res.json();
+  }
 
   // ============================================================
   // PLATFORM CONFIG
@@ -654,41 +542,24 @@
   };
 
   // ============================================================
-  // DEMO DATA SEED
-  // ============================================================
-  const DEMO = [
-    { id:'d1', name:'Amsterdam GO Raids', platform:'discord',  lat:52.3702,  lng:4.8952,   members:1240, desc:'The biggest Amsterdam Pokémon GO Discord. Raids 24/7.', link:'https://discord.gg/example',              lang:'Dutch / English', approved:true },
-    { id:'d2', name:'London Trainers',    platform:'telegram', lat:51.5074,  lng:-0.1278,  members:3800, desc:'All London raids, nests and events.',                   link:'https://t.me/example',                    lang:'English',         approved:true },
-    { id:'d3', name:'Berlin PokGo',       platform:'whatsapp', lat:52.5200,  lng:13.4050,  members:620,  desc:'Berlin area WhatsApp raiding group.',                   link:'https://chat.whatsapp.com/example',       lang:'German',          approved:true },
-    { id:'d4', name:'Paris PokéGO',       platform:'facebook', lat:48.8566,  lng:2.3522,   members:5400, desc:'Biggest French Pokémon GO Facebook group.',             link:'https://facebook.com/groups/example',     lang:'French',          approved:true },
-    { id:'d5', name:'r/NYCPokemonGO',     platform:'reddit',   lat:40.7128,  lng:-74.0060, members:28000,desc:'NYC subreddit for all things Pokémon GO.',              link:'https://reddit.com/r/NYCPokemonGO',       lang:'English',         approved:true },
-    { id:'d6', name:'Tokyo Raids JP',     platform:'discord',  lat:35.6762,  lng:139.6503, members:910,  desc:'Tokyo-based raids Discord server.',                     link:'https://discord.gg/example2',             lang:'Japanese',        approved:true },
-    { id:'d7', name:'Sydney Pokies',      platform:'telegram', lat:-33.8688, lng:151.2093, members:770,  desc:'Sydney Telegram raid coordination.',                    link:'https://t.me/example2',                   lang:'English',         approved:true },
-    { id:'d8', name:'São Paulo GO',       platform:'whatsapp', lat:-23.5505, lng:-46.6333, members:2200, desc:'São Paulo WhatsApp PoGO group.',                        link:'https://chat.whatsapp.com/example2',      lang:'Portuguese',      approved:true },
-    { id:'d9', name:'NYC Discord Raids',  platform:'discord',  lat:40.7200,  lng:-73.9950, members:4100, desc:'New York City main Discord for raid coordination.',     link:'https://discord.gg/example3',             lang:'English',         approved:true },
-    { id:'d10',name:'Chicago GO',         platform:'discord',  lat:41.8781,  lng:-87.6298, members:1800, desc:'Chicago Pokémon GO community and raid hub.',            link:'https://discord.gg/example4',             lang:'English',         approved:true },
-  ];
-  if (!localStorage.getItem(APPROVED_KEY)) localStorage.setItem(APPROVED_KEY, JSON.stringify(DEMO));
-
-  // ============================================================
   // STATS
   // ============================================================
   function updateStats(communities) {
     const total   = communities.length;
-    const members = communities.reduce((s,c) => s + (c.members||0), 0);
-    const cells   = new Set(communities.map(c => `${Math.round(c.lat/10)},${Math.round(c.lng/10)}`));
+    const members = communities.reduce((s, c) => s + (c.members || 0), 0);
+    const cells   = new Set(communities.map(c => `${Math.round(c.lat / 10)},${Math.round(c.lng / 10)}`));
     document.getElementById('stat-total').textContent    = total;
-    document.getElementById('stat-members').textContent  = members >= 1000 ? (members/1000).toFixed(1)+'K' : members;
+    document.getElementById('stat-members').textContent  = members >= 1000 ? (members / 1000).toFixed(1) + 'K' : members;
     document.getElementById('stat-countries').textContent = cells.size;
   }
 
   // ============================================================
   // MAIN COMMUNITY MAP
   // ============================================================
-  const map = L.map('community-map', { center:[20,10], zoom:2, zoomControl:true, attributionControl:true });
+  const map = L.map('community-map', { center: [20, 10], zoom: 2, zoomControl: true, attributionControl: true });
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    maxZoom:19
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19
   }).addTo(map);
 
   if (navigator.geolocation) {
@@ -698,7 +569,6 @@
     );
   }
 
-  // Marker cluster group
   const clusterGroup = L.markerClusterGroup({
     showCoverageOnHover: false,
     maxClusterRadius: 60,
@@ -712,31 +582,31 @@
       return L.divIcon({
         html: `<div><span>${count}</span></div>`,
         className: `marker-cluster marker-cluster-${size}`,
-        iconSize: [40,40]
+        iconSize: [40, 40]
       });
     }
   });
   map.addLayer(clusterGroup);
 
-  let activeFilter = 'all';
+  let activeFilter    = 'all';
+  let allCommunities  = [];
 
   function makePinIcon(platform) {
     const p = PLATFORM[platform] || PLATFORM.discord;
     return L.divIcon({
       className: 'community-pin',
       html: `<div class="community-pin-inner ${p.cls}"><i class="${p.icon}"></i></div>`,
-      iconSize: [46,46], iconAnchor: [23,23], popupAnchor: [0,-26]
+      iconSize: [46, 46], iconAnchor: [23, 23], popupAnchor: [0, -26]
     });
   }
 
   function buildPopup(c) {
     const p = PLATFORM[c.platform] || PLATFORM.discord;
     const memberStr = c.members ? c.members.toLocaleString() : '—';
-    const descHtml  = c.desc ? `<p class="popup-desc">${c.desc}</p>` : '';
+    const descHtml  = c.description ? `<p class="popup-desc">${c.description}</p>` : '';
     const langHtml  = c.lang ? `<div class="popup-stat"><strong>${c.lang}</strong><span>Language</span></div>` : '';
     const campfireBadge = c.platform === 'campfire'
-      ? `<div class="campfire-badge"><i class="fa-solid fa-fire"></i> Niantic Campfire</div>`
-      : '';
+      ? `<div class="campfire-badge"><i class="fa-solid fa-fire"></i> Niantic Campfire</div>` : '';
     return `
       <div class="community-popup">
         <div class="community-popup-header">
@@ -757,24 +627,37 @@
   function renderMarkers(communities) {
     clusterGroup.clearLayers();
     communities.forEach(c => {
-      if (!c.approved) return;
       if (activeFilter !== 'all' && c.platform !== activeFilter) return;
       if (!c.lat || !c.lng) return;
       const m = L.marker([c.lat, c.lng], { icon: makePinIcon(c.platform) });
-      m.bindPopup(buildPopup(c), { maxWidth:340, minWidth:270, autoPan:true });
+      m.bindPopup(buildPopup(c), { maxWidth: 340, minWidth: 270, autoPan: true });
       clusterGroup.addLayer(m);
     });
-    updateStats(communities.filter(c => c.approved));
+    updateStats(communities);
   }
 
-  renderMarkers(loadApproved());
+  async function loadAndRenderMap() {
+    const indicator = document.getElementById('fetch-indicator');
+    indicator.classList.remove('hidden');
+    try {
+      // RLS policy already filters to approved=true for anon
+      allCommunities = await sbFetch('communities?select=*&approved=eq.true&order=submitted_at.desc');
+      renderMarkers(allCommunities);
+    } catch (e) {
+      console.error('Failed to load communities:', e);
+    } finally {
+      indicator.classList.add('hidden');
+    }
+  }
+
+  loadAndRenderMap();
 
   document.querySelectorAll('.map-filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.map-filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       activeFilter = btn.dataset.platform;
-      renderMarkers(loadApproved());
+      renderMarkers(allCommunities);
     });
   });
 
@@ -785,8 +668,7 @@
     center: [20, 10], zoom: 2,
     zoomControl: true, attributionControl: false
   });
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19 }).addTo(pickerMap);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(pickerMap);
 
   let pickerMarker = null;
   let pickerLat    = null;
@@ -795,13 +677,11 @@
   const pickerIcon = L.divIcon({
     className: 'community-pin',
     html: `<div class="community-pin-inner" style="background:linear-gradient(135deg,#3be8ff,#b020ff)"><i class="fa-solid fa-map-pin"></i></div>`,
-    iconSize: [46,46], iconAnchor: [23,46], popupAnchor: [0,-46]
+    iconSize: [46, 46], iconAnchor: [23, 46], popupAnchor: [0, -46]
   });
 
-  function setPickerPin(lat, lng, flyTo=false) {
-    pickerLat = lat;
-    pickerLng = lng;
-
+  function setPickerPin(lat, lng, flyTo = false) {
+    pickerLat = lat; pickerLng = lng;
     if (pickerMarker) {
       pickerMarker.setLatLng([lat, lng]);
     } else {
@@ -811,9 +691,7 @@
         setPickerPin(pos.lat, pos.lng, false);
       });
     }
-
     if (flyTo) pickerMap.flyTo([lat, lng], 12, { duration: 1 });
-
     document.getElementById('pin-coords').textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
     document.getElementById('pin-coords').classList.add('visible');
     document.getElementById('pin-hint').classList.add('has-pin');
@@ -830,23 +708,13 @@
     document.getElementById('btn-clear-pin').classList.remove('visible');
   }
 
-  pickerMap.on('click', function(e) {
-    setPickerPin(e.latlng.lat, e.latlng.lng, false);
-  });
-
+  pickerMap.on('click', function(e) { setPickerPin(e.latlng.lat, e.latlng.lng, false); });
   document.getElementById('btn-clear-pin').addEventListener('click', clearPickerPin);
 
-  // Show/hide Campfire hint based on platform selection
   document.getElementById('f-platform').addEventListener('change', function() {
-    const hint = document.getElementById('campfire-hint');
-    if (this.value === 'campfire') {
-      hint.classList.add('visible');
-    } else {
-      hint.classList.remove('visible');
-    }
+    document.getElementById('campfire-hint').classList.toggle('visible', this.value === 'campfire');
   });
 
-  // Geocode city → fly picker map there
   document.getElementById('btn-geocode').addEventListener('click', async function() {
     const city = document.getElementById('f-city').value.trim();
     if (!city) return;
@@ -856,27 +724,24 @@
       const res  = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1`);
       const data = await res.json();
       if (data && data.length) {
-        const lat = parseFloat(data[0].lat);
-        const lng = parseFloat(data[0].lon);
-        setPickerPin(lat, lng, true);
+        setPickerPin(parseFloat(data[0].lat), parseFloat(data[0].lon), true);
       } else {
         alert('Location not found. Try a more specific city name.');
       }
-    } catch(e) {
+    } catch (e) {
       alert('Geocode failed. Check your connection.');
     }
     this.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Find on Map';
     this.disabled = false;
   });
 
-  // Invalidate size when scrolled into view (Leaflet fix)
   const pickerObserver = new IntersectionObserver(entries => {
     if (entries[0].isIntersecting) pickerMap.invalidateSize();
   });
   pickerObserver.observe(document.getElementById('pin-picker-map'));
 
   // ============================================================
-  // SUBMIT FORM
+  // SUBMIT FORM → SUPABASE INSERT
   // ============================================================
   function showBanner(id) {
     document.getElementById('form-success').classList.remove('visible');
@@ -891,48 +756,61 @@
     const platform = document.getElementById('f-platform').value;
     const link     = document.getElementById('f-link').value.trim();
     const city     = document.getElementById('f-city').value.trim();
-    const members  = parseInt(document.getElementById('f-members').value) || 0;
-    const desc     = document.getElementById('f-desc').value.trim();
+    const members  = parseInt(document.getElementById('f-members').value) || null;
+    const desc     = document.getElementById('f-desc').value.trim() || null;
     const contact  = document.getElementById('f-contact').value.trim();
-    const lang     = document.getElementById('f-lang').value.trim();
+    const lang     = document.getElementById('f-lang').value.trim() || null;
 
     if (!name || !platform || !link || !city || !contact) {
       document.getElementById('form-error-msg').textContent = 'Please fill in all required fields.';
       showBanner('form-error'); return;
     }
-    try { new URL(link); } catch(_) {
+    try { new URL(link); } catch (_) {
       document.getElementById('form-error-msg').textContent = 'Please enter a valid invite URL.';
       showBanner('form-error'); return;
     }
     if (!pickerLat || !pickerLng) {
       document.getElementById('form-error-msg').textContent = 'Please drop a pin on the map to set your community location.';
       showBanner('form-error');
-      document.getElementById('pin-picker-map').scrollIntoView({ behavior:'smooth', block:'center' });
+      document.getElementById('pin-picker-map').scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
 
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting…';
 
-    const submission = {
-      id: 'pending_' + Date.now(),
-      name, platform, link, city, members, desc, contact, lang,
-      lat: pickerLat, lng: pickerLng,
-      approved: false,
-      submittedAt: new Date().toISOString()
-    };
+    try {
+      await sbFetch('communities', {
+        method: 'POST',
+        prefer: 'return=minimal',
+        body: JSON.stringify({
+          name,
+          platform,
+          link,
+          city,
+          members,
+          description: desc,
+          contact,
+          lang,
+          lat: pickerLat,
+          lng: pickerLng,
+          approved: false,
+        }),
+      });
 
-    const pending = loadPending();
-    pending.push(submission);
-    savePending(pending);
-
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit for Review';
-    document.getElementById('community-form').reset();
-    document.getElementById('campfire-hint').classList.remove('visible');
-    clearPickerPin();
-    showBanner('form-success');
-    document.getElementById('submit-section').scrollIntoView({ behavior:'smooth' });
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit for Review';
+      document.getElementById('community-form').reset();
+      document.getElementById('campfire-hint').classList.remove('visible');
+      clearPickerPin();
+      showBanner('form-success');
+      document.getElementById('submit-section').scrollIntoView({ behavior: 'smooth' });
+    } catch (err) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit for Review';
+      document.getElementById('form-error-msg').textContent = `Submission failed: ${err.message}`;
+      showBanner('form-error');
+    }
   });
 
   // Lang bar
