@@ -510,24 +510,26 @@
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ4bXJveHN4eGR6bHBoeHRmaXdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3NDAxNDUsImV4cCI6MjA5MDMxNjE0NX0.oTlAOX44GjgHr9L7BphIXt842uOS8oSljY4OrNYEmD0';
 
   async function sbFetch(path, options = {}) {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-      ...options,
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json',
-        'Prefer': options.prefer || '',
-        ...options.headers,
-      },
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || `HTTP ${res.status}`);
-    }
-    // 204 No Content
-    if (res.status === 204) return null;
-    return res.json();
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...options,
+    headers: {
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': options.prefer || '',
+      ...options.headers,
+    },
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `HTTP ${res.status}`);
   }
+  // Return null for empty responses (204 No Content OR empty body)
+  if (res.status === 204) return null;
+  const text = await res.text();
+  if (!text) return null;          // ← handles empty body on any status
+  return JSON.parse(text);
+}
 
   // ============================================================
   // PLATFORM CONFIG
