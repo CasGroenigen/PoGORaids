@@ -3,5 +3,180 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/png" href="imgs/mewlogoblack-removebg-preview.png" />
   <title>Event Admin — PoGORaids</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,900;1,700&family=Barlow:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:       #08090f;
+      --panel:     #10121c;
+      --panel-hi:  #14172a;
+      --panel-b:   #1a1e30;
+      --border:    rgba(80,140,255,0.13);
+      --border-hi: rgba(80,140,255,0.25);
+      --cyan:      #3be8ff;
+      --cyan-dim:  #1ab8d4;
+      --purple:    #9b4dff;
+      --logo-grad: linear-gradient(135deg, #3be8ff 0%, #7b3fff 55%, #b020ff 100%);
+      --green:     #22d47a;
+      --red:       #ff4d6a;
+      --yellow:    #f5c842;
+      --text:      #e8eaf0;
+      --muted:     #7a82a0;
+      --font-head: 'Barlow Condensed', sans-serif;
+      --font-body: 'Barlow', sans-serif;
+      --font-mono: 'Space Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--ink);
+      color: var(--text);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(59,128,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59,128,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── ADMIN TOPBAR ── */
+    .admin-bar {
+      position: sticky;
+      top: 0;
+      z-index: 99;
+      background: rgba(8,9,15,0.96);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .admin-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .admin-logo {
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: 18px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: var(--logo-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .admin-badge {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      background: rgba(59,232,255,0.1);
+      color: var(--cyan);
+      border: 1px solid rgba(59,232,255,0.2);
+      padding: 3px 8px;
+      border-radius: 3px;
+    }
+
+    .admin-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-sm {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 8px 18px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover { color: var(--text); border-color: var(--border-hi); }
+
+    .btn-primary {
+      background: var(--logo-grad);
+      color: #fff;
+      box-shadow: 0 2px 12px rgba(123,63,255,0.35);
+    }
+
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    .btn-success {
+      background: rgba(34,212,122,0.15);
+      color: var(--green);
+      border: 1px solid rgba(34,212,122,0.25);
+    }
+
+    .btn-success:hover { background: rgba(34,212,122,0.22); }
+
+    .btn-danger {
+      background: rgba(255,77,106,0.1);
+      color: var(--red);
+      border: 1px solid rgba(255,77,106,0.2);
+      font-size: 12px;
+      padding: 6px 12px;
+    }
+
+    .btn-danger:hover { background: rgba(255,77,106,0.18); }
+
+    /* ── LAYOUT ── */
+    .admin-layout {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: calc(100vh - 60px);
+    }
+
+    /* ── SIDEBAR ── */
+    .admin-sidebar {
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      position: sticky;
+      top: 60px;
+      height: calc(100vh - 60px);
+      overflow-y: auto;
+    }
+
+    .sidebar-section {
+      padding: 0 20px 16px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .
