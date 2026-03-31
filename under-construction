@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Under Maintenance — PoGORaids</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,900;1,700&family=Barlow:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ink:       #08090f;
+      --panel:     #10121c;
+      --border:    rgba(80,140,255,0.12);
+      --cyan:      #3be8ff;
+      --cyan-dim:  #1ab8d4;
+      --logo-grad: linear-gradient(135deg,#3be8ff 0%,#7b3fff 55%,#b020ff 100%);
+      --text:      #e8eaf0;
+      --muted:     #7a82a0;
+      --font-head: 'Barlow Condensed',sans-serif;
+      --font-body: 'Barlow',sans-serif;
+      --font-mono: 'Space Mono',monospace;
+    }
+    body { 
+      background: var(--ink); 
+      color: var(--text); 
+      font-family: var(--font-body); 
+      display: flex; 
+      flex-direction: column; 
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    body::before {
+      content:''; position:fixed; inset:0;
+      background-image: linear-gradient(rgba(59,128,255,.04) 1px,transparent 1px), linear-gradient(90deg,rgba(59,128,255,.04) 1px,transparent 1px);
+      background-size:60px 60px; pointer-events:none; z-index:0;
+    }
+
+    /* ── NAVBAR ── */
+    .navbar { border-bottom: 1px solid var(--border); padding: 0 40px; height: 64px; display: flex; align-items: center; background: rgba(8,9,15,.92); backdrop-filter: blur(16px); position: relative; z-index: 10; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-title { font-family: var(--font-head); font-weight: 900; font-size: 22px; letter-spacing: .06em; text-transform: uppercase; background: var(--logo-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    /* ── CONTENT ── */
+    .maintenance-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    .maintenance-wrap::before {
+      content: ''; position: absolute; width: 500px; height: 500px; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      background: radial-gradient(ellipse, rgba(123,63,255,.12) 0%, transparent 65%); pointer-events: none;
+    }
+
+    .icon-box {
+      font-size: 64px;
+      margin-bottom: 24px;
+      color: var(--cyan);
+      filter: drop-shadow(0 0 15px rgba(59,232,255,0.4));
+      animation: pulse 2s infinite ease-in-out;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(0.95); } }
+
+    .eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: .3em; text-transform: uppercase; color: var(--cyan); margin-bottom: 16px; }
+    h1 { font-family: var(--font-head); font-weight: 900; font-size: clamp(32px, 8vw, 64px); text-transform: uppercase; line-height: 0.9; margin-bottom: 20px; background: var(--logo-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    p { color: var(--muted); max-width: 480px; font-size: 16px; margin-bottom: 32px; line-height: 1.6; }
+
+    .btn-back {
+      background: var(--logo-grad);
+      color: #fff;
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 14px 32px;
+      border-radius: 4px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(123,63,255,0.4);
+    }
+    .btn-back:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(59,232,255,0.3); }
+
+    .status-card {
+      margin-top: 48px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .status-dot { width: 8px; height: 8px; background: #ffbc00; border-radius: 50%; box-shadow: 0 0 8px #ffbc00; }
+
+    footer { padding: 24px; text-align: center; border-top: 1px solid var(--border); position: relative; z-index: 10; }
+    footer p { font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-bottom: 0; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo">
+      <span class="nav-title">PoGORaids</span>
+    </a>
+  </nav>
+
+  <main class="maintenance-wrap">
+    <div class="icon-box">
+      <i class="fa-solid fa-screwdriver-wrench"></i>
+    </div>
+    <div class="eyebrow">// System Update</div>
+    <h1>Under Construction</h1>
+    <p>Our dev team is currently deploying new features to the Trainer Tools hub. We'll be back online shortly with improved raid coordination modules.</p>
+    
+    <a href="index.html" class="btn-back">
+      <i class="fa-solid fa-arrow-left"></i> Return to Base
+    </a>
+
+    <div class="status-card">
+      <div class="status-dot"></div>
+      STATUS: DEPLOYING_V2_MODULES
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 PoGORaids.net — Not affiliated with Niantic or Pokémon GO.</p>
+  </footer>
+
+</body>
+</html>
