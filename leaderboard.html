@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leaderboards — PoGORaids</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,900;1,700&family=Barlow:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:       #08090f;
+      --panel:     #10121c;
+      --panel-hi:  #14172a;
+      --panel-b:   #1a1e30;
+      --border:    rgba(80,140,255,0.12);
+      --border-hi: rgba(80,140,255,0.25);
+      --cyan:      #3be8ff;
+      --cyan-dim:  #1ab8d4;
+      --purple:    #9b4dff;
+      --gold:      #f5c842;
+      --silver:    #a8b8c8;
+      --bronze:    #cd7f32;
+      --logo-grad: linear-gradient(135deg, #3be8ff 0%, #7b3fff 55%, #b020ff 100%);
+      --text:      #e8eaf0;
+      --muted:     #7a82a0;
+      --green:     #22d47a;
+      --red:       #ff4d6a;
+      --font-head: 'Barlow Condensed', sans-serif;
+      --font-body: 'Barlow', sans-serif;
+      --font-mono: 'Space Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--ink);
+      color: var(--text);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(59,128,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59,128,255,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      position: sticky; top: 0; z-index: 99;
+      background: rgba(8,9,15,0.94); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; }
+    .nav-title {
+      font-family: var(--font-head); font-weight: 900; font-size: 20px;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      background: var(--logo-grad); -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .nav-links { list-style: none; display: flex; gap: 28px; align-items: center; }
+    .nav-links a {
+      font-family: var(--font-head); font-weight: 700; font-size: 14px;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+      transition: color 0.2s; position: relative;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--cyan); }
+    .nav-links .discord-btn {
+      color: #fff; background: #5865F2; padding: 6px 16px;
+      border-radius: 4px; font-size: 13px;
+    }
+    .nav-links .discord-btn:hover { background: #4752c4; }
+
+    /* Auth button */
+    .nav-auth-btn {
+      font-family: var(--font-head); font-weight: 700; font-size: 13px;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 7px 18px; border-radius: 4px; cursor: pointer;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--muted); display: flex; align-items: center; gap: 7px;
+      transition: all 0.2s;
+    }
+    .nav-auth-btn:hover { color: var(--cyan); border-color: rgba(59,232,255,0.3); }
+    .nav-auth-btn.signed-in { color: var(--cyan); border-color: rgba(59,232,255,0.3); background: rgba(59,232,255,0.06); }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      position: relative; z-index: 1;
+      padding: 64px 40px 48px; max-width: 1280px; margin: 0 auto;
+    }
+    .page-header::before {
+      content: ''; position: absolute; top: 0; left: -10%; width: 60%; height: 100%;
+      background: radial-gradient(ellipse at top left, rgba(123,63,255,0.10) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .breadcrumb {
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px; position: relative; z-index: 2;
+    }
+    .breadcrumb a { color: var(--cyan-dim); transition: color 0.2s; }
+    .breadcrumb a:hover { color: var(--cyan); }
+    .page-label {
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.25em;
+      text-transform: uppercase; color: var(--cyan); margin-bottom: 8px;
+      position: relative; z-index: 2;
+    }
+    .page-title {
+      font-family: var(--font-head); font-weight: 900;
+      font-size: clamp(44px, 6vw, 72px); text-transform: uppercase;
+      letter-spacing: -0.01em; line-height: 0.95; margin-bottom: 14px;
+      position: relative; z-index: 2;
+    }
+    .page-title .grad {
+      background: var(--logo-grad); -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .page-sub { font-size: 15px; color: var(--muted); max-width: 500px; line-height: 1.7; position: relative; z-index: 2; }
+
+    /* ── STATS STRIP ── */
+    .stats-strip {
+      position: relative; z-index: 1;
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      max-width: 1280px; margin: 0 auto 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .strip-stat {
+      padding: 20px 40px;
+      border-left: 1px solid var(--border);
+    }
+    .strip-stat:last-child { border-right: 1px solid var(--border); }
+    .strip-num {
+      font-family: var(--font-head); font-weight: 900; font-size: 32px;
+      color: var(--cyan); line-height: 1;
+    }
+    .strip-label {
+      font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--muted); margin-top: 4px;
+    }
+
+    /* ── CONTROLS ── */
+    .controls {
+      position: relative; z-index: 1;
+      max-width: 1280px; margin: 0 auto;
+      padding: 28px 40px 20px;
+      display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap;
+    }
+
+    .ctrl-group { display: flex; flex-direction: column; gap: 5px; }
+    .ctrl-label {
+      font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .ctrl-select, .ctrl-input {
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      color: var(--text); font-family: var(--font-body); font-size: 13px;
+      padding: 8px 12px; border-radius: 4px; outline: none;
+      transition: border-color 0.2s; min-width: 160px;
+    }
+    .ctrl-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237a82a0'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 10px center;
+      background-color: rgba(255,255,255,0.04); padding-right: 28px;
+      cursor: pointer;
+    }
+    .ctrl-select option { background: #13152a; }
+    .ctrl-select:focus, .ctrl-input:focus { border-color: var(--border-hi); }
+    .ctrl-input::placeholder { color: var(--muted); }
+
+    .ctrl-search-wrap { position: relative; }
+    .ctrl-search-wrap i {
+      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      color: var(--muted); font-size: 11px;
+    }
+    .ctrl-search-wrap .ctrl-input { padding-left: 30px; }
+
+    .btn-compare {
+      font-family: var(--font-head); font-weight: 700; font-size: 13px;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 9px 20px; border-radius: 4px; cursor: pointer;
+      background: rgba(123,63,255,0.12); color: var(--purple);
+      border: 1px solid rgba(123,63,255,0.3);
+      display: flex; align-items: center; gap: 7px; transition: all 0.2s;
+      margin-left: auto;
+    }
+    .btn-compare:hover { background: rgba(123,63,255,0.2); }
+    .btn-compare .compare-count {
+      background: var(--purple); color: #fff;
+      border-radius: 10px; padding: 1px 7px; font-size: 11px;
+      display: none;
+    }
+    .btn-compare .compare-count.visible { display: inline; }
+
+    /* ── TABLE ── */
+    .table-wrap {
+      position: relative; z-index: 1;
+      max-width: 1280px; margin: 0 auto;
+      padding: 0 40px 80px;
+    }
+
+    .lb-table-container {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 8px; overflow: hidden;
+    }
+
+    table {
+      width: 100%; border-collapse: separate; border-spacing: 0;
+    }
+
+    thead th {
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--muted);
+      padding: 14px 16px; border-bottom: 1px solid var(--border);
+      text-align: left; background: rgba(8,9,15,0.5);
+      white-space: nowrap; cursor: pointer; user-select: none;
+      transition: color 0.2s;
+    }
+    thead th:hover { color: var(--text); }
+    thead th.sorted { color: var(--cyan); }
+    thead th i { margin-left: 5px; font-size: 9px; }
+
+    tbody tr {
+      transition: background 0.15s;
+      cursor: pointer;
+    }
+    tbody tr:hover { background: rgba(59,232,255,0.03); }
+    tbody tr.selected { background: rgba(123,63,255,0.06); }
+
+    td {
+      padding: 14px 16px; border-bottom: 1px solid rgba(80,140,255,0.06);
+      vertical-align: middle;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+
+    /* Rank cell */
+    .rank-cell {
+      font-family: var(--font-head); font-weight: 900; font-size: 18px;
+      text-align: center; min-width: 52px;
+    }
+    .rank-1 { color: var(--gold); }
+    .rank-2 { color: var(--silver); }
+    .rank-3 { color: var(--bronze); }
+    .rank-other { color: var(--muted); font-size: 14px; }
+
+    .rank-icon { font-size: 16px; margin-right: 2px; }
+
+    /* Player cell */
+    .player-cell { display: flex; align-items: center; gap: 12px; }
+    .player-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-head); font-weight: 900; font-size: 16px;
+      color: #fff; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.08);
+    }
+    .team-mystic   { background: linear-gradient(135deg,#0048cc,#0072ff); }
+    .team-valor    { background: linear-gradient(135deg,#cc0000,#ff4444); }
+    .team-instinct { background: linear-gradient(135deg,#cc9000,#ffc800); }
+    .team-none     { background: linear-gradient(135deg,#333,#555); }
+
+    .player-name {
+      font-family: var(--font-head); font-weight: 700; font-size: 16px;
+      text-transform: uppercase; letter-spacing: 0.04em; color: var(--text);
+    }
+    .player-region {
+      font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em;
+      color: var(--muted); margin-top: 1px;
+    }
+
+    /* Stat value */
+    .stat-value {
+      font-family: var(--font-head); font-weight: 700; font-size: 18px;
+      color: var(--cyan); letter-spacing: 0.02em;
+    }
+    .stat-sub {
+      font-family: var(--font-mono); font-size: 9px; color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    /* Bar cell */
+    .bar-cell { min-width: 120px; }
+    .bar-track {
+      height: 4px; background: rgba(255,255,255,0.06);
+      border-radius: 2px; overflow: hidden; margin-top: 6px;
+    }
+    .bar-fill {
+      height: 100%; border-radius: 2px;
+      background: var(--logo-grad);
+      transition: width 0.6s ease;
+    }
+
+    /* Change badge */
+    .change-badge {
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em;
+      padding: 3px 8px; border-radius: 3px; display: inline-flex;
+      align-items: center; gap: 4px;
+    }
+    .change-up   { color: var(--green); background: rgba(34,212,122,0.1); }
+    .change-down { color: var(--red);   background: rgba(255,77,106,0.1); }
+    .change-same { color: var(--muted); background: rgba(122,130,160,0.1); }
+
+    /* Compare checkbox */
+    .compare-check {
+      width: 18px; height: 18px; border-radius: 3px;
+      border: 1px solid var(--border); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s; flex-shrink: 0;
+    }
+    .compare-check.checked {
+      background: var(--purple); border-color: var(--purple);
+      color: #fff; font-size: 10px;
+    }
+
+    /* Empty state */
+    .empty-lb {
+      text-align: center; padding: 80px 20px; color: var(--muted);
+    }
+    .empty-lb i { font-size: 40px; margin-bottom: 14px; display: block; opacity: 0.25; }
+
+    /* Pagination */
+    .pagination {
+      display: flex; align-items: center; gap: 6px;
+      padding: 16px 20px; border-top: 1px solid var(--border);
+      justify-content: center;
+    }
+    .page-btn {
+      font-family: var(--font-mono); font-size: 11px;
+      padding: 6px 12px; border-radius: 3px; cursor: pointer;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--muted); transition: all 0.15s;
+    }
+    .page-btn:hover { color: var(--cyan); border-color: rgba(59,232,255,0.3); }
+    .page-btn.active { color: var(--cyan); border-color: rgba(59,232,255,0.4); background: rgba(59,232,255,0.07); }
+    .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    /* ── COMPARE PANEL ── */
+    .compare-panel {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      z-index: 200; transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+      background: var(--panel-b); border-top: 1px solid var(--border-hi);
+      padding: 16px 40px; display: flex; align-items: center; gap: 16px;
+    }
+    .compare-panel.open { transform: translateY(0); }
+    .compare-panel-label {
+      font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--cyan); white-space: nowrap;
+    }
+    .compare-chips { display: flex; gap: 8px; flex-wrap: wrap; flex: 1; }
+    .compare-chip {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(123,63,255,0.12); border: 1px solid rgba(123,63,255,0.3);
+      border-radius: 4px; padding: 6px 12px;
+      font-family: var(--font-head); font-weight: 700; font-size: 13px;
+      letter-spacing: 0.06em; text-transform: uppercase; color: var(--text);
+    }
+    .compare-chip-remove {
+      background: none; border: none; color: var(--muted); cursor: pointer;
+      font-size: 11px; padding: 0; line-height: 1;
+    }
+    .compare-chip-remove:hover { color: var(--red); }
+    .btn-run-compare {
+      font-family: var(--font-head); font-weight: 700; font-size: 13px;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 10px 24px; border-radius: 4px; cursor: pointer;
+      background: var(--logo-grad); color: #fff; border: none;
+      display: flex; align-items: center; gap: 8px; white-space: nowrap;
+      box-shadow: 0 4px 16px rgba(123,63,255,0.35);
+    }
+    .btn-run-compare:hover { opacity: 0.9; }
+    .btn-clear-compare {
+      font-family: var(--font-head); font-weight: 700; font-size: 12px;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 9px 16px; border-radius: 4px; cursor: pointer;
+      background: transparent; color: var(--muted);
+      border: 1px solid var(--border); white-space: nowrap;
+    }
+    .btn-clear-compare:hover { color: var(--red); border-color: rgba(255,77,106,0.3); }
+
+    /* ── COMPARE MODAL ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(8,9,15,0.88); backdrop-filter: blur(10px);
+      z-index: 300; align-items: center; justify-content: center; padding: 24px;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .compare-modal {
+      background: var(--panel-b); border: 1px solid var(--border-hi);
+      border-radius: 10px; max-width: 900px; width: 100%;
+      max-height: 90vh; overflow-y: auto;
+    }
+
+    .modal-header {
+      padding: 24px 28px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; background: var(--panel-b); z-index: 2;
+    }
+    .modal-title {
+      font-family: var(--font-head); font-weight: 900; font-size: 24px;
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .modal-close {
+      background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+      color: var(--muted); width: 32px; height: 32px; border-radius: 50%;
+      cursor: pointer; font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .modal-close:hover { color: var(--text); background: rgba(255,255,255,0.1); }
+
+    .modal-body { padding: 24px 28px 28px; }
+
+    /* Chart */
+    .chart-wrap { position: relative; height: 320px; margin-bottom: 28px; }
+
+    /* Compare table */
+    .compare-stat-row {
+      display: grid;
+      border-bottom: 1px solid rgba(80,140,255,0.06);
+      padding: 10px 0;
+      align-items: center;
+    }
+    .compare-stat-name {
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .compare-stat-val {
+      font-family: var(--font-head); font-weight: 700; font-size: 16px;
+      text-align: right;
+    }
+    .compare-stat-best { color: var(--gold); }
+
+    /* ── AUTH MODAL ── */
+    .auth-modal {
+      background: var(--panel-b); border: 1px solid var(--border-hi);
+      border-radius: 10px; max-width: 420px; width: 100%;
+      padding: 40px; text-align: center; position: relative; overflow: hidden;
+    }
+    .auth-modal::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+      height: 2px; background: var(--logo-grad);
+    }
+    .auth-modal h2 {
+      font-family: var(--font-head); font-weight: 900; font-size: 28px;
+      text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px;
+    }
+    .auth-modal p { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .btn-google {
+      width: 100%; background: #fff; color: #333;
+      font-family: var(--font-head); font-weight: 700; font-size: 14px;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 13px; border-radius: 5px; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: opacity 0.2s; margin-bottom: 12px;
+    }
+    .btn-google:hover { opacity: 0.92; }
+    .btn-google img { width: 18px; height: 18px; }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 100px; left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: var(--panel-b); border: 1px solid var(--border-hi);
+      border-radius: 5px; padding: 10px 20px; z-index: 400;
+      font-family: var(--font-head); font-weight: 700; font-size: 14px;
+      letter-spacing: 0.06em; text-transform: uppercase; color: var(--text);
+      display: flex; align-items: center; gap: 8px;
+      opacity: 0; transition: opacity 0.3s, transform 0.3s; pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative; z-index: 1; border-top: 1px solid var(--border);
+      padding: 24px 40px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-logo {
+      font-family: var(--font-head); font-weight: 900; font-size: 15px;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      background: var(--logo-grad); -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    footer p { font-family: var(--font-mono); font-size: 10px; color: var(--muted); }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* Responsive */
+    @media (max-width: 1024px) { .stats-strip { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 768px) {
+      .navbar, .page-header, .controls, .table-wrap, footer { padding-left: 20px; padding-right: 20px; }
+      .controls { flex-direction: column; align-items: stretch; }
+      .btn-compare { margin-left: 0; }
+      .stats-strip { grid-template-columns: repeat(2,1fr); }
+      .strip-stat { padding: 14px 20px; }
+      .compare-panel { padding: 14px 20px; flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo">
+      <span class="nav-title">PoGORaids</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html#tools">Tools</a></li>
+      <li><a href="news.html">News</a></li>
+      <li><a href="events.html">Calendar</a></li>
+      <li><a href="leaderboard.html" class="active">Leaderboard</a></li>
+      <li><a href="https://discord.gg/pogoraids" class="discord-btn" target="_blank"><i class="fa-brands fa-discord"></i> Discord</a></li>
+    </ul>
+    <button class="nav-auth-btn" id="nav-auth-btn" onclick="handleAuthClick()">
+      <i class="fa-solid fa-user"></i>
+      <span id="nav-auth-label">Sign In</span>
+    </button>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a> <span>/</span>
+      <a href="index.html#tools">Tools</a> <span>/</span>
+      <span>Leaderboard</span>
+    </div>
+    <div class="page-label">// Global Rankings</div>
+    <h1 class="page-title"><span class="grad">Leader</span>boards</h1>
+    <p class="page-sub">Compare Pokémon GO trainers worldwide. Filter by region, sort by any stat, and challenge your rivals.</p>
+  </div>
+
+  <!-- STATS STRIP -->
+  <div class="stats-strip">
+    <div class="strip-stat">
+      <div class="strip-num" id="s-trainers">—</div>
+      <div class="strip-label">Ranked Trainers</div>
+    </div>
+    <div class="strip-stat">
+      <div class="strip-num" id="s-countries">—</div>
+      <div class="strip-label">Countries</div>
+    </div>
+    <div class="strip-stat">
+      <div class="strip-num" id="s-top-xp">—</div>
+      <div class="strip-label">#1 Total XP</div>
+    </div>
+    <div class="strip-stat">
+      <div class="strip-num" id="s-total-raids">—</div>
+      <div class="strip-label">Total Raids Logged</div>
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <div class="ctrl-group">
+      <div class="ctrl-label">Stat</div>
+      <select class="ctrl-select" id="ctrl-stat" onchange="onFilterChange()">
+        <option value="xp">Total XP</option>
+        <option value="stardust">Stardust</option>
+        <option value="pokemon_caught">Pokémon Caught</option>
+        <option value="raids_done">Raids Done</option>
+        <option value="shiny_count">Shiny Count</option>
+        <option value="battle_legend">Medal: Legend</option>
+        <option value="medal_jogger">Medal: Jogger</option>
+        <option value="medal_kanto">Medal: Kanto</option>
+        <option value="medal_raids">Medal: Battle Legend</option>
+        <option value="medal_gym">Medal: Gym Leader</option>
+      </select>
+    </div>
+    <div class="ctrl-group">
+      <div class="ctrl-label">Country</div>
+      <select class="ctrl-select" id="ctrl-country" onchange="onFilterChange()">
+        <option value="">Worldwide</option>
+      </select>
+    </div>
+    <div class="ctrl-group">
+      <div class="ctrl-label">Region</div>
+      <select class="ctrl-select" id="ctrl-region" onchange="onFilterChange()">
+        <option value="">All Regions</option>
+      </select>
+    </div>
+    <div class="ctrl-group">
+      <div class="ctrl-label">Search</div>
+      <div class="ctrl-search-wrap">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" class="ctrl-input" id="ctrl-search" placeholder="Trainer name…" oninput="onFilterChange()" />
+      </div>
+    </div>
+    <button class="btn-compare" id="btn-compare" onclick="openCompareModal()">
+      <i class="fa-solid fa-code-compare"></i> Compare
+      <span class="compare-count" id="compare-count">0</span>
+    </button>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrap">
+    <div class="lb-table-container">
+      <table id="lb-table">
+        <thead>
+          <tr>
+            <th style="width:60px;text-align:center">Rank</th>
+            <th>Trainer</th>
+            <th class="sorted" id="th-stat" onclick="toggleSort()">
+              <span id="th-stat-label">Total XP</span>
+              <i class="fa-solid fa-arrow-down" id="sort-icon"></i>
+            </th>
+            <th>Progress</th>
+            <th>Change</th>
+            <th style="width:40px"></th>
+          </tr>
+        </thead>
+        <tbody id="lb-body">
+          <tr><td colspan="6"><div class="empty-lb"><i class="fa-solid fa-spinner fa-spin"></i><div style="font-family:var(--font-head);font-size:18px;text-transform:uppercase;letter-spacing:0.1em;margin-top:8px">Loading…</div></div></td></tr>
+        </tbody>
+      </table>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </div>
+
+  <!-- COMPARE BOTTOM PANEL -->
+  <div class="compare-panel" id="compare-panel">
+    <div class="compare-panel-label">// Compare</div>
+    <div class="compare-chips" id="compare-chips"></div>
+    <button class="btn-clear-compare" onclick="clearCompare()">Clear</button>
+    <button class="btn-run-compare" onclick="openCompareModal()">
+      <i class="fa-solid fa-chart-line"></i> View Comparison
+    </button>
+  </div>
+
+  <!-- AUTH MODAL -->
+  <div class="modal-overlay" id="auth-modal-overlay">
+    <div class="auth-modal">
+      <h2>Sign In</h2>
+      <p>Sign in with Google to submit your stats and appear on the leaderboard.</p>
+      <button class="btn-google" onclick="signInGoogle()">
+        <img src="https://www.google.com/favicon.ico" alt="Google" />
+        Continue with Google
+      </button>
+      <button style="width:100%;background:none;border:1px solid var(--border);color:var(--muted);font-family:var(--font-head);font-weight:700;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;padding:11px;border-radius:5px;cursor:pointer;" onclick="closeAuthModal()">
+        Cancel
+      </button>
+    </div>
+  </div>
+
+  <!-- COMPARE MODAL -->
+  <div class="modal-overlay" id="compare-modal-overlay">
+    <div class="compare-modal">
+      <div class="modal-header">
+        <div class="modal-title">Trainer Comparison</div>
+        <button class="modal-close" onclick="closeCompareModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" id="compare-modal-body">
+        <!-- rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <footer>
+    <span class="footer-logo">PoGORaids</span>
+    <p>© 2026 PoGORaids.net — Not affiliated with Niantic or Pokémon GO.</p>
+  </footer>
+
+  <!-- ── SUPABASE ── -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+  <script>
+  // ============================================================
+  // CONFIG
+  // ============================================================
+  const SUPABASE_URL      = 'https://vxmroxsxxdzlphxtfiwh.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ4bXJveHN4eGR6bHBoeHRmaXdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3NDAxNDUsImV4cCI6MjA5MDMxNjE0NX0.oTlAOX44GjgHr9L7BphIXt842uOS8oSljY4OrNYEmD0';
+
+  const { createClient } = supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // ============================================================
+  // STAT CONFIG
+  // ============================================================
+  const STAT_META = {
+    xp:            { label: 'Total XP',       icon: 'fa-star',        fmt: fmtBig },
+    stardust:      { label: 'Stardust',        icon: 'fa-moon',        fmt: fmtBig },
+    pokemon_caught:{ label: 'Pokémon Caught',  icon: 'fa-circle',      fmt: n => n?.toLocaleString() },
+    raids_done:    { label: 'Raids Done',      icon: 'fa-shield-halved',fmt: n => n?.toLocaleString() },
+    shiny_count:   { label: 'Shiny Count',     icon: 'fa-sparkles',    fmt: n => n?.toLocaleString() },
+    battle_legend: { label: 'Legend',          icon: 'fa-trophy',      fmt: n => n?.toLocaleString() },
+    medal_jogger:  { label: 'Jogger (km)',      icon: 'fa-person-running',fmt: fmtBig },
+    medal_kanto:   { label: 'Kanto',           icon: 'fa-circle',      fmt: n => n?.toLocaleString() },
+    medal_raids:   { label: 'Battle Legend',   icon: 'fa-shield-halved',fmt: n => n?.toLocaleString() },
+    medal_gym:     { label: 'Gym Leader',      icon: 'fa-flag',        fmt: n => n?.toLocaleString() },
+  };
+
+  function fmtBig(n) {
+    if (!n && n !== 0) return '—';
+    if (n >= 1e9) return (n/1e9).toFixed(2) + 'B';
+    if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+    if (n >= 1e3) return (n/1e3).toFixed(1) + 'K';
+    return n.toLocaleString();
+  }
+
+  const TEAM_COLORS = { Mystic:'team-mystic', Valor:'team-valor', Instinct:'team-instinct' };
+  const COMPARE_COLORS = ['#3be8ff','#b020ff','#f5c842','#22d47a','#ff6b35'];
+
+  // ============================================================
+  // STATE
+  // ============================================================
+  let currentUser   = null;
+  let allRows       = [];         // full dataset from Supabase
+  let filteredRows  = [];
+  let activeStat    = 'xp';
+  let sortDir       = 'desc';
+  let activeCountry = '';
+  let activeRegion  = '';
+  let searchQuery   = '';
+  let currentPage   = 1;
+  const PAGE_SIZE   = 20;
+  let compareSet    = new Set();  // user ids
+  let compareRows   = [];         // row objects
+  let compareChart  = null;
+
+  // ============================================================
+  // AUTH
+  // ============================================================
+  sb.auth.getSession().then(({ data }) => {
+    currentUser = data?.session?.user || null;
+    updateAuthUI();
+  });
+
+  sb.auth.onAuthStateChange((_e, session) => {
+    currentUser = session?.user || null;
+    updateAuthUI();
+  });
+
+  function updateAuthUI() {
+    const btn   = document.getElementById('nav-auth-btn');
+    const label = document.getElementById('nav-auth-label');
+    if (currentUser) {
+      btn.classList.add('signed-in');
+      label.textContent = currentUser.user_metadata?.full_name?.split(' ')[0] || 'Profile';
+      btn.onclick = () => window.location.href = 'profile.html';
+    } else {
+      btn.classList.remove('signed-in');
+      label.textContent = 'Sign In';
+      btn.onclick = handleAuthClick;
+    }
+  }
+
+  function handleAuthClick() { openAuthModal(); }
+
+  async function signInGoogle() {
+    await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.href }
+    });
+  }
+
+  function openAuthModal()  { document.getElementById('auth-modal-overlay').classList.add('open'); }
+  function closeAuthModal() { document.getElementById('auth-modal-overlay').classList.remove('open'); }
+
+  document.getElementById('auth-modal-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('auth-modal-overlay')) closeAuthModal();
+  });
+
+  // ============================================================
+  // DATA LOADING
+  // ============================================================
+  async function loadLeaderboard() {
+    try {
+      // Load latest stat snapshot per user via the leaderboard view
+      const { data, error } = await sb
+        .from('leaderboard_view')       // we'll define this view in SQL
+        .select('*')
+        .order(activeStat, { ascending: false, nullsLast: true });
+
+      if (error) throw error;
+      allRows = data || [];
+
+      populateFilters();
+      applyFilters();
+      renderStrip();
+    } catch(e) {
+      // Supabase table/view doesn't exist yet → use demo data
+      allRows = generateDemoData(80);
+      populateFilters();
+      applyFilters();
+      renderStrip();
+    }
+  }
+
+  // Demo data for when Supabase isn't set up yet
+  function generateDemoData(n) {
+    const names = ['AshKetchum','GaryOak','MistyWater','BrockRock','Serena','Dawn','Iris','Cilan','Tracey','May','Max','Bonnie','Clemont','Lana','Mallow','Lillie','Sophocles','Kiawe','Gladion','Hau','Goh','Chloe','Leon','Raihan','Hop','Marnie','Bede','Sonia','Gloria','Victor'];
+    const countries = ['Netherlands','Germany','France','United Kingdom','United States','Japan','Brazil','Spain','Italy','Poland','Belgium','Sweden','Norway','Denmark','Finland','Australia','Canada','Mexico'];
+    const regions   = ['Noord-Holland','Zuid-Holland','Bayern','Île-de-France','London','California','Tokyo','São Paulo','Catalonia','Lazio'];
+    const teams     = ['Mystic','Valor','Instinct'];
+    return Array.from({length:n}, (_,i) => ({
+      user_id:       `demo-${i}`,
+      trainer_name:  names[i % names.length] + (i > names.length-1 ? (i+1) : ''),
+      country:       countries[i % countries.length],
+      region:        regions[i % regions.length],
+      team:          teams[i % 3],
+      xp:            Math.floor(Math.random() * 300e6) + 10e6,
+      stardust:      Math.floor(Math.random() * 8e6),
+      pokemon_caught:Math.floor(Math.random() * 90000) + 5000,
+      raids_done:    Math.floor(Math.random() * 30000) + 500,
+      shiny_count:   Math.floor(Math.random() * 5000) + 100,
+      battle_legend: Math.floor(Math.random() * 1000),
+      medal_jogger:  Math.floor(Math.random() * 50000),
+      medal_kanto:   Math.floor(Math.random() * 151),
+      medal_raids:   Math.floor(Math.random() * 10000),
+      medal_gym:     Math.floor(Math.random() * 100000),
+      rank_change:   Math.floor(Math.random()*7) - 3,
+    }));
+  }
+
+  // ============================================================
+  // FILTERS & RENDER
+  // ============================================================
+  function populateFilters() {
+    const countries = [...new Set(allRows.map(r => r.country).filter(Boolean))].sort();
+    const cSel = document.getElementById('ctrl-country');
+    cSel.innerHTML = '<option value="">Worldwide</option>' +
+      countries.map(c => `<option value="${c}">${c}</option>`).join('');
+
+    const regions = [...new Set(allRows.map(r => r.region).filter(Boolean))].sort();
+    const rSel = document.getElementById('ctrl-region');
+    rSel.innerHTML = '<option value="">All Regions</option>' +
+      regions.map(r => `<option value="${r}">${r}</option>`).join('');
+  }
+
+  function onFilterChange() {
+    activeStat    = document.getElementById('ctrl-stat').value;
+    activeCountry = document.getElementById('ctrl-country').value;
+    activeRegion  = document.getElementById('ctrl-region').value;
+    searchQuery   = document.getElementById('ctrl-search').value.trim().toLowerCase();
+    document.getElementById('th-stat-label').textContent = STAT_META[activeStat]?.label || activeStat;
+    currentPage = 1;
+    applyFilters();
+  }
+
+  function applyFilters() {
+    filteredRows = allRows.filter(r => {
+      if (activeCountry && r.country !== activeCountry) return false;
+      if (activeRegion  && r.region  !== activeRegion)  return false;
+      if (searchQuery   && !(r.trainer_name||'').toLowerCase().includes(searchQuery)) return false;
+      return true;
+    });
+    // sort
+    filteredRows.sort((a,b) => {
+      const av = a[activeStat] ?? -1, bv = b[activeStat] ?? -1;
+      return sortDir === 'desc' ? bv - av : av - bv;
+    });
+    renderTable();
+    renderPagination();
+  }
+
+  function toggleSort() {
+    sortDir = sortDir === 'desc' ? 'asc' : 'desc';
+    document.getElementById('sort-icon').className = `fa-solid fa-arrow-${sortDir === 'desc' ? 'down' : 'up'}`;
+    applyFilters();
+  }
+
+  function renderStrip() {
+    if (!allRows.length) return;
+    document.getElementById('s-trainers').textContent = allRows.length.toLocaleString();
+    document.getElementById('s-countries').textContent = new Set(allRows.map(r=>r.country).filter(Boolean)).size;
+    const topXP = Math.max(...allRows.map(r=>r.xp||0));
+    document.getElementById('s-top-xp').textContent = fmtBig(topXP);
+    const totalRaids = allRows.reduce((s,r)=>s+(r.raids_done||0),0);
+    document.getElementById('s-total-raids').textContent = fmtBig(totalRaids);
+  }
+
+  function renderTable() {
+    const tbody = document.getElementById('lb-body');
+    const start = (currentPage-1)*PAGE_SIZE;
+    const slice = filteredRows.slice(start, start+PAGE_SIZE);
+    const maxVal = Math.max(...filteredRows.map(r=>r[activeStat]||0), 1);
+    const fmt = STAT_META[activeStat]?.fmt || (n => n?.toLocaleString());
+
+    if (!slice.length) {
+      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-lb">
+        <i class="fa-solid fa-trophy"></i>
+        <div style="font-family:var(--font-head);font-size:18px;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px">No trainers found</div>
+        <div style="font-size:13px">Try adjusting your filters</div>
+      </div></td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = slice.map((row, i) => {
+      const globalRank = start + i + 1;
+      const isSelected = compareSet.has(row.user_id);
+      const teamClass  = TEAM_COLORS[row.team] || 'team-none';
+      const initial    = (row.trainer_name||'?')[0].toUpperCase();
+      const val        = row[activeStat] ?? 0;
+      const pct        = Math.round((val/maxVal)*100);
+      const change     = row.rank_change ?? 0;
+      const changeBadge = change > 0
+        ? `<span class="change-badge change-up"><i class="fa-solid fa-arrow-up"></i>${change}</span>`
+        : change < 0
+        ? `<span class="change-badge change-down"><i class="fa-solid fa-arrow-down"></i>${Math.abs(change)}</span>`
+        : `<span class="change-badge change-same">—</span>`;
+
+      let rankHtml;
+      if (globalRank === 1) rankHtml = `<span class="rank-icon">🥇</span>`;
+      else if (globalRank === 2) rankHtml = `<span class="rank-icon">🥈</span>`;
+      else if (globalRank === 3) rankHtml = `<span class="rank-icon">🥉</span>`;
+      else rankHtml = `<span class="rank-other">#${globalRank}</span>`;
+
+      return `<tr class="${isSelected?'selected':''}" onclick="handleRowClick('${row.user_id}', event)">
+        <td class="rank-cell rank-${globalRank <= 3 ? globalRank : 'other'}">${rankHtml}</td>
+        <td>
+          <div class="player-cell">
+            <div class="player-avatar ${teamClass}">${initial}</div>
+            <div>
+              <div class="player-name">${row.trainer_name || 'Unknown'}</div>
+              <div class="player-region">${[row.country,row.region].filter(Boolean).join(' · ') || '—'}</div>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="stat-value">${fmt(val) || '—'}</div>
+          <div class="stat-sub">${STAT_META[activeStat]?.label||''}</div>
+        </td>
+        <td class="bar-cell">
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--muted)">${pct}%</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+        </td>
+        <td>${changeBadge}</td>
+        <td>
+          <div class="compare-check ${isSelected?'checked':''}"
+            onclick="toggleCompare('${row.user_id}', event)"
+            title="${isSelected?'Remove from compare':'Add to compare'}">
+            ${isSelected?'<i class="fa-solid fa-check"></i>':''}
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  function renderPagination() {
+    const total = Math.ceil(filteredRows.length / PAGE_SIZE);
+    const pag = document.getElementById('pagination');
+    if (total <= 1) { pag.innerHTML = ''; return; }
+    let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+    for (let p=1;p<=Math.min(total,8);p++) {
+      html += `<button class="page-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;
+    }
+    if (total > 8) html += `<span style="color:var(--muted);font-family:var(--font-mono);font-size:11px">…${total}</span>`;
+    html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===total?'disabled':''}>›</button>`;
+    pag.innerHTML = html;
+  }
+
+  function goPage(p) {
+    const total = Math.ceil(filteredRows.length / PAGE_SIZE);
+    if (p < 1 || p > total) return;
+    currentPage = p;
+    renderTable();
+    renderPagination();
+    document.getElementById('lb-table').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  // ============================================================
+  // ROW CLICK → PROFILE
+  // ============================================================
+  function handleRowClick(userId, e) {
+    // Don't navigate if clicking the compare checkbox
+    if (e.target.closest('.compare-check')) return;
+    // Navigate to profile view (read-only for other users)
+    window.location.href = `profile.html?uid=${userId}`;
+  }
+
+  // ============================================================
+  // COMPARE
+  // ============================================================
+  function toggleCompare(userId, e) {
+    e.stopPropagation();
+    if (compareSet.has(userId)) {
+      compareSet.delete(userId);
+      compareRows = compareRows.filter(r => r.user_id !== userId);
+    } else {
+      if (compareSet.size >= 5) { showToast('Max 5 trainers to compare'); return; }
+      compareSet.add(userId);
+      const row = allRows.find(r => r.user_id === userId);
+      if (row) compareRows.push(row);
+    }
+    updateCompareUI();
+    renderTable(); // refresh checkmarks
+  }
+
+  function updateCompareUI() {
+    const count = compareSet.size;
+    const panel = document.getElementById('compare-panel');
+    const btn   = document.getElementById('btn-compare');
+    const countEl = document.getElementById('compare-count');
+
+    panel.classList.toggle('open', count > 0);
+    countEl.textContent = count;
+    countEl.classList.toggle('visible', count > 0);
+
+    const chips = document.getElementById('compare-chips');
+    chips.innerHTML = compareRows.map(r => `
+      <div class="compare-chip">
+        ${r.trainer_name}
+        <button class="compare-chip-remove" onclick="toggleCompare('${r.user_id}', event)">×</button>
+      </div>`).join('');
+  }
+
+  function clearCompare() {
+    compareSet.clear(); compareRows = [];
+    updateCompareUI(); renderTable();
+  }
+
+  function openCompareModal() {
+    if (compareRows.length < 2) { showToast('Select at least 2 trainers to compare'); return; }
+    renderCompareModal();
+    document.getElementById('compare-modal-overlay').classList.add('open');
+  }
+
+  function closeCompareModal() {
+    document.getElementById('compare-modal-overlay').classList.remove('open');
+    if (compareChart) { compareChart.destroy(); compareChart = null; }
+  }
+
+  document.getElementById('compare-modal-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('compare-modal-overlay')) closeCompareModal();
+  });
+
+  function renderCompareModal() {
+    const body = document.getElementById('compare-modal-body');
+    const stats = Object.keys(STAT_META);
+    const cols  = compareRows.length;
+
+    // Build radar chart data
+    const normalizedStats = ['xp','stardust','pokemon_caught','raids_done','shiny_count'];
+    const maxVals = {};
+    normalizedStats.forEach(s => {
+      maxVals[s] = Math.max(...compareRows.map(r=>r[s]||0), 1);
+    });
+
+    const chartData = {
+      labels: normalizedStats.map(s => STAT_META[s]?.label || s),
+      datasets: compareRows.map((r,i) => ({
+        label: r.trainer_name,
+        data:  normalizedStats.map(s => Math.round(((r[s]||0)/maxVals[s])*100)),
+        borderColor: COMPARE_COLORS[i],
+        backgroundColor: COMPARE_COLORS[i]+'33',
+        pointBackgroundColor: COMPARE_COLORS[i],
+        borderWidth: 2,
+      }))
+    };
+
+    // Stat comparison table
+    const statRows = stats.map(s => {
+      const vals = compareRows.map(r => r[s]||0);
+      const best = Math.max(...vals);
+      const fmt  = STAT_META[s]?.fmt || (n=>n?.toLocaleString());
+      const cells = compareRows.map((r,i) => {
+        const v = r[s]||0;
+        const isBest = v === best && best > 0;
+        return `<div class="compare-stat-val ${isBest?'compare-stat-best':''}">${fmt(v)||'—'}</div>`;
+      }).join('');
+      return `<div class="compare-stat-row" style="grid-template-columns:160px ${Array(cols).fill('1fr').join(' ')}">
+        <div class="compare-stat-name">${STAT_META[s]?.label||s}</div>
+        ${cells}
+      </div>`;
+    }).join('');
+
+    // Trainer headers
+    const headers = `<div style="display:grid;grid-template-columns:160px ${Array(cols).fill('1fr').join(' ')};margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:14px">
+      <div></div>
+      ${compareRows.map((r,i) => `
+        <div style="text-align:right">
+          <div style="font-family:var(--font-head);font-weight:900;font-size:16px;text-transform:uppercase;color:${COMPARE_COLORS[i]}">${r.trainer_name}</div>
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--muted)">${r.country||''}</div>
+        </div>`).join('')}
+    </div>`;
+
+    body.innerHTML = `
+      <div class="chart-wrap">
+        <canvas id="compare-chart"></canvas>
+      </div>
+      ${headers}
+      <div>${statRows}</div>`;
+
+    // Render chart
+    const ctx = document.getElementById('compare-chart').getContext('2d');
+    if (compareChart) compareChart.destroy();
+    compareChart = new Chart(ctx, {
+      type: 'radar',
+      data: chartData,
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#e8eaf0', font: { family: 'Barlow Condensed', size: 13, weight: '700' } } }
+        },
+        scales: {
+          r: {
+            grid: { color: 'rgba(80,140,255,0.12)' },
+            ticks: { display: false },
+            pointLabels: { color: '#7a82a0', font: { family: 'Space Mono', size: 10 } },
+            suggestedMin: 0, suggestedMax: 100,
+          }
+        }
+      }
+    });
+  }
+
+  // ============================================================
+  // TOAST
+  // ============================================================
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  // ============================================================
+  // INIT
+  // ============================================================
+  loadLeaderboard();
+  </script>
+</body>
+</html>
