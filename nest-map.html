@@ -251,16 +251,8 @@
       border-bottom: 1px solid var(--border);
       background: rgba(8,9,15,0.6);
     }
-    .map-chrome-dots {
-      display: flex;
-      gap: 7px;
-      align-items: center;
-    }
-    .map-chrome-dots span {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      background: var(--border);
-    }
+    .map-chrome-dots { display: flex; gap: 7px; align-items: center; }
+    .map-chrome-dots span { width: 10px; height: 10px; border-radius: 50%; }
     .map-chrome-dots span:nth-child(1) { background: rgba(255,90,90,0.5); }
     .map-chrome-dots span:nth-child(2) { background: rgba(255,190,50,0.5); }
     .map-chrome-dots span:nth-child(3) { background: rgba(50,220,100,0.5); }
@@ -282,16 +274,9 @@
       border-radius: 3px;
     }
 
-    /* ── MAP WRAPPER (relative for overlays) ── */
-    .map-wrapper {
-      position: relative;
-    }
-    #nest-map {
-      width: 100%;
-      height: 70vh;
-      min-height: 480px;
-      display: block;
-    }
+    /* ── MAP WRAPPER ── */
+    .map-wrapper { position: relative; }
+    #nest-map { width: 100%; height: 70vh; min-height: 480px; display: block; }
 
     /* ── ZOOM GUARD OVERLAY ── */
     .zoom-guard-overlay {
@@ -329,11 +314,7 @@
       height: 2px;
       background: var(--logo-grad);
     }
-    .zoom-guard-box i {
-      font-size: 2rem;
-      color: var(--cyan);
-      margin-bottom: 4px;
-    }
+    .zoom-guard-box i { font-size: 2rem; color: var(--cyan); margin-bottom: 4px; }
     .zoom-guard-box strong {
       font-family: var(--font-head);
       font-size: 1.3rem;
@@ -342,18 +323,12 @@
       text-transform: uppercase;
       color: var(--text);
     }
-    .zoom-guard-box span {
-      font-size: 0.82rem;
-      color: var(--muted);
-      max-width: 240px;
-      line-height: 1.5;
-    }
+    .zoom-guard-box span { font-size: 0.82rem; color: var(--muted); max-width: 240px; line-height: 1.5; }
 
     /* ── CORNER LOADING INDICATOR ── */
     .map-fetch-indicator {
       position: absolute;
-      top: 14px;
-      right: 14px;
+      top: 14px; right: 14px;
       z-index: 1000;
       display: flex;
       align-items: center;
@@ -422,12 +397,7 @@
     }
     .park-label-inner:hover { border-color: var(--cyan-dim); }
     .park-label-inner img { width: 34px; height: 34px; object-fit: contain; image-rendering: pixelated; }
-    .park-label-inner .nest-unknown {
-      font-size: 1.2rem;
-      color: var(--muted);
-      font-weight: 700;
-      line-height: 1;
-    }
+    .park-label-inner .nest-unknown { font-size: 1.2rem; color: var(--muted); font-weight: 700; line-height: 1; }
 
     /* ── POPUP ── */
     .nest-popup { padding: 20px 22px 18px; min-width: 240px; max-width: 300px; }
@@ -513,7 +483,7 @@
     .poke-suggestion-item:hover { background: rgba(59,232,255,0.06); }
     .poke-suggestion-item img { width: 26px; height: 26px; object-fit: contain; image-rendering: pixelated; }
 
-    /* Dropdown */
+    /* ── DROPDOWN ── */
     .nest-popup .poke-dropdown-wrap { margin-bottom: 10px; }
     .nest-popup select.poke-dropdown {
       width: 100%;
@@ -565,7 +535,7 @@
       letter-spacing: 0.05em;
     }
 
-    /* ── MAP FOOTER BAR (legend) ── */
+    /* ── MAP FOOTER BAR ── */
     .map-footer-bar {
       display: flex;
       align-items: center;
@@ -584,12 +554,7 @@
       margin-right: 4px;
     }
     .legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); }
-    .legend-dot {
-      width: 12px; height: 12px;
-      border-radius: 2px;
-      border: 1px solid;
-      flex-shrink: 0;
-    }
+    .legend-dot { width: 12px; height: 12px; border-radius: 2px; border: 1px solid; flex-shrink: 0; }
     .legend-dot.known  { background: rgba(59,232,255,0.15); border-color: rgba(59,232,255,0.5); }
     .legend-dot.unknown { background: rgba(155,77,255,0.15); border-color: rgba(155,77,255,0.4); }
 
@@ -615,12 +580,7 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    .footer p {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 0.05em;
-    }
+    .footer p { font-family: var(--font-mono); font-size: 11px; color: var(--muted); letter-spacing: 0.05em; }
     .footer p a { color: var(--cyan-dim); }
     .footer p a:hover { color: var(--cyan); }
 
@@ -680,7 +640,7 @@
   <div class="page-hero">
     <div class="page-hero-eyebrow">// Trainer Tools</div>
     <h1 data-i18n="nestmap_title">Nest Map</h1>
-    <p data-i18n="nestmap_sub">Discover Pokémon nests near you. Click any park to report or view what’s currently nesting there.</p>
+    <p data-i18n="nestmap_sub">Discover Pokémon nests near you. Click any park to report or view what's currently nesting there.</p>
     <div class="nest-reset-timer">
       <i class="fa-solid fa-clock-rotate-left"></i>
       <span class="timer-label" data-i18n="nest_reset_label">Next Nest Reset:</span>
@@ -691,20 +651,13 @@
   <!-- MAP -->
   <div class="map-section">
     <div class="map-chrome">
-      <!-- Chrome bar -->
       <div class="map-chrome-bar">
-        <div class="map-chrome-dots">
-          <span></span><span></span><span></span>
-        </div>
+        <div class="map-chrome-dots"><span></span><span></span><span></span></div>
         <span class="map-chrome-title">OpenStreetMap — Live Nest Data</span>
         <span class="map-chrome-badge">OSM</span>
       </div>
-
-      <!-- Map itself -->
       <div class="map-wrapper">
         <div id="nest-map"></div>
-
-        <!-- Zoom guard -->
         <div class="zoom-guard-overlay" id="zoom-guard">
           <div class="zoom-guard-box">
             <i class="fa-solid fa-magnifying-glass-plus"></i>
@@ -712,15 +665,11 @@
             <span data-i18n="zoom_guard_sub">Zoom in further to load nearby parks and Pokémon nests.</span>
           </div>
         </div>
-
-        <!-- Loading indicator -->
         <div class="map-fetch-indicator hidden" id="fetch-indicator">
           <i class="fa-solid fa-spinner"></i>
           <span data-i18n="map_loading">Loading…</span>
         </div>
       </div>
-
-      <!-- Legend footer bar -->
       <div class="map-footer-bar">
         <span class="legend-label">Legend</span>
         <div class="legend-item"><div class="legend-dot known"></div><span data-i18n="legend_reported">Nest reported</span></div>
@@ -742,6 +691,10 @@
   <script src="i18n.js"></script>
 
   <script>
+  // ===== SUPABASE CONFIG =====
+  const SUPABASE_URL  = 'https://vxmroxsxxdzlphxtfiwh.supabase.co';
+  const SUPABASE_ANON = 'YOUR_ANON_JWT_KEY_HERE'; // Replace with the anon key from Project Settings → API
+
   // ===== EXTEND i18n WITH NEST-MAP KEYS =====
   const nestMapTranslations = {
     en: {
@@ -758,7 +711,7 @@
       popup_search_placeholder: 'Search Pokémon…',
       popup_dropdown_default: '— or pick from nestable list —',
       popup_set_nest: 'Set Nest',
-      popup_stored_locally: 'Data stored locally in your browser',
+      popup_community: 'Shared with the community',
       popup_reported_by: 'Reported by',
       popup_no_nest: 'Unknown',
       popup_no_nest_sub: 'No nest reported yet',
@@ -777,7 +730,7 @@
       popup_search_placeholder: 'Buscar Pokémon…',
       popup_dropdown_default: '— o elige de la lista de anidables —',
       popup_set_nest: 'Establecer Nido',
-      popup_stored_locally: 'Datos guardados localmente en tu navegador',
+      popup_community: 'Compartido con la comunidad',
       popup_reported_by: 'Reportado por',
       popup_no_nest: 'Desconocido',
       popup_no_nest_sub: 'Ningún nido reportado aún',
@@ -796,7 +749,7 @@
       popup_search_placeholder: 'Buscar Pokémon…',
       popup_dropdown_default: '— ou escolha da lista de ninháveis —',
       popup_set_nest: 'Definir Ninho',
-      popup_stored_locally: 'Dados armazenados localmente no seu navegador',
+      popup_community: 'Compartilhado com a comunidade',
       popup_reported_by: 'Reportado por',
       popup_no_nest: 'Desconhecido',
       popup_no_nest_sub: 'Nenhum ninho reportado ainda',
@@ -815,7 +768,7 @@
       popup_search_placeholder: 'Pokémon zoeken…',
       popup_dropdown_default: '— of kies uit nestbare lijst —',
       popup_set_nest: 'Nest Instellen',
-      popup_stored_locally: 'Gegevens lokaal opgeslagen in je browser',
+      popup_community: 'Gedeeld met de community',
       popup_reported_by: 'Gemeld door',
       popup_no_nest: 'Onbekend',
       popup_no_nest_sub: 'Nog geen nest gemeld',
@@ -834,7 +787,7 @@
       popup_search_placeholder: 'Pokémon suchen…',
       popup_dropdown_default: '— oder aus Nesterliste wählen —',
       popup_set_nest: 'Nest Setzen',
-      popup_stored_locally: 'Daten lokal im Browser gespeichert',
+      popup_community: 'Mit der Community geteilt',
       popup_reported_by: 'Gemeldet von',
       popup_no_nest: 'Unbekannt',
       popup_no_nest_sub: 'Noch kein Nest gemeldet',
@@ -842,7 +795,7 @@
     fr: {
       nestmap_title: 'Carte des nids',
       nestmap_sub: 'Découvrez les nids de Pokémon près de chez vous. Cliquez sur un parc pour signaler ou voir ce qui s\'y niche actuellement.',
-      nest_reset_label: 'Prochain Reset des Nids :',
+      nest_reset_label: 'Prochain Reset des Nids :',
       map_loading: 'Chargement…',
       zoom_guard_title: 'Zoomez pour voir les nids',
       zoom_guard_sub: 'Zoomez un peu plus pour charger les parcs et nids de Pokémon à proximité.',
@@ -853,7 +806,7 @@
       popup_search_placeholder: 'Chercher un Pokémon…',
       popup_dropdown_default: '— ou choisir dans la liste —',
       popup_set_nest: 'Définir le Nid',
-      popup_stored_locally: 'Données stockées localement dans votre navigateur',
+      popup_community: 'Partagé avec la communauté',
       popup_reported_by: 'Signalé par',
       popup_no_nest: 'Inconnu',
       popup_no_nest_sub: 'Aucun nid signalé pour l\'instant',
@@ -872,7 +825,7 @@
       popup_search_placeholder: 'Sök Pokémon…',
       popup_dropdown_default: '— eller välj från listan —',
       popup_set_nest: 'Ange Bo',
-      popup_stored_locally: 'Data sparas lokalt i din webbläsare',
+      popup_community: 'Delas med communityn',
       popup_reported_by: 'Rapporterat av',
       popup_no_nest: 'Okänt',
       popup_no_nest_sub: 'Inget bo rapporterat ännu',
@@ -891,7 +844,7 @@
       popup_search_placeholder: 'ポケモンを検索…',
       popup_dropdown_default: '— またはリストから選択 —',
       popup_set_nest: '巣を設定',
-      popup_stored_locally: 'データはブラウザにローカル保存されます',
+      popup_community: 'コミュニティと共有',
       popup_reported_by: '報告者',
       popup_no_nest: '不明',
       popup_no_nest_sub: 'まだ巣が報告されていません',
@@ -910,7 +863,7 @@
       popup_search_placeholder: 'Szukaj Pokémona…',
       popup_dropdown_default: '— lub wybierz z listy —',
       popup_set_nest: 'Ustaw Gniazdo',
-      popup_stored_locally: 'Dane zapisane lokalnie w przeglądarce',
+      popup_community: 'Udostępniono społeczności',
       popup_reported_by: 'Zgłoszone przez',
       popup_no_nest: 'Nieznane',
       popup_no_nest_sub: 'Brak zgłoszonego gniazda',
@@ -929,7 +882,7 @@
       popup_search_placeholder: 'Søk etter Pokémon…',
       popup_dropdown_default: '— eller velg fra liste —',
       popup_set_nest: 'Angi Rede',
-      popup_stored_locally: 'Data lagret lokalt i nettleseren din',
+      popup_community: 'Delt med fellesskapet',
       popup_reported_by: 'Rapportert av',
       popup_no_nest: 'Ukjent',
       popup_no_nest_sub: 'Ingen rede rapportert ennå',
@@ -948,7 +901,7 @@
       popup_search_placeholder: 'Hae Pokémonia…',
       popup_dropdown_default: '— tai valitse listasta —',
       popup_set_nest: 'Aseta Pesä',
-      popup_stored_locally: 'Tiedot tallennettu paikallisesti selaimeesi',
+      popup_community: 'Jaettu yhteisölle',
       popup_reported_by: 'Ilmoittanut',
       popup_no_nest: 'Tuntematon',
       popup_no_nest_sub: 'Pesää ei ole vielä ilmoitettu',
@@ -967,7 +920,7 @@
       popup_search_placeholder: 'Søg Pokémon…',
       popup_dropdown_default: '— eller vælg fra liste —',
       popup_set_nest: 'Angiv Rede',
-      popup_stored_locally: 'Data gemt lokalt i din browser',
+      popup_community: 'Delt med fællesskabet',
       popup_reported_by: 'Rapporteret af',
       popup_no_nest: 'Ukendt',
       popup_no_nest_sub: 'Ingen rede rapporteret endnu',
@@ -986,7 +939,7 @@
       popup_search_placeholder: 'Pokémon खोजें…',
       popup_dropdown_default: '— या सूची से चुनें —',
       popup_set_nest: 'नेस्ट सेट करें',
-      popup_stored_locally: 'डेटा आपके ब्राउज़र में स्थानीय रूप से संग्रहीत',
+      popup_community: 'समुदाय के साथ साझा',
       popup_reported_by: 'द्वारा रिपोर्ट किया गया',
       popup_no_nest: 'अज्ञात',
       popup_no_nest_sub: 'अभी तक कोई नेस्ट रिपोर्ट नहीं',
@@ -1005,7 +958,7 @@
       popup_search_placeholder: 'Pokémon ara…',
       popup_dropdown_default: '— veya listeden seç —',
       popup_set_nest: 'Yuvayı Ayarla',
-      popup_stored_locally: 'Veriler tarayıcınızda yerel olarak saklanır',
+      popup_community: 'Toplulukla paylaşıldı',
       popup_reported_by: 'Bildiren',
       popup_no_nest: 'Bilinmiyor',
       popup_no_nest_sub: 'Henüz yuva bildirilmedi',
@@ -1045,35 +998,80 @@
   // ===== CONFIG =====
   const OVERPASS_API = 'https://overpass-api.de/api/interpreter';
   const SPRITE_BASE  = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
-  const STORAGE_KEY  = 'pogoraids_nests_v1';
   const MIN_ZOOM     = 14;
   const DEBOUNCE_MS  = 500;
 
-  function debounce(fn, delay) {
-    let timer;
-    return function (...args) {
-      clearTimeout(timer);
-      timer = setTimeout(() => fn.apply(this, args), delay);
-    };
+  function getCurrentCycleStart() {
+    const PERIOD_MS = 14 * 24 * 60 * 60 * 1000;
+    const anchor    = new Date(Date.UTC(2026, 2, 25, 10, 0, 0)).getTime();
+    const now       = Date.now();
+    let cs          = anchor;
+    while (cs + PERIOD_MS <= now) cs += PERIOD_MS;
+    return new Date(cs).toISOString();
   }
 
-  async function fetchWithRetry(url, options = {}, retries = 2, backoffMs = 800) {
+  // ===== SUPABASE HELPERS =====
+  async function sbFetch(path, options = {}) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+      headers: {
+        'apikey':        SUPABASE_ANON,
+        'Authorization': `Bearer ${SUPABASE_ANON}`,
+        'Content-Type':  'application/json',
+        'Prefer':        'return=representation',
+        ...options.headers
+      },
+      ...options
+    });
+    if (!res.ok) throw new Error(`Supabase ${res.status}`);
+    return res.json();
+  }
+
+  async function upsertNest(osmId, parkName, pokemonId, pokemonName, reporter) {
+    const cycleStart = getCurrentCycleStart();
+    await sbFetch('nests', {
+      method: 'POST',
+      headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
+      body: JSON.stringify({
+        osm_id:       osmId,
+        park_name:    parkName,
+        pokemon_id:   pokemonId,
+        pokemon_name: pokemonName,
+        reporter,
+        reported_at:  new Date().toISOString(),
+        cycle_start:  cycleStart
+      })
+    });
+  }
+
+  // ===== IN-MEMORY CACHE =====
+  let nestsCache   = {}; // osmId → { pokemonId, pokemonName, reporter }
+  let historyCache = {}; // osmId → { pokemonId, pokemonName } (previous cycle)
+
+  async function refreshCache() {
     try {
-      const res = await fetch(url, options);
-      if (!res.ok) {
-        if (retries > 0 && (res.status >= 500 || res.status === 429)) {
-          await new Promise(r => setTimeout(r, backoffMs));
-          return fetchWithRetry(url, options, retries - 1, backoffMs * 2);
+      const current = await sbFetch('nests?select=*');
+      const history = await sbFetch('nest_history?select=*&order=cycle_end.desc');
+      nestsCache   = {};
+      historyCache = {};
+      current.forEach(r => {
+        nestsCache[r.osm_id] = {
+          pokemonId:   r.pokemon_id,
+          pokemonName: r.pokemon_name,
+          reporter:    r.reporter
+        };
+      });
+      // Keep only the most recent history entry per park
+      history.forEach(r => {
+        if (!historyCache[r.osm_id]) {
+          historyCache[r.osm_id] = {
+            pokemonId:   r.pokemon_id,
+            pokemonName: r.pokemon_name
+          };
         }
-        throw new Error(`HTTP ${res.status}`);
-      }
-      return res;
-    } catch (err) {
-      if (retries > 0) {
-        await new Promise(r => setTimeout(r, backoffMs));
-        return fetchWithRetry(url, options, retries - 1, backoffMs * 2);
-      }
-      throw err;
+      });
+    } catch (e) {
+      console.warn('Could not load nests from Supabase, falling back to localStorage', e);
+      try { nestsCache = JSON.parse(localStorage.getItem('pogoraids_nests_v1')) || {}; } catch (_) {}
     }
   }
 
@@ -1139,14 +1137,6 @@
     {id:629,name:'Vullaby'},{id:632,name:'Durant'},{id:633,name:'Deino'},
   ];
 
-  // ===== NEST STORAGE =====
-  function loadNests() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
-    catch(e) { return {}; }
-  }
-  function saveNests(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
-  let nests = loadNests();
-
   // ===== MAP INIT =====
   const map = L.map('nest-map', {
     center: [52.3, 4.9],
@@ -1208,7 +1198,10 @@
   }
 
   function buildPopupContent(osmId, parkName) {
-    const nest = nests[osmId];
+    const nest = nestsCache[osmId];
+    const prev = historyCache[osmId];
+
+    // Current nest display
     let currentHtml;
     if (nest && nest.pokemonId) {
       currentHtml = `
@@ -1229,14 +1222,30 @@
           </div>
         </div>`;
     }
-    const sortedPokemon = [...POKEMON].sort((a,b) => a.name.localeCompare(b.name));
+
+    // Previous cycle display
+    let prevHtml = '';
+    if (prev && prev.pokemonId) {
+      prevHtml = `
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(155,77,255,0.06);border:1px solid rgba(155,77,255,0.2);border-radius:4px;margin-bottom:10px;">
+          <img src="${getPokemonSprite(prev.pokemonId)}" style="width:28px;height:28px;object-fit:contain;image-rendering:pixelated;opacity:0.7;" />
+          <div>
+            <span style="font-family:var(--font-mono);font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;display:block;">Previous cycle</span>
+            <span style="font-size:0.82rem;color:var(--muted);">${prev.pokemonName}</span>
+          </div>
+        </div>`;
+    }
+
+    const sortedPokemon = [...POKEMON].sort((a, b) => a.name.localeCompare(b.name));
     const dropdownOptions = sortedPokemon.map(p =>
       `<option value="${p.id}" data-name="${p.name}">${p.name}</option>`
     ).join('');
+
     return `
       <div class="nest-popup">
         <h3><i class="fa-solid fa-tree" style="color:var(--cyan);margin-right:6px;"></i>${parkName || 'Area'}</h3>
         ${currentHtml}
+        ${prevHtml}
         <label>${t('popup_report_label')}</label>
         <div class="poke-search-wrap">
           <input type="text" id="poke-input-${osmId}" placeholder="${t('popup_search_placeholder')}" autocomplete="off" />
@@ -1249,22 +1258,30 @@
           </select>
         </div>
         <button class="btn-set-nest" id="btn-save-${osmId}" disabled>${t('popup_set_nest')}</button>
-        <div class="nest-reporter">${t('popup_stored_locally')}</div>
+        <div class="nest-reporter" id="nest-status-${osmId}">${t('popup_community')}</div>
       </div>`;
   }
 
-  function attachPopupListeners(osmId, layer) {
+  function attachPopupListeners(osmId, parkName, layer) {
     setTimeout(() => {
       const input    = document.getElementById(`poke-input-${osmId}`);
       const sugg     = document.getElementById(`poke-suggestions-${osmId}`);
       const dropdown = document.getElementById(`poke-dropdown-${osmId}`);
       const btn      = document.getElementById(`btn-save-${osmId}`);
+      const status   = document.getElementById(`nest-status-${osmId}`);
       if (!input) return;
+
       let selectedPokemon = null;
-      function selectPokemon(id, name) { selectedPokemon = { id: parseInt(id), name }; btn.disabled = false; }
+
+      function selectPokemon(id, name) {
+        selectedPokemon = { id: parseInt(id), name };
+        btn.disabled = false;
+      }
+
       input.addEventListener('input', () => {
         const q = input.value.trim().toLowerCase();
-        selectedPokemon = null; btn.disabled = true;
+        selectedPokemon = null;
+        btn.disabled = true;
         if (dropdown) dropdown.value = '';
         if (!q) { sugg.classList.remove('open'); sugg.innerHTML = ''; return; }
         const matches = POKEMON.filter(p => p.name.toLowerCase().startsWith(q)).slice(0, 8);
@@ -1285,7 +1302,9 @@
           });
         });
       });
+
       input.addEventListener('blur', () => setTimeout(() => sugg.classList.remove('open'), 150));
+
       if (dropdown) {
         dropdown.addEventListener('change', () => {
           const opt = dropdown.options[dropdown.selectedIndex];
@@ -1294,17 +1313,30 @@
             input.value = opt.dataset.name;
             sugg.classList.remove('open');
           } else {
-            selectedPokemon = null; btn.disabled = true; input.value = '';
+            selectedPokemon = null;
+            btn.disabled = true;
+            input.value = '';
           }
         });
       }
-      btn.addEventListener('click', () => {
+
+      btn.addEventListener('click', async () => {
         if (!selectedPokemon) return;
-        nests[osmId] = { pokemonId: selectedPokemon.id, pokemonName: selectedPokemon.name, reporter: 'You', timestamp: Date.now() };
-        saveNests(nests);
-        if (parkLayers[osmId]) parkLayers[osmId].marker.setIcon(buildLabelIcon(nests[osmId]));
-        layer.closePopup();
-        setTimeout(() => layer.openPopup(), 200);
+        btn.disabled = true;
+        btn.textContent = 'Saving…';
+        try {
+          await upsertNest(osmId, parkName, selectedPokemon.id, selectedPokemon.name, 'You');
+          nestsCache[osmId] = { pokemonId: selectedPokemon.id, pokemonName: selectedPokemon.name, reporter: 'You' };
+          if (parkLayers[osmId]) parkLayers[osmId].marker.setIcon(buildLabelIcon(nestsCache[osmId]));
+          status.textContent = '✓ Saved to community database!';
+          status.style.color = 'var(--cyan)';
+          setTimeout(() => { layer.closePopup(); setTimeout(() => layer.openPopup(), 200); }, 800);
+        } catch (e) {
+          status.textContent = '✗ Save failed. Try again.';
+          status.style.color = '#ff6060';
+          btn.disabled = false;
+          btn.textContent = t('popup_set_nest');
+        }
       });
     }, 80);
   }
@@ -1312,8 +1344,9 @@
   function renderPark(feature, center) {
     const osmId   = feature.id;
     const name    = (feature.tags && feature.tags.name) || 'Unnamed Area';
-    const nest    = nests[osmId];
+    const nest    = nestsCache[osmId];
     const hasNest = !!(nest && nest.pokemonId);
+
     const poly = L.geoJSON({
       type: 'Feature',
       geometry: feature.geometry || { type: 'Point', coordinates: [center[1], center[0]] }
@@ -1326,11 +1359,40 @@
       },
       onEachFeature: (f, l) => { l.on('click', () => marker.openPopup()); }
     }).addTo(map);
+
     const marker = L.marker(center, { icon: buildLabelIcon(nest), zIndexOffset: 10 }).addTo(map);
     marker.bindPopup(() => buildPopupContent(osmId, name), { maxWidth: 320, minWidth: 260, autoPan: true });
-    marker.on('popupopen', () => attachPopupListeners(osmId, marker));
+    marker.on('popupopen', () => attachPopupListeners(osmId, name, marker));
     marker.on('click', () => marker.openPopup());
     parkLayers[osmId] = { polygon: poly, marker };
+  }
+
+  function debounce(fn, delay) {
+    let timer;
+    return function (...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn.apply(this, args), delay);
+    };
+  }
+
+  async function fetchWithRetry(url, options = {}, retries = 2, backoffMs = 800) {
+    try {
+      const res = await fetch(url, options);
+      if (!res.ok) {
+        if (retries > 0 && (res.status >= 500 || res.status === 429)) {
+          await new Promise(r => setTimeout(r, backoffMs));
+          return fetchWithRetry(url, options, retries - 1, backoffMs * 2);
+        }
+        throw new Error(`HTTP ${res.status}`);
+      }
+      return res;
+    } catch (err) {
+      if (retries > 0) {
+        await new Promise(r => setTimeout(r, backoffMs));
+        return fetchWithRetry(url, options, retries - 1, backoffMs * 2);
+      }
+      throw err;
+    }
   }
 
   function fetchParks(bounds) {
@@ -1368,7 +1430,7 @@ out body geom;`;
           if (el.geometry && el.geometry.length) {
             const lats = el.geometry.map(p => p.lat);
             const lons = el.geometry.map(p => p.lon);
-            center = [lats.reduce((a,b)=>a+b,0)/lats.length, lons.reduce((a,b)=>a+b,0)/lons.length];
+            center = [lats.reduce((a, b) => a + b, 0) / lats.length, lons.reduce((a, b) => a + b, 0) / lons.length];
           } else if (el.center) {
             center = [el.center.lat, el.center.lon];
           } else return;
@@ -1385,8 +1447,13 @@ out body geom;`;
 
   const debouncedFetchParks = debounce(() => fetchParks(map.getBounds()), DEBOUNCE_MS);
   map.on('moveend zoomend', debouncedFetchParks);
-  updateZoomGuard();
-  fetchParks(map.getBounds());
+
+  // ===== BOOT =====
+  (async () => {
+    await refreshCache();
+    updateZoomGuard();
+    fetchParks(map.getBounds());
+  })();
   </script>
 </body>
 </html>
