@@ -105,8 +105,130 @@
     .map-filter-btn[data-platform="facebook"].active  { color:var(--facebook); border-color:var(--facebook); }
     .map-filter-btn[data-platform="reddit"].active    { color:var(--reddit);   border-color:var(--reddit);   }
     .map-filter-btn[data-platform="campfire"].active  { color:var(--campfire); border-color:var(--campfire); }
-    .map-wrapper { position:relative; }
+
+    /* ── FULLSCREEN BUTTON ── */
+    .map-fullscreen-btn {
+      background: rgba(59,232,255,0.04);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      width: 30px; height: 26px;
+      border-radius: 3px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: color .15s, border-color .15s, background .15s;
+      font-size: 12px; padding: 0;
+    }
+    .map-fullscreen-btn:hover {
+      color: var(--cyan);
+      border-color: rgba(59,232,255,0.35);
+      background: rgba(59,232,255,0.08);
+    }
+
+    /* ── MAP SEARCH BAR ── */
+    .map-search-bar {
+      position: relative; z-index: 1001;
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 18px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(8,9,15,.6);
+      flex-wrap: wrap;
+    }
+    .map-search-wrap {
+      position: relative;
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 4px 6px 4px 12px;
+      flex: 1; min-width: 220px; max-width: 560px;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .map-search-wrap:focus-within {
+      border-color: var(--cyan-dim);
+      box-shadow: 0 0 0 2px rgba(59,232,255,0.08);
+    }
+    .map-search-wrap > .search-icon {
+      color: var(--muted); font-size: 13px; flex-shrink: 0;
+    }
+    .map-search-wrap:focus-within > .search-icon { color: var(--cyan); }
+    .map-search-wrap input {
+      background: transparent; border: none;
+      color: var(--text); font-family: var(--font-body);
+      font-size: .9rem; outline: none;
+      flex: 1; padding: 6px 4px; min-width: 0;
+    }
+    .map-search-wrap input::placeholder { color: var(--muted); }
+    .btn-clear-search {
+      background: transparent; border: none;
+      color: var(--muted); cursor: pointer;
+      width: 26px; height: 26px;
+      display: none; align-items: center; justify-content: center;
+      border-radius: 3px; font-size: 13px; flex-shrink: 0;
+    }
+    .btn-clear-search.visible { display: flex; }
+    .btn-clear-search:hover { color: #ff7070; background: rgba(255,80,80,.08); }
+    .btn-search {
+      background: rgba(59,232,255,0.08);
+      border: 1px solid rgba(59,232,255,0.2);
+      color: var(--cyan);
+      height: 30px; padding: 0 14px;
+      border-radius: 3px; cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+      font-family: var(--font-head); font-weight: 700;
+      font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+      transition: background .15s; white-space: nowrap; flex-shrink: 0;
+    }
+    .btn-search:hover { background: rgba(59,232,255,0.16); }
+    .btn-search:disabled { opacity: .5; cursor: wait; }
+
+    .map-search-results {
+      position: absolute;
+      top: calc(100% + 6px); left: 0; right: 0;
+      background: var(--panel);
+      border: 1px solid var(--border-hi);
+      border-radius: 4px;
+      max-height: 300px; overflow-y: auto;
+      display: none; z-index: 10;
+      box-shadow: 0 8px 32px rgba(0,0,0,.6);
+    }
+    .map-search-results.visible { display: block; }
+    .map-search-result {
+      padding: 10px 14px; cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      font-size: .85rem; color: var(--text);
+      display: flex; align-items: flex-start; gap: 10px;
+      transition: background .15s;
+    }
+    .map-search-result:last-child { border-bottom: none; }
+    .map-search-result:hover { background: rgba(59,232,255,0.06); }
+    .map-search-result i { color: var(--cyan); margin-top: 3px; font-size: 11px; flex-shrink: 0; }
+    .map-search-result-name { font-weight: 600; line-height: 1.3; }
+    .map-search-result-meta { font-size: .75rem; color: var(--muted); margin-top: 2px; }
+    .map-search-result.empty, .map-search-result.loading {
+      padding: 14px; text-align: center; color: var(--muted);
+      font-size: .82rem; cursor: default; justify-content: center;
+    }
+    .map-search-result.loading { color: var(--cyan); }
+    .map-search-result.empty:hover, .map-search-result.loading:hover { background: transparent; }
+
+    .map-wrapper { position:relative; z-index:1; }
     #community-map { width:100%; height:72vh; min-height:520px; display:block; }
+
+    /* ── FULLSCREEN MODE OVERRIDES ── */
+    .map-chrome:fullscreen, .map-chrome:-webkit-full-screen {
+      border-radius: 0; border: none;
+      width: 100vw; height: 100vh;
+      max-width: none; max-height: none;
+      display: flex; flex-direction: column;
+    }
+    .map-chrome:fullscreen .map-wrapper,
+    .map-chrome:-webkit-full-screen .map-wrapper {
+      flex: 1; min-height: 0;
+    }
+    .map-chrome:fullscreen #community-map,
+    .map-chrome:-webkit-full-screen #community-map {
+      height: 100% !important; min-height: 0 !important;
+    }
 
     /* ── CLUSTER OVERRIDES ── */
     .marker-cluster-small,
@@ -134,6 +256,28 @@
     .map-fetch-indicator.hidden { opacity:0; }
     .map-fetch-indicator i { font-size:.85rem; animation:spin 1s linear infinite; }
     @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* ── SEARCH RESULT PIN ── */
+    .search-result-pin { background:transparent!important; border:none!important; box-shadow:none!important; }
+    .search-result-pin-inner {
+      width: 36px; height: 36px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; color: #fff;
+      background: linear-gradient(135deg, #3be8ff, #b020ff);
+      border: 2px solid rgba(255,255,255,0.35);
+      box-shadow: 0 4px 18px rgba(123,63,255,0.55);
+      animation: search-pulse 2.2s ease-in-out infinite;
+    }
+    .search-result-pin-inner i { transform: rotate(45deg); }
+    @keyframes search-pulse {
+      0%, 100% { box-shadow: 0 4px 18px rgba(123,63,255,0.55); }
+      50% { box-shadow: 0 4px 28px rgba(59,232,255,0.75); }
+    }
+    .search-popup { padding: 6px 10px; font-size: 13px; display: flex; align-items: center; gap: 8px; font-family: var(--font-body); }
+    .search-popup i { color: var(--cyan); }
+    .search-popup small { display: block; color: var(--muted); font-size: 11px; margin-top: 2px; font-family: var(--font-mono); }
 
     /* ── LEAFLET OVERRIDES ── */
     .leaflet-container { background:#08090f!important; }
@@ -284,6 +428,8 @@
       .footer { flex-direction:column; gap:10px; text-align:center; padding:20px; }
       .geocode-row { flex-direction:column; }
       .btn-geocode { width:100%; justify-content:center; }
+      .btn-search span { display: none; }
+      .btn-search { padding: 0 10px; }
     }
   </style>
 </head>
@@ -341,7 +487,7 @@
 
   <!-- MAP -->
   <div class="map-section">
-    <div class="map-chrome">
+    <div class="map-chrome" id="map-chrome">
       <div class="map-chrome-bar">
         <div class="map-chrome-dots"><span></span><span></span><span></span></div>
         <span class="map-chrome-title">Live Community Map</span>
@@ -354,8 +500,27 @@
           <button class="map-filter-btn" data-platform="reddit"><i class="fa-brands fa-reddit-alien"></i> Reddit</button>
           <button class="map-filter-btn" data-platform="campfire"><i class="fa-solid fa-fire"></i> Campfire</button>
           <span class="map-chrome-badge">LIVE</span>
+          <button class="map-fullscreen-btn" id="btn-fullscreen" title="Enter fullscreen" aria-label="Toggle fullscreen">
+            <i class="fa-solid fa-expand"></i>
+          </button>
         </div>
       </div>
+
+      <!-- SEARCH BAR -->
+      <div class="map-search-bar">
+        <div class="map-search-wrap">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" id="map-search-input" placeholder="Search a city, address, or region to find communities nearby…" autocomplete="off" aria-label="Search location" />
+          <button type="button" class="btn-clear-search" id="btn-clear-search" title="Clear search" aria-label="Clear search">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+          <button type="button" class="btn-search" id="btn-search" title="Search" aria-label="Search location">
+            <i class="fa-solid fa-arrow-right"></i> <span>Search</span>
+          </button>
+          <div class="map-search-results" id="map-search-results"></div>
+        </div>
+      </div>
+
       <div class="map-wrapper">
         <div id="community-map"></div>
         <div class="map-fetch-indicator" id="fetch-indicator">
@@ -511,26 +676,25 @@
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ4bXJveHN4eGR6bHBoeHRmaXdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3NDAxNDUsImV4cCI6MjA5MDMxNjE0NX0.oTlAOX44GjgHr9L7BphIXt842uOS8oSljY4OrNYEmD0';
 
   async function sbFetch(path, options = {}) {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-    ...options,
-    headers: {
-      'apikey': SUPABASE_ANON_KEY,
-      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-      'Content-Type': 'application/json',
-      'Prefer': options.prefer || '',
-      ...options.headers,
-    },
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || `HTTP ${res.status}`);
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+      ...options,
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': options.prefer || '',
+        ...options.headers,
+      },
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || `HTTP ${res.status}`);
+    }
+    if (res.status === 204) return null;
+    const text = await res.text();
+    if (!text) return null;
+    return JSON.parse(text);
   }
-  // Return null for empty responses (204 No Content OR empty body)
-  if (res.status === 204) return null;
-  const text = await res.text();
-  if (!text) return null;          // ← handles empty body on any status
-  return JSON.parse(text);
-}
 
   // ============================================================
   // PLATFORM CONFIG
@@ -643,7 +807,6 @@
     const indicator = document.getElementById('fetch-indicator');
     indicator.classList.remove('hidden');
     try {
-      // RLS policy already filters to approved=true for anon
       allCommunities = await sbFetch('communities?select=*&approved=eq.true&order=submitted_at.desc');
       renderMarkers(allCommunities);
     } catch (e) {
@@ -663,6 +826,200 @@
       renderMarkers(allCommunities);
     });
   });
+
+  // ============================================================
+  // FULLSCREEN TOGGLE
+  // ============================================================
+  const fullscreenBtn = document.getElementById('btn-fullscreen');
+  const mapChrome     = document.getElementById('map-chrome');
+
+  function isFullscreen() {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement);
+  }
+
+  function toggleFullscreen() {
+    if (!isFullscreen()) {
+      if (mapChrome.requestFullscreen)        mapChrome.requestFullscreen();
+      else if (mapChrome.webkitRequestFullscreen) mapChrome.webkitRequestFullscreen();
+    } else {
+      if (document.exitFullscreen)        document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+  }
+
+  function onFullscreenChange() {
+    const fs = isFullscreen();
+    fullscreenBtn.innerHTML = fs
+      ? '<i class="fa-solid fa-compress"></i>'
+      : '<i class="fa-solid fa-expand"></i>';
+    fullscreenBtn.title = fs ? 'Exit fullscreen' : 'Enter fullscreen';
+    // Let the browser apply layout, then invalidate Leaflet size
+    setTimeout(() => map.invalidateSize(), 250);
+    setTimeout(() => map.invalidateSize(), 600);
+  }
+
+  fullscreenBtn.addEventListener('click', toggleFullscreen);
+  document.addEventListener('fullscreenchange',        onFullscreenChange);
+  document.addEventListener('webkitfullscreenchange',  onFullscreenChange);
+
+  // ============================================================
+  // LOCATION SEARCH ON MAIN MAP
+  // ============================================================
+  const searchInput       = document.getElementById('map-search-input');
+  const searchBtn         = document.getElementById('btn-search');
+  const clearSearchBtn    = document.getElementById('btn-clear-search');
+  const searchResultsEl   = document.getElementById('map-search-results');
+
+  let searchMarker      = null;
+  let searchDebounce    = null;
+  let searchAbortCtrl   = null;
+
+  const searchIcon = L.divIcon({
+    className: 'search-result-pin',
+    html: `<div class="search-result-pin-inner"><i class="fa-solid fa-location-dot"></i></div>`,
+    iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36]
+  });
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    })[c]);
+  }
+
+  function showSearchResult(lat, lng, name, fullName) {
+    if (searchMarker) {
+      searchMarker.setLatLng([lat, lng]);
+    } else {
+      searchMarker = L.marker([lat, lng], { icon: searchIcon, zIndexOffset: 1000 }).addTo(map);
+    }
+    searchMarker.bindPopup(`
+      <div class="search-popup">
+        <i class="fa-solid fa-location-dot"></i>
+        <div>
+          <strong>${escapeHtml(name)}</strong>
+          <small>${escapeHtml(fullName)}</small>
+        </div>
+      </div>
+    `).openPopup();
+
+    const currentZoom = map.getZoom();
+    const targetZoom  = Math.max(currentZoom, 11);
+    map.flyTo([lat, lng], targetZoom, { duration: 1.2 });
+  }
+
+  function clearSearchResult() {
+    if (searchMarker) {
+      map.removeLayer(searchMarker);
+      searchMarker = null;
+    }
+  }
+
+  async function performSearch(query) {
+    const q = (query || '').trim();
+    if (q.length < 2) {
+      searchResultsEl.classList.remove('visible');
+      return;
+    }
+
+    // Cancel any in-flight request
+    if (searchAbortCtrl) searchAbortCtrl.abort();
+    searchAbortCtrl = new AbortController();
+
+    searchResultsEl.innerHTML =
+      '<div class="map-search-result loading"><i class="fa-solid fa-spinner fa-spin"></i> Searching…</div>';
+    searchResultsEl.classList.add('visible');
+    searchBtn.disabled = true;
+
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=6&addressdetails=1`,
+        { signal: searchAbortCtrl.signal, headers: { 'Accept-Language': 'en' } }
+      );
+      const data = await res.json();
+
+      if (!data || !data.length) {
+        searchResultsEl.innerHTML =
+          '<div class="map-search-result empty">No locations found. Try a more specific query.</div>';
+        return;
+      }
+
+      searchResultsEl.innerHTML = data.map(r => {
+        const parts    = (r.display_name || '').split(',');
+        const name     = parts.shift().trim() || 'Unnamed location';
+        const meta     = parts.slice(0, 3).join(',').trim();
+        const metaHtml = meta ? `<div class="map-search-result-meta">${escapeHtml(meta)}</div>` : '';
+        return `<div class="map-search-result" data-lat="${r.lat}" data-lng="${r.lon}" data-name="${escapeHtml(name)}" data-full="${escapeHtml(r.display_name || name)}">
+          <i class="fa-solid fa-location-dot"></i>
+          <div>
+            <div class="map-search-result-name">${escapeHtml(name)}</div>
+            ${metaHtml}
+          </div>
+        </div>`;
+      }).join('');
+
+      searchResultsEl.querySelectorAll('.map-search-result[data-lat]').forEach(el => {
+        el.addEventListener('click', () => {
+          const lat  = parseFloat(el.dataset.lat);
+          const lng  = parseFloat(el.dataset.lng);
+          const name = el.dataset.name;
+          const full = el.dataset.full;
+          showSearchResult(lat, lng, name, full);
+          searchResultsEl.classList.remove('visible');
+          searchInput.value = name;
+          clearSearchBtn.classList.add('visible');
+        });
+      });
+    } catch (e) {
+      if (e.name === 'AbortError') return; // superseded by a newer search
+      searchResultsEl.innerHTML =
+        '<div class="map-search-result empty">Search failed. Check your connection and try again.</div>';
+    } finally {
+      searchBtn.disabled = false;
+      searchAbortCtrl = null;
+    }
+  }
+
+  searchBtn.addEventListener('click', () => performSearch(searchInput.value));
+
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      performSearch(searchInput.value);
+    } else if (e.key === 'Escape') {
+      searchResultsEl.classList.remove('visible');
+      searchInput.blur();
+    }
+  });
+
+  searchInput.addEventListener('input', () => {
+    const hasText = searchInput.value.length > 0;
+    clearSearchBtn.classList.toggle('visible', hasText);
+    clearTimeout(searchDebounce);
+    if (hasText && searchInput.value.trim().length >= 3) {
+      searchDebounce = setTimeout(() => performSearch(searchInput.value), 600);
+    } else {
+      searchResultsEl.classList.remove('visible');
+    }
+  });
+
+  clearSearchBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    clearSearchBtn.classList.remove('visible');
+    searchResultsEl.classList.remove('visible');
+    clearSearchResult();
+    searchInput.focus();
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.map-search-wrap')) {
+      searchResultsEl.classList.remove('visible');
+    }
+  });
+
+  // Keep map size correct when its container changes
+  const mapResizeObserver = new ResizeObserver(() => map.invalidateSize());
+  mapResizeObserver.observe(document.getElementById('community-map'));
 
   // ============================================================
   // PIN PICKER MAP
