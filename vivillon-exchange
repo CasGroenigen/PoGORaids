@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="imgs/mewlogoblack-removebg-preview.png" />
+  <title>Vivillon Gift Exchange - PoGORaids</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,900;1,700&family=Barlow:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:        #08090f;
+      --panel:      #10121c;
+      --border:     rgba(80,140,255,0.12);
+      --cyan:       #3be8ff;
+      --cyan-dim:   #1ab8d4;
+      --purple:     #9b4dff;
+      --logo-grad:  linear-gradient(135deg, #3be8ff 0%, #7b3fff 55%, #b020ff 100%);
+      --text:       #e8eaf0;
+      --muted:      #7a82a0;
+      --font-head:  'Barlow Condensed', sans-serif;
+      --font-body:  'Barlow', sans-serif;
+      --font-mono:  'Space Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--ink);
+      color: var(--text);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(59,128,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59,128,255,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── LANGUAGE BAR ── */
+    .lang-bar {
+      position: relative;
+      z-index: 100;
+      background: var(--ink);
+      border-bottom: 1px solid var(--border);
+      padding: 6px 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .lang-bar span {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-right: 4px;
+    }
+    .lang-btn {
+      background: none;
+      border: 1px solid transparent;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 3px;
+      transition: border-color 0.15s;
+      display: flex;
+      align-items: center;
+    }
+    .lang-btn:hover, .lang-btn.active { border-color: var(--cyan-dim); }
+    .lang-btn .fi { width: 20px; height: 14px; border-radius: 2px; }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 99;
+      background: rgba(8,9,15,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; }
+    .nav-logo-img {
+      width: 34px; height: 34px; object-fit: contain;
+      filter: drop-shadow(0 0 8px rgba(123,63,255,0.6));
+    }
+    .nav-title {
+      font-family: var(--font-head);
+      font-weight: 900; font-size: 22px;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      background: var(--logo-grad);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .nav-links { list-style: none; display: flex; gap: 32px; align-items: center; }
+    .nav-links a {
+      font-family: var(--font-head);
+      font-weight: 700; font-size: 15px;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); transition: color 0.2s; position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 2px; background: var(--cyan); transition: width 0.25s;
+    }
+    .nav-links a:hover { color: var(--cyan); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-links a.active { color: var(--cyan); }
+    .nav-links a.active::after { width: 100%; }
+    .nav-discord {
+      color: var(--text) !important; background: #5865F2;
+      padding: 6px 18px; border-radius: 4px; font-size: 13px !important;
+      transition: background 0.2s !important;
+    }
+    .nav-discord:hover { background: #4752c4 !important; }
+    .nav-discord::after { display: none !important; }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; z-index: 1;
+      min-height: 60vh; display: flex;
+      align-items: center; justify-content: center;
+      overflow: hidden; padding: 80px 24px 60px;
+    }
+    .hero::before {
+      content: ''; position: absolute; width: 700px; height: 700px;
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      background: radial-gradient(ellipse, rgba(123,63,255,0.14) 0%, transparent 65%);
+      animation: pulse-orb 5s ease-in-out infinite; pointer-events: none;
+    }
+    .hero::after {
+      content: ''; position: absolute; width: 400px; height: 400px;
+      top: 30%; right: 10%;
+      background: radial-gradient(ellipse, rgba(59,232,255,0.10) 0%, transparent 65%);
+      animation: pulse-orb 7s ease-in-out infinite reverse; pointer-events: none;
+    }
+    @keyframes pulse-orb {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+      50%       { transform: translate(-50%, -50%) scale(1.15); opacity: 0.7; }
+    }
+    .hero-stripe {
+      position: absolute; top: 0; bottom: 0; left: -20%; width: 55%;
+      background: linear-gradient(135deg, rgba(123,63,255,0.05) 0%, transparent 60%);
+      transform: skewX(-8deg); pointer-events: none;
+    }
+    .hero-ball {
+      position: absolute; bottom: -60px; right: -80px;
+      width: 340px; height: 340px; border-radius: 50%;
+      border: 2px solid rgba(123,63,255,0.08); pointer-events: none; z-index: 0;
+    }
+    .hero-ball::before { content: ''; position: absolute; inset: 20px; border-radius: 50%; border: 1px solid rgba(59,232,255,0.05); }
+    .hero-ball::after { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: rgba(123,63,255,0.07); transform: translateY(-50%); }
+
+    .hero-content { position: relative; z-index: 2; text-align: center; max-width: 900px; }
+    .hero-eyebrow {
+      font-family: var(--font-mono); font-size: 11px;
+      letter-spacing: 0.25em; text-transform: uppercase; color: var(--cyan);
+      margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 12px;
+    }
+    .hero-eyebrow::before, .hero-eyebrow::after { content: ''; width: 40px; height: 1px; background: var(--cyan-dim); }
+    
+    .hero-title {
+      font-family: var(--font-head); font-weight: 900;
+      font-size: clamp(42px, 7vw, 72px); line-height: 0.95;
+      letter-spacing: -0.01em; text-transform: uppercase; margin-bottom: 10px;
+    }
+    .hero-title .line1 {
+      display: block; background: var(--logo-grad);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-title .line2 {
+      display: block; font-style: italic; color: var(--text);
+      font-size: 0.7em; letter-spacing: 0.04em; -webkit-text-fill-color: var(--text);
+    }
+    .hero-title .highlight { color: var(--cyan); -webkit-text-fill-color: var(--cyan); }
+
+    .hero-sub {
+      font-size: 18px; color: var(--muted); max-width: 600px;
+      margin: 20px auto 40px; line-height: 1.7;
+    }
+    .hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+    .btn-primary {
+      background: var(--logo-grad); color: #fff;
+      font-family: var(--font-head); font-weight: 700; font-size: 15px;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 14px 36px; border-radius: 4px; border: none;
+      display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px rgba(123,63,255,0.4);
+    }
+    .btn-primary:hover { opacity: 0.88; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(59,232,255,0.3); }
+
+    .hero-stats { display: flex; justify-content: center; gap: 0; margin-top: 56px; flex-wrap: wrap; }
+    .stat-item { padding: 20px 40px; border-left: 1px solid var(--border); text-align: center; }
+    .stat-item:last-child { border-right: 1px solid var(--border); }
+    .stat-num {
+      font-family: var(--font-head); font-weight: 900; font-size: 34px;
+      color: var(--cyan); letter-spacing: -0.01em; line-height: 1;
+    }
+    .stat-label {
+      font-family: var(--font-mono); font-size: 10px;
+      letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-top: 4px;
+    }
+
+    /* ── VIVILLON LAYOUT ── */
+    .vivillon-section {
+      position: relative; z-index: 2;
+      padding: 60px 40px; max-width: 1400px; margin: 0 auto;
+    }
+    .vivillon-layout {
+      display: grid; grid-template-columns: 280px 1fr 300px;
+      gap: 24px; align-items: start;
+    }
+
+    .panel {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 6px; padding: 24px;
+      position: relative; overflow: hidden;
+    }
+    .panel-label {
+      font-family: var(--font-mono); font-size: 10px;
+      letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--cyan); margin-bottom: 4px;
+    }
+    .panel-title {
+      font-family: var(--font-head); font-size: 22px; font-weight: 700;
+      text-transform: uppercase; margin-bottom: 24px; letter-spacing: 0.02em;
+    }
+
+    .sidebar { position: sticky; top: 88px; display: flex; flex-direction: column; gap: 24px; }
+
+    /* ── FORM ELEMENTS ── */
+    .form-group { margin-bottom: 20px; }
+    .form-label {
+      display: block; font-family: var(--font-mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--muted); margin-bottom: 8px;
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%; padding: 10px 14px; background: var(--ink);
+      border: 1px solid var(--border); border-radius: 4px;
+      color: var(--text); font-family: var(--font-body); font-size: 14px;
+      outline: none; transition: border-color 0.2s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--cyan-dim); }
+    .form-textarea { resize: vertical; min-height: 60px; }
+    .form-select {
+      appearance: none; -webkit-appearance: none; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a82a0' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px;
+    }
+
+    .fc-box {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--ink); border: 1px solid var(--border);
+      padding: 8px 12px; border-radius: 4px; margin-bottom: 20px;
+    }
+    .fc-text { font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--cyan); letter-spacing: 0.05em; }
+    .icon-btn {
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      cursor: pointer; padding: 6px 8px; border-radius: 4px; transition: all 0.2s;
+    }
+    .icon-btn:hover { color: var(--cyan); border-color: var(--cyan-dim); }
+
+    .multiselect-box {
+      background: var(--ink); border: 1px solid var(--border); border-radius: 4px;
+      padding: 8px; max-height: 160px; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .multiselect-option {
+      display: flex; align-items: center; gap: 8px; padding: 6px 8px;
+      border-radius: 3px; cursor: pointer; transition: background 0.2s;
+      font-size: 13px; color: var(--muted);
+    }
+    .multiselect-option:hover { background: var(--panel); color: var(--text); }
+    .multiselect-option.selected { background: rgba(59,232,255,0.08); color: var(--cyan); }
+    .multiselect-option .viv-icon { width: 20px; height: 20px; flex-shrink: 0; }
+    .multiselect-option .check-icon { margin-left: auto; opacity: 0; font-size: 10px; }
+    .multiselect-option.selected .check-icon { opacity: 1; }
+
+    .radio-group { display: flex; flex-direction: column; gap: 8px; }
+    .radio-option {
+      display: flex; align-items: center; gap: 8px; padding: 8px 12px;
+      background: var(--ink); border: 1px solid var(--border); border-radius: 4px;
+      cursor: pointer; transition: all 0.2s; font-size: 13px; color: var(--muted);
+    }
+    .radio-option:hover { border-color: var(--cyan-dim); color: var(--text); }
+    .radio-option.active { border-color: var(--cyan); background: rgba(59,232,255,0.05); color: var(--cyan); }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .status-dot.available { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
+    .status-dot.away { background: #f59e0b; }
+    .status-dot.full { background: #ef4444; }
+
+    .btn-block { width: 100%; justify-content: center; padding: 12px; font-size: 14px; }
+
+    /* ── MAIN CONTENT ── */
+    .search-panel { margin-bottom: 20px; }
+    .search-bar { position: relative; margin-bottom: 20px; }
+    .search-bar i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; }
+    .search-bar input {
+      width: 100%; padding: 12px 14px 12px 40px; background: var(--ink);
+      border: 1px solid var(--border); border-radius: 4px; color: var(--text);
+      font-family: var(--font-body); outline: none;
+    }
+    .search-bar input:focus { border-color: var(--cyan-dim); }
+
+    .region-chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+    .region-chip {
+      display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+      background: var(--ink); border: 1px solid var(--border); border-radius: 4px;
+      cursor: pointer; transition: all 0.2s; font-size: 13px; color: var(--muted);
+    }
+    .region-chip:hover { border-color: var(--cyan-dim); color: var(--text); }
+    .region-chip.active { border-color: var(--cyan); background: rgba(59,232,255,0.05); color: var(--cyan); }
+    .region-chip .viv-icon { width: 22px; height: 22px; }
+    .region-chip-count {
+      margin-left: auto; font-family: var(--font-mono); font-size: 10px;
+      background: var(--panel); padding: 2px 6px; border-radius: 2px;
+    }
+
+    .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+    .toolbar-info { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+    .toolbar-info strong { color: var(--cyan); }
+    .toolbar-actions { display: flex; gap: 10px; align-items: center; }
+    .sort-select { width: auto; padding: 8px 12px; font-size: 12px; }
+
+    /* ── TRAINER CARDS ── */
+    .trainer-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+    .trainer-card {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 6px;
+      padding: 20px; display: flex; flex-direction: column; gap: 14px;
+      position: relative; overflow: hidden; transition: all 0.2s;
+    }
+    .trainer-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px;
+      background: var(--logo-grad); transform: scaleX(0); transform-origin: left; transition: transform 0.3s;
+    }
+    .trainer-card:hover { border-color: rgba(59,232,255,0.25); transform: translateY(-4px); }
+    .trainer-card:hover::after { transform: scaleX(1); }
+    .trainer-card.request-sent { border-color: rgba(34, 197, 94, 0.3); }
+    .trainer-card.request-sent::after { background: #22c55e; transform: scaleX(1); }
+
+    .trainer-header { display: flex; align-items: center; gap: 12px; }
+    .trainer-avatar {
+      width: 44px; height: 44px; border-radius: 6px; display: flex;
+      align-items: center; justify-content: center;
+      font-family: var(--font-head); font-weight: 900; font-size: 18px;
+      color: #fff; position: relative; flex-shrink: 0;
+    }
+    .trainer-avatar .status-dot { position: absolute; bottom: -2px; right: -2px; border: 2px solid var(--panel); }
+    .trainer-name { font-family: var(--font-head); font-weight: 700; font-size: 16px; text-transform: uppercase; letter-spacing: 0.03em; }
+    .trainer-meta { font-family: var(--font-mono); font-size: 10px; color: var(--muted); display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+
+    .trainer-fc {
+      background: var(--ink); border: 1px solid var(--border); border-radius: 4px;
+      padding: 8px 12px; display: flex; justify-content: space-between; align-items: center;
+    }
+    .trainer-fc-text { font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--cyan); letter-spacing: 0.05em; }
+
+    .trainer-details { display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
+    .detail-row { display: flex; align-items: flex-start; gap: 8px; }
+    .detail-label { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; color: var(--muted); width: 80px; padding-top: 2px; flex-shrink: 0; }
+    .detail-value { color: var(--text); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+    .region-tag {
+      display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px;
+      background: var(--ink); border: 1px solid var(--border); border-radius: 2px;
+      font-size: 11px; color: var(--muted);
+    }
+    .region-tag .viv-icon { width: 16px; height: 16px; }
+
+    .trainer-actions { display: flex; gap: 8px; margin-top: 4px; }
+    .btn-outline-sm {
+      border: 1px solid var(--border); background: var(--ink); color: var(--text);
+      font-family: var(--font-head); font-weight: 700; text-transform: uppercase;
+      padding: 8px 14px; font-size: 12px; border-radius: 4px; cursor: pointer;
+      transition: all 0.2s; display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center;
+    }
+    .btn-outline-sm:hover { border-color: var(--cyan-dim); color: var(--cyan); }
+    .btn-grad-sm {
+      background: var(--logo-grad); color: #fff;
+      font-family: var(--font-head); font-weight: 700; text-transform: uppercase;
+      padding: 8px 14px; font-size: 12px; border-radius: 4px; cursor: pointer;
+      transition: opacity 0.2s; display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center; border: none;
+    }
+    .btn-grad-sm:hover { opacity: 0.9; }
+    .btn-sent-sm {
+      background: rgba(34, 197, 94, 0.1); color: #22c55e;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      font-family: var(--font-head); font-weight: 700; text-transform: uppercase;
+      padding: 8px 14px; font-size: 12px; border-radius: 4px; cursor: default;
+      display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center;
+    }
+
+    /* ── REGION PROGRESS LIST ── */
+    .region-progress-list { display: flex; flex-direction: column; gap: 4px; max-height: 400px; overflow-y: auto; margin: 0 -8px; padding: 0 8px; }
+    .region-progress-item {
+      display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+      border-radius: 4px; cursor: pointer; transition: background 0.2s;
+    }
+    .region-progress-item:hover { background: var(--ink); }
+    .region-progress-item.active { background: rgba(59,232,255,0.05); }
+    .region-progress-item .viv-icon { width: 26px; height: 26px; flex-shrink: 0; }
+    .region-progress-info { flex: 1; min-width: 0; }
+    .region-progress-name { font-family: var(--font-head); font-size: 14px; font-weight: 600; text-transform: uppercase; }
+    .region-progress-count { font-family: var(--font-mono); font-size: 10px; color: var(--muted); }
+    .region-progress-check {
+      width: 18px; height: 18px; border: 1px solid var(--border); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .region-progress-check i { font-size: 10px; color: var(--ink); opacity: 0; }
+    .region-progress-item.completed .region-progress-check { background: #22c55e; border-color: #22c55e; }
+    .region-progress-item.completed .region-progress-check i { opacity: 1; color: #fff; }
+
+    /* ── SKELETONS ── */
+    .skeleton-card { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+    .skeleton { background: linear-gradient(90deg, var(--panel) 0%, #1a1d2e 50%, var(--panel) 100%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .skel-line { height: 12px; } .skel-line.sm { width: 60%; } .skel-line.md { width: 80%; } .skel-line.lg { width: 100%; }
+    .skel-avatar { width: 44px; height: 44px; border-radius: 6px; }
+    .skel-btn { height: 32px; border-radius: 4px; }
+
+    /* ── PAGINATION ── */
+    .pagination { display: flex; justify-content: center; gap: 6px; margin-top: 32px; }
+    .page-btn {
+      min-width: 36px; height: 36px; background: var(--panel);
+      border: 1px solid var(--border); color: var(--muted); border-radius: 4px;
+      cursor: pointer; font-family: var(--font-mono); font-size: 13px; transition: all 0.2s;
+    }
+    .page-btn:hover:not(:disabled) { border-color: var(--cyan-dim); color: var(--cyan); }
+    .page-btn.active { background: var(--cyan); color: var(--ink); border-color: var(--cyan); }
+    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(8px); z-index: 1000;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .modal-box {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+      width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto;
+      position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .modal-header { padding: 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .modal-title { font-family: var(--font-head); font-size: 24px; font-weight: 900; text-transform: uppercase; }
+    .modal-close {
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      width: 32px; height: 32px; border-radius: 4px; cursor: pointer; transition: all 0.2s;
+    }
+    .modal-close:hover { color: var(--text); border-color: var(--cyan-dim); }
+    .modal-body { padding: 24px; }
+    .modal-footer { padding: 20px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 12px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-check {
+      display: flex; align-items: flex-start; gap: 10px; margin-top: 16px;
+      padding: 12px; background: var(--ink); border: 1px solid var(--border); border-radius: 4px; cursor: pointer;
+    }
+    .form-check input { margin-top: 3px; accent-color: var(--cyan); }
+    .form-check label { font-size: 13px; color: var(--muted); cursor: pointer; }
+    .form-error { font-family: var(--font-mono); font-size: 11px; color: #ef4444; margin-top: 4px; display: none; }
+    .form-error.visible { display: block; }
+    .form-input.error { border-color: #ef4444; }
+
+    .modal-success { text-align: center; padding: 40px 24px; }
+    .success-icon {
+      width: 64px; height: 64px; margin: 0 auto 20px; border-radius: 50%;
+      background: rgba(34, 197, 94, 0.1); display: flex; align-items: center; justify-content: center;
+      font-size: 28px; color: #22c55e; animation: pop 0.3s ease;
+    }
+    @keyframes pop { 0% { transform: scale(0); } 60% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+    /* ── TOASTS ── */
+    .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1100; display: flex; flex-direction: column; gap: 10px; }
+    .toast {
+      background: var(--panel); border: 1px solid var(--border); border-left: 4px solid var(--cyan);
+      padding: 12px 20px; border-radius: 4px; display: flex; align-items: center; gap: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3); animation: slideIn 0.3s ease;
+    }
+    .toast.success { border-left-color: #22c55e; }
+    .toast.error { border-left-color: #ef4444; }
+    .toast-icon { font-size: 16px; }
+    .toast.success .toast-icon { color: #22c55e; }
+    .toast.error .toast-icon { color: #ef4444; }
+    .toast.info .toast-icon { color: var(--cyan); }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    /* ── FOOTER ── */
+    .footer {
+      position: relative; z-index: 2; border-top: 1px solid var(--border);
+      padding: 28px 40px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-left { display: flex; align-items: center; gap: 12px; }
+    .footer-logo-text {
+      font-family: var(--font-head); font-weight: 900; font-size: 16px;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      background: var(--logo-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .footer p { font-family: var(--font-mono); font-size: 11px; color: var(--muted); letter-spacing: 0.05em; }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--ink); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--cyan-dim); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1100px) {
+      .vivillon-layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+    @media (max-width: 768px) {
+      .navbar { padding: 0 20px; }
+      .nav-links { gap: 16px; }
+      .hero { min-height: auto; padding: 60px 20px 50px; }
+      .vivillon-section { padding: 40px 20px; }
+      .trainer-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .hero-stats { flex-wrap: wrap; }
+      .stat-item { flex: 1 1 40%; border: none; }
+      .footer { flex-direction: column; gap: 10px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LANGUAGE BAR -->
+  <div class="lang-bar">
+    <span>🌐 Language:</span>
+    <button class="lang-btn active" data-lang="en"><span class="fi fi-us"></span></button>
+    <button class="lang-btn" data-lang="es"><span class="fi fi-es"></span></button>
+    <button class="lang-btn" data-lang="pt"><span class="fi fi-pt"></span></button>
+    <button class="lang-btn" data-lang="nl"><span class="fi fi-nl"></span></button>
+    <button class="lang-btn" data-lang="de"><span class="fi fi-de"></span></button>
+    <button class="lang-btn" data-lang="fr"><span class="fi fi-fr"></span></button>
+    <button class="lang-btn" data-lang="sv"><span class="fi fi-se"></span></button>
+    <button class="lang-btn" data-lang="ja"><span class="fi fi-jp"></span></button>
+    <button class="lang-btn" data-lang="pl"><span class="fi fi-pl"></span></button>
+    <button class="lang-btn" data-lang="no"><span class="fi fi-no"></span></button>
+    <button class="lang-btn" data-lang="fi"><span class="fi fi-fi"></span></button>
+    <button class="lang-btn" data-lang="da"><span class="fi fi-dk"></span></button>
+    <button class="lang-btn" data-lang="hi"><span class="fi fi-in"></span></button>
+    <button class="lang-btn" data-lang="tr"><span class="fi fi-tr"></span></button>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-logo">
+      <img src="assets/logo.png" alt="PoGORaids Logo" class="nav-logo-img" onerror="this.style.display='none'" />
+      <span class="nav-title">PoGORaids</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html">Tools</a></li>
+      <li><a href="vivillon.html" class="active">Vivillon</a></li>
+      <li><a href="news.html">News</a></li>
+      <li><a href="https://discord.gg/pogoraids" class="nav-discord">Discord</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-stripe"></div>
+    <div class="hero-ball"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">// Vivillon Exchange</div>
+      <h1 class="hero-title">
+        <span class="line1">Vivillon</span>
+        <span class="line2">Gift <span class="highlight">Exchange</span></span>
+      </h1>
+      <p class="hero-sub">Find trainers from around the world and exchange gifts to complete your Vivillon collection.</p>
+      <div class="hero-cta">
+        <button class="btn-primary" id="heroAddBtn"><i class="fa-solid fa-plus"></i> Add My Friend Code</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num" data-target="8412">0</div>
+          <div class="stat-label">Codes Available</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num" data-target="1204">0</div>
+          <div class="stat-label">Shared This Week</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num" data-target="45920">0</div>
+          <div class="stat-label">Total Exchanges</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN LAYOUT -->
+  <section class="vivillon-section">
+    <div class="vivillon-layout">
+      
+      <!-- LEFT SIDEBAR -->
+      <aside class="sidebar sidebar-left">
+        <div class="panel">
+          <div class="panel-label">// My Profile</div>
+          <div class="panel-title">Trainer Details</div>
+          
+          <div class="fc-box">
+            <div>
+              <div class="form-label" style="margin-bottom: 4px;">Friend Code</div>
+              <div class="fc-text" id="myFriendCode">1234 5678 9012</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="icon-btn" id="copyMyCode" title="Copy"><i class="fa-solid fa-copy"></i></button>
+              <button class="icon-btn" id="editMyCode" title="Edit"><i class="fa-solid fa-pen"></i></button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">My Region</label>
+            <select class="form-select" id="myRegion"></select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Looking For</label>
+            <div class="multiselect-box" id="lookingForSelect"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Availability</label>
+            <div class="radio-group" id="availabilityOptions">
+              <div class="radio-option active" data-status="available">
+                <span class="status-dot available"></span> Available now
+              </div>
+              <div class="radio-option" data-status="away">
+                <span class="status-dot away"></span> Away
+              </div>
+              <div class="radio-option" data-status="full">
+                <span class="status-dot full"></span> Already full
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-primary btn-block" id="saveProfile"><i class="fa-solid fa-floppy-disk"></i> Save Profile</button>
+        </div>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <main class="main-content">
+        <div class="panel search-panel">
+          <div class="search-bar">
+            <i class="fa-solid fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search by friend code or username..." autocomplete="off">
+          </div>
+          <div class="region-chips" id="regionChips"></div>
+        </div>
+
+        <div class="toolbar">
+          <div class="toolbar-info">
+            <strong id="resultCount">0</strong> trainers found
+          </div>
+          <div class="toolbar-actions">
+            <button class="btn-outline-sm" id="clearFilters" style="display:none; flex: none;"><i class="fa-solid fa-times"></i> Clear</button>
+            <select class="form-select sort-select" id="sortSelect">
+              <option value="recently-active">Recently Active</option>
+              <option value="newest">Newest</option>
+              <option value="most-wanted">Most Wanted</option>
+              <option value="alphabetical">Alphabetical</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="trainer-grid" id="trainerGrid" aria-live="polite"></div>
+        <div class="pagination" id="pagination"></div>
+      </main>
+
+      <!-- RIGHT SIDEBAR -->
+      <aside class="sidebar sidebar-right">
+        <div class="panel">
+          <div class="panel-label">// Region Progress</div>
+          <div class="panel-title">Collection Status</div>
+          <div class="region-progress-list" id="regionProgressList"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-label">// Pro Tip</div>
+          <h3 style="font-family: var(--font-head); font-size: 18px; text-transform: uppercase; margin-bottom: 12px;">Gift Exchange Tips</h3>
+          <p style="font-size: 13px; color: var(--muted); line-height: 1.6;">Remember to send at least one gift before removing inactive friends.</p>
+          <ul style="margin-top: 12px; list-style: none;">
+            <li style="font-size: 13px; color: var(--muted); padding: 4px 0;"><i class="fa-solid fa-chevron-right" style="color: var(--cyan); font-size: 10px; margin-right: 8px;"></i> Open gifts daily to maximize progress</li>
+            <li style="font-size: 13px; color: var(--muted); padding: 4px 0;"><i class="fa-solid fa-chevron-right" style="color: var(--cyan); font-size: 10px; margin-right: 8px;"></i> Pin postcards from your region</li>
+          </ul>
+        </div>
+      </aside>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-left">
+      <span class="footer-logo-text">PoGORaids</span>
+    </div>
+    <p>© 2026 PoGORaids.net — Not affiliated with Niantic or Pokémon GO.</p>
+  </footer>
+
+  <!-- ADD FRIEND MODAL -->
+  <div class="modal-overlay" id="addFriendModal" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <div class="panel-label">// Add Friend Code</div>
+          <h2 class="modal-title">Join the Exchange</h2>
+        </div>
+        <button class="modal-close" id="modalClose" aria-label="Close modal"><i class="fa-solid fa-times"></i></button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer" id="modalFooter" style="display: none;">
+        <button class="btn-outline-sm" id="modalCancel" style="flex: none; padding: 10px 20px;">Cancel</button>
+        <button class="btn-grad-sm" id="modalSubmit" style="flex: none; padding: 10px 24px;"><i class="fa-solid fa-check"></i> Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOASTS -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <script>
+    /* ============================================================
+       VIVILLON REGION DATA & SVG GENERATOR
+       ============================================================ */
+    const vivillonRegions = {
+      'Archipelago':  { c1: '#4a90d9', c2: '#a8d8f0', c3: '#ffffff' },
+      'Continental':  { c1: '#8b6f47', c2: '#c4a67a', c3: '#5c4033' },
+      'Elegant':      { c1: '#d4a5b5', c2: '#f5e0e8', c3: '#c08090' },
+      'Garden':       { c1: '#5cb85c', c2: '#a8d8a8', c3: '#3a8a3a' },
+      'High Plains':  { c1: '#d4a543', c2: '#f0d090', c3: '#a07820' },
+      'Icy Snow':     { c1: '#a8d8f0', c2: '#e0f0ff', c3: '#7090b0' },
+      'Jungle':       { c1: '#2d8a2d', c2: '#4aad4a', c3: '#1a5a1a' },
+      'Marine':       { c1: '#2a5f8a', c2: '#4a8ab5', c3: '#1a3f5a' },
+      'Meadow':       { c1: '#6b5b95', c2: '#a899d4', c3: '#4a3f7a' },
+      'Modern':       { c1: '#6c757d', c2: '#adb5bd', c3: '#495057' },
+      'Monsoon':      { c1: '#3a4f8a', c2: '#5a6fb5', c3: '#2a3f6a' },
+      'Ocean':        { c1: '#1a8a9a', c2: '#4ab5c5', c3: '#0a5a6a' },
+      'Polar':        { c1: '#c0d8e8', c2: '#e8f0f8', c3: '#90b0c8' },
+      'River':        { c1: '#4a9ab5', c2: '#7ac0d5', c3: '#2a7a95' },
+      'Sandstorm':    { c1: '#d4a050', c2: '#e8c878', c3: '#a07820' },
+      'Savanna':      { c1: '#e09540', c2: '#f5c878', c3: '#b06820' },
+      'Sun':          { c1: '#f5a623', c2: '#ffd560', c3: '#cc7a00' },
+      'Tundra':       { c1: '#b8c8d8', c2: '#d8e8f0', c3: '#8898a8' }
+    };
+
+    const regionNames = Object.keys(vivillonRegions);
+
+    function vivillonSVG(region, size = 24) {
+      const r = vivillonRegions[region];
+      if (!r) return '';
+      const c1 = r.c1, c2 = r.c2, c3 = r.c3;
+      const uid = region.replace(/\s/g, '');
+      return `<svg class="viv-icon" width="${size}" height="${size}" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+        <defs>
+          <radialGradient id="g${uid}" cx="50%" cy="40%" r="60%">
+            <stop offset="0%" stop-color="${c2}"/>
+            <stop offset="100%" stop-color="${c1}"/>
+          </radialGradient>
+        </defs>
+        <path d="M16 15 C 12 8, 6 5, 3 10 C 1 14, 3 18, 7 19 C 11 19, 14 17, 16 15 Z" fill="url(#g${uid})" stroke="${c3}" stroke-width="0.5"/>
+        <path d="M16 15 C 20 8, 26 5, 29 10 C 31 14, 29 18, 25 19 C 21 19, 18 17, 16 15 Z" fill="url(#g${uid})" stroke="${c3}" stroke-width="0.5"/>
+        <path d="M16 16 C 14 21, 10 25, 8 29 C 12 29, 15 26, 16 22 Z" fill="${c2}" stroke="${c3}" stroke-width="0.5"/>
+        <path d="M16 16 C 18 21, 22 25, 24 29 C 20 29, 17 26, 16 22 Z" fill="${c2}" stroke="${c3}" stroke-width="0.5"/>
+        <circle cx="8" cy="13" r="1.8" fill="${c3}" opacity="0.7"/>
+        <circle cx="24" cy="13" r="1.8" fill="${c3}" opacity="0.7"/>
+        <circle cx="12" cy="25" r="1.2" fill="${c3}" opacity="0.5"/>
+        <circle cx="20" cy="25" r="1.2" fill="${c3}" opacity="0.5"/>
+        <ellipse cx="16" cy="17" rx="1.2" ry="7" fill="#2a2a3a"/>
+        <circle cx="16" cy="10" r="1.8" fill="#2a2a3a"/>
+        <path d="M16 9 Q 14 6, 13 5" stroke="#2a2a3a" stroke-width="0.6" fill="none" stroke-linecap="round"/>
+        <path d="M16 9 Q 18 6, 19 5" stroke="#2a2a3a" stroke-width="0.6" fill="none" stroke-linecap="round"/>
+      </svg>`;
+    }
+
+    /* ============================================================
+       MOCK TRAINER DATA
+       ============================================================ */
+    const trainerNames = [
+      'SakuraTrainer', 'PokeMaster99', 'VivillonHunter', 'GiftExchangePro', 'AshKetchum',
+      'MistyWater', 'BrockStone', 'ValorFanatic', 'MysticPlayer', 'InstinctHero',
+      'RegionRover', 'GlobeTrotter', 'PikachuPal', 'EeveeLover', 'RayquazaFlyer',
+      'GymLeader', 'RaidBossSlayer', 'StardustFarmer', 'CandyCollector', 'ShinyHunter',
+      'LunarWing', 'SolarBeam', 'TidalWave', 'ForestGuardian', 'DesertNomad',
+      'FrostBite', 'EmberGlow', 'ThunderShock', 'PsychicMind', 'DarkKnight',
+      'FairyDust', 'DragonTamer', 'SteelWing', 'PoisonSting', 'RockSolid',
+      'BugCatcher', 'GhostHunter', 'IceQueen', 'FireStorm', 'WaterLily',
+      'GrassRoots', 'ElectricSurge', 'FlyingHigh', 'GroundBreaker', 'NormalType',
+      'KantoKid', 'JohtoJourney', 'HoennHero', 'SinnohStar', 'UnovaUnited',
+      'KalosKnight', 'AlolaAloha', 'GalarGiant', 'PaldeaPro', 'BuddyTrainer',
+      'DailySender', 'GiftWrapper', 'PostcardPal', 'VivillonVet', 'PatternPro',
+      'ButterflyFan', 'WingCollector', 'MonarchMan', 'NectarNomad', 'CocoonKing'
+    ];
+
+    // A realistic subset of countries for the mock data
+    const countryPool = [
+      'United States', 'Japan', 'United Kingdom', 'Germany', 'France', 'Brazil', 'Canada', 'Australia', 
+      'Spain', 'Italy', 'Mexico', 'South Korea', 'Netherlands', 'Sweden', 'India', 'Turkey', 'Argentina', 'Poland'
+    ];
+
+    // Full list of countries for the Add Friend modal dropdown
+    const allCountries = [
+      'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan',
+      'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan', 'Bolivia',
+      'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada',
+      'Cape Verde', 'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia', 'Comoros', 'Congo', 'Costa Rica', 'Croatia',
+      'Cuba', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador',
+      'Equatorial Guinea', 'Eritrea', 'Estonia', 'Eswatini', 'Ethiopia', 'Fiji', 'Finland', 'France', 'Gabon', 'Gambia',
+      'Georgia', 'Germany', 'Ghana', 'Greece', 'Grenada', 'Guatemala', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti',
+      'Honduras', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy',
+      'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', 'Korea, South', 'Kosovo', 'Kuwait', 'Kyrgyzstan',
+      'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Madagascar',
+      'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Mauritania', 'Mauritius', 'Mexico', 'Micronesia',
+      'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal',
+      'Netherlands', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'North Macedonia', 'Norway', 'Oman', 'Pakistan', 'Palau',
+      'Palestine', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal', 'Qatar', 'Romania',
+      'Russia', 'Rwanda', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal',
+      'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Sudan',
+      'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania',
+      'Thailand', 'Timor-Leste', 'Togo', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu', 'Uganda',
+      'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam',
+      'Yemen', 'Zambia', 'Zimbabwe'
+    ].sort();
+
+    function randomFrom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    function randomSubset(arr, min, max) {
+      const count = Math.floor(Math.random() * (max - min + 1)) + min;
+      const shuffled = [...arr].sort(() => Math.random() - 0.5);
+      return shuffled.slice(0, count);
+    }
+
+    function generateFriendCode() {
+      const parts = [];
+      for (let i = 0; i < 3; i++) parts.push(String(Math.floor(Math.random() * 10000)).padStart(4, '0'));
+      return parts.join(' ');
+    }
+
+    function generateMockTrainers(count) {
+      const trainers = [];
+      const now = Date.now();
+      const regionWeights = {
+        'Meadow': 15, 'Modern': 10, 'Garden': 8, 'Elegant': 7, 'Continental': 8,
+        'Marine': 6, 'Ocean': 12, 'Sun': 8, 'Polar': 6, 'Tundra': 5,
+        'Jungle': 5, 'Archipelago': 4, 'High Plains': 3, 'Icy Snow': 2,
+        'Monsoon': 3, 'River': 4, 'Sandstorm': 2, 'Savanna': 3
+      };
+      const weightedRegions = [];
+      for (const [region, weight] of Object.entries(regionWeights)) {
+        for (let i = 0; i < weight; i++) weightedRegions.push(region);
+      }
+      const statuses = [
+        { value: 'available', weight: 60 },
+        { value: 'away', weight: 25 },
+        { value: 'full', weight: 15 }
+      ];
+      const weightedStatuses = [];
+      statuses.forEach(s => { for (let i = 0; i < s.weight; i++) weightedStatuses.push(s.value); });
+
+      for (let i = 0; i < count; i++) {
+        const homeRegion = randomFrom(weightedRegions);
+        const lookingFor = randomSubset(regionNames.filter(r => r !== homeRegion), 2, 4);
+        const minutesAgo = Math.floor(Math.random() * 10080);
+        const createdAt = now - Math.floor(Math.random() * 90) * 24 * 60 * 60 * 1000;
+        
+        trainers.push({
+          id: 't_' + i,
+          username: trainerNames[i % trainerNames.length] + (i >= trainerNames.length ? Math.floor(i / trainerNames.length) : ''),
+          friendCode: generateFriendCode(),
+          homeRegion,
+          lookingFor,
+          country: randomFrom(countryPool), // Replaced languages with country
+          status: randomFrom(weightedStatuses),
+          lastSeen: now - minutesAgo * 60 * 1000,
+          createdAt,
+          completedExchanges: Math.floor(Math.random() * 50),
+          avatarColor: vivillonRegions[homeRegion].c1,
+          avatarInitial: trainerNames[i % trainerNames.length][0].toUpperCase()
+        });
+      }
+      return trainers;
+    }
+
+    /* ============================================================
+       STATE
+       ============================================================ */
+    const state = {
+      myProfile: {
+        friendCode: '1234 5678 9012',
+        username: 'MyTrainer',
+        homeRegion: 'Meadow',
+        lookingFor: ['Ocean', 'Sun', 'Sandstorm'],
+        status: 'available',
+        country: 'United States'
+      },
+      trainers: [],
+      filters: { search: '', regions: [], sort: 'recently-active' },
+      sentRequests: new Set(),
+      currentPage: 1,
+      perPage: 9,
+      completedRegions: new Set(['Meadow', 'Modern'])
+    };
+
+    /* ============================================================
+       UTILITIES
+       ============================================================ */
+    function debounce(fn, delay) {
+      let timer;
+      return function(...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), delay);
+      };
+    }
+
+    function formatLastSeen(timestamp) {
+      const diff = Date.now() - timestamp;
+      const minutes = Math.floor(diff / 60000);
+      if (minutes < 1) return 'Just now';
+      if (minutes < 60) return `${minutes} min ago`;
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `${hours} hr ago`;
+      const days = Math.floor(hours / 24);
+      if (days < 7) return `${days} day${days > 1 ? 's' : ''} ago`;
+      const weeks = Math.floor(days / 7);
+      return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
+    }
+
+    function statusLabel(status) {
+      return { available: 'Available', away: 'Away', full: 'Full' }[status] || status;
+    }
+
+    /* ============================================================
+       TOAST SYSTEM
+       ============================================================ */
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      const icons = {
+        success: '<i class="fa-solid fa-check-circle toast-icon"></i>',
+        error: '<i class="fa-solid fa-times-circle toast-icon"></i>',
+        info: '<i class="fa-solid fa-info-circle toast-icon"></i>'
+      };
+      toast.innerHTML = `${icons[type] || icons.info}<span style="font-size: 13px; font-weight: 500;">${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.animation = 'slideIn 0.3s ease reverse';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    async function copyToClipboard(text, label = 'Copied to clipboard!') {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast(label, 'success');
+      } catch (err) {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try { document.execCommand('copy'); showToast(label, 'success'); } catch (e) { showToast('Failed to copy', 'error'); }
+        document.body.removeChild(textArea);
+      }
+    }
+
+    /* ============================================================
+       RENDER FUNCTIONS
+       ============================================================ */
+    function populateRegionSelects() {
+      const myRegion = document.getElementById('myRegion');
+      myRegion.innerHTML = regionNames.map(r => `<option value="${r}" ${r === state.myProfile.homeRegion ? 'selected' : ''}>${r}</option>`).join('');
+    }
+
+    function renderMultiSelect(containerId, selectedValues) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = regionNames.map(region => {
+        const selected = selectedValues.includes(region);
+        return `
+          <div class="multiselect-option ${selected ? 'selected' : ''}" data-region="${region}">
+            ${vivillonSVG(region, 20)}
+            <span>${region}</span>
+            <i class="fa-solid fa-check check-icon"></i>
+          </div>
+        `;
+      }).join('');
+
+      container.querySelectorAll('.multiselect-option').forEach(el => {
+        el.addEventListener('click', () => {
+          const region = el.dataset.region;
+          const idx = selectedValues.indexOf(region);
+          if (idx > -1) {
+            selectedValues.splice(idx, 1);
+            el.classList.remove('selected');
+          } else {
+            selectedValues.push(region);
+            el.classList.add('selected');
+          }
+        });
+      });
+    }
+
+    function renderRegionChips() {
+      const container = document.getElementById('regionChips');
+      const counts = {};
+      regionNames.forEach(r => { counts[r] = 0; });
+      state.trainers.forEach(t => { counts[t.homeRegion] = (counts[t.homeRegion] || 0) + 1; });
+
+      container.innerHTML = regionNames.map(region => {
+        const active = state.filters.regions.includes(region);
+        return `
+          <div class="region-chip ${active ? 'active' : ''}" data-region="${region}">
+            ${vivillonSVG(region, 22)}
+            <span>${region}</span>
+            <span class="region-chip-count">${counts[region] || 0}</span>
+          </div>
+        `;
+      }).join('');
+
+      container.querySelectorAll('.region-chip').forEach(el => {
+        el.addEventListener('click', () => {
+          const region = el.dataset.region;
+          const idx = state.filters.regions.indexOf(region);
+          if (idx > -1) state.filters.regions.splice(idx, 1);
+          else state.filters.regions.push(region);
+          state.currentPage = 1;
+          renderRegionChips();
+          renderRegionProgress();
+          renderTrainers();
+          updateClearFiltersBtn();
+        });
+      });
+    }
+
+    function renderRegionProgress() {
+      const container = document.getElementById('regionProgressList');
+      const counts = {};
+      regionNames.forEach(r => { counts[r] = 0; });
+      state.trainers.forEach(t => {
+        if (t.status === 'available') counts[t.homeRegion] = (counts[t.homeRegion] || 0) + 1;
+      });
+
+      container.innerHTML = regionNames.map(region => {
+        const completed = state.completedRegions.has(region);
+        const active = state.filters.regions.includes(region);
+        return `
+          <div class="region-progress-item ${completed ? 'completed' : ''} ${active ? 'active' : ''}" data-region="${region}">
+            ${vivillonSVG(region, 26)}
+            <div class="region-progress-info">
+              <div class="region-progress-name">${region}</div>
+              <div class="region-progress-count">${counts[region]} online</div>
+            </div>
+            <div class="region-progress-check">
+              <i class="fa-solid fa-check"></i>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      container.querySelectorAll('.region-progress-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const region = el.dataset.region;
+          const idx = state.filters.regions.indexOf(region);
+          if (idx > -1) state.filters.regions.splice(idx, 1);
+          else state.filters.regions.push(region);
+          state.currentPage = 1;
+          renderRegionChips();
+          renderRegionProgress();
+          renderTrainers();
+          updateClearFiltersBtn();
+        });
+      });
+    }
+
+    function getFilteredTrainers() {
+      let results = [...state.trainers];
+      if (state.filters.search) {
+        const q = state.filters.search.toLowerCase().replace(/\s/g, '');
+        results = results.filter(t => {
+          const fc = t.friendCode.replace(/\s/g, '');
+          return t.username.toLowerCase().includes(q) || fc.includes(q);
+        });
+      }
+      if (state.filters.regions.length > 0) {
+        results = results.filter(t => state.filters.regions.includes(t.homeRegion));
+      }
+      switch (state.filters.sort) {
+        case 'newest': results.sort((a, b) => b.createdAt - a.createdAt); break;
+        case 'recently-active': results.sort((a, b) => b.lastSeen - a.lastSeen); break;
+        case 'most-wanted': results.sort((a, b) => b.lookingFor.length - a.lookingFor.length); break;
+        case 'alphabetical': results.sort((a, b) => a.username.localeCompare(b.username)); break;
+      }
+      return results;
+    }
+
+    function renderSkeletonCards(count = 6) {
+      const grid = document.getElementById('trainerGrid');
+      grid.innerHTML = Array(count).fill(0).map(() => `
+        <div class="skeleton-card">
+          <div style="display:flex;gap:12px;">
+            <div class="skeleton skel-avatar"></div>
+            <div style="flex:1;">
+              <div class="skeleton skel-line sm" style="margin-bottom:8px;"></div>
+              <div class="skeleton skel-line" style="height:10px;width:50%;"></div>
+            </div>
+          </div>
+          <div class="skeleton skel-line lg" style="height:36px;border-radius:4px;"></div>
+          <div class="skeleton skel-line md"></div>
+          <div class="skeleton skel-line lg"></div>
+          <div style="display:flex;gap:8px;">
+            <div class="skeleton skel-btn" style="flex:1;"></div>
+            <div class="skeleton skel-btn" style="flex:1;"></div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderEmptyState() {
+      document.getElementById('trainerGrid').innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+          <i class="fa-solid fa-gift" style="font-size: 48px; color: var(--muted); opacity: 0.5; margin-bottom: 20px;"></i>
+          <h3 style="font-family: var(--font-head); font-size: 24px; text-transform: uppercase; margin-bottom: 8px;">No trainers found</h3>
+          <p style="color: var(--muted); margin-bottom: 20px;">No trainers currently available from this region.</p>
+          <button class="btn-outline-sm" id="emptyClearFilters" style="display: inline-flex; flex: none; padding: 10px 20px;">Clear Filters</button>
+        </div>
+      `;
+      document.getElementById('emptyClearFilters').addEventListener('click', clearAllFilters);
+      document.getElementById('pagination').innerHTML = '';
+    }
+
+    function renderTrainerCard(trainer) {
+      const sent = state.sentRequests.has(trainer.id);
+      return `
+        <article class="trainer-card ${sent ? 'request-sent' : ''}" data-id="${trainer.id}">
+          <div class="trainer-header">
+            <div class="trainer-avatar" style="background: linear-gradient(135deg, ${trainer.avatarColor}, ${trainer.avatarColor}99);">
+              ${trainer.avatarInitial}
+              <span class="status-dot ${trainer.status}"></span>
+            </div>
+            <div>
+              <div class="trainer-name">${trainer.username}</div>
+              <div class="trainer-meta">
+                <i class="fa-regular fa-clock"></i> ${formatLastSeen(trainer.lastSeen)} · ${statusLabel(trainer.status)}
+              </div>
+            </div>
+          </div>
+
+          <div class="trainer-fc">
+            <div class="fc-text">${trainer.friendCode}</div>
+            <button class="icon-btn copy-code-btn" data-code="${trainer.friendCode}" style="border: none; padding: 4px;">
+              <i class="fa-solid fa-copy"></i>
+            </button>
+          </div>
+
+          <div class="trainer-details">
+            <div class="detail-row">
+              <span class="detail-label">Region</span>
+              <span class="detail-value">${vivillonSVG(trainer.homeRegion, 18)} ${trainer.homeRegion}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Looking For</span>
+              <span class="detail-value">
+                ${trainer.lookingFor.map(r => `<span class="region-tag">${vivillonSVG(r, 16)} ${r}</span>`).join('')}
+              </span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Country</span>
+              <span class="detail-value">${trainer.country}</span>
+            </div>
+          </div>
+
+          <div class="trainer-actions">
+            <button class="btn-outline-sm copy-code-btn" data-code="${trainer.friendCode}">
+              <i class="fa-solid fa-copy"></i> Copy Code
+            </button>
+            ${sent
+              ? `<button class="btn-sent-sm" disabled><i class="fa-solid fa-check"></i> Request Sent</button>`
+              : `<button class="btn-grad-sm add-friend-btn" data-id="${trainer.id}"><i class="fa-solid fa-user-plus"></i> I've Added You</button>`
+            }
+          </div>
+        </article>
+      `;
+    }
+
+    function renderTrainers() {
+      const grid = document.getElementById('trainerGrid');
+      const filtered = getFilteredTrainers();
+      const total = filtered.length;
+      const totalPages = Math.ceil(total / state.perPage);
+      if (state.currentPage > totalPages && totalPages > 0) state.currentPage = totalPages;
+      if (totalPages === 0) state.currentPage = 1;
+
+      const start = (state.currentPage - 1) * state.perPage;
+      const pageItems = filtered.slice(start, start + state.perPage);
+
+      document.getElementById('resultCount').textContent = total.toLocaleString();
+
+      if (total === 0) {
+        renderEmptyState();
+        return;
+      }
+
+      grid.innerHTML = pageItems.map(renderTrainerCard).join('');
+
+      grid.querySelectorAll('.copy-code-btn').forEach(btn => {
+        btn.addEventListener('click', () => copyToClipboard(btn.dataset.code, 'Friend code copied!'));
+      });
+
+      grid.querySelectorAll('.add-friend-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
+          state.sentRequests.add(id);
+          const card = btn.closest('.trainer-card');
+          card.classList.add('request-sent');
+          btn.outerHTML = `<button class="btn-sent-sm" disabled><i class="fa-solid fa-check"></i> Request Sent</button>`;
+          showToast('Friend request sent! Remember to send a gift soon.', 'success');
+        });
+      });
+
+      renderPagination(totalPages);
+    }
+
+    function renderPagination(totalPages) {
+      const container = document.getElementById('pagination');
+      if (totalPages <= 1) { container.innerHTML = ''; return; }
+      let html = `<button class="page-btn" ${state.currentPage === 1 ? 'disabled' : ''} data-page="${state.currentPage - 1}"><i class="fa-solid fa-chevron-left"></i></button>`;
+      const startPage = Math.max(1, state.currentPage - 2);
+      const endPage = Math.min(totalPages, startPage + 4);
+      for (let i = startPage; i <= endPage; i++) {
+        html += `<button class="page-btn ${i === state.currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+      }
+      html += `<button class="page-btn" ${state.currentPage === totalPages ? 'disabled' : ''} data-page="${state.currentPage + 1}"><i class="fa-solid fa-chevron-right"></i></button>`;
+      container.innerHTML = html;
+      container.querySelectorAll('.page-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const page = parseInt(btn.dataset.page);
+          if (!isNaN(page) && page >= 1 && page <= totalPages) {
+            state.currentPage = page;
+            renderTrainers();
+            document.querySelector('.main-content').scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      });
+    }
+
+    function updateClearFiltersBtn() {
+      const btn = document.getElementById('clearFilters');
+      const hasFilters = state.filters.search || state.filters.regions.length > 0;
+      btn.style.display = hasFilters ? 'inline-flex' : 'none';
+    }
+
+    function clearAllFilters() {
+      state.filters.search = '';
+      state.filters.regions = [];
+      state.currentPage = 1;
+      document.getElementById('searchInput').value = '';
+      renderRegionChips();
+      renderRegionProgress();
+      renderTrainers();
+      updateClearFiltersBtn();
+      showToast('Filters cleared', 'info');
+    }
+
+    /* ============================================================
+       MODAL LOGIC
+       ============================================================ */
+    const modal = document.getElementById('addFriendModal');
+
+    function buildModalForm() {
+      const body = document.getElementById('modalBody');
+      const footer = document.getElementById('modalFooter');
+      footer.style.display = 'flex';
+      body.innerHTML = `
+        <form id="addFriendForm" novalidate>
+          <div class="form-group">
+            <label class="form-label">Username <span style="color: #ef4444;">*</span></label>
+            <input type="text" class="form-input" id="fUsername" placeholder="Trainer123" maxlength="20" required>
+            <div class="form-error" id="errUsername">Please enter a username.</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Friend Code <span style="color: #ef4444;">*</span></label>
+            <input type="text" class="form-input" id="fFriendCode" placeholder="1234 5678 9012" maxlength="14" required>
+            <div class="form-error" id="errFriendCode">Friend code must be in format: XXXX XXXX XXXX</div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Home Region <span style="color: #ef4444;">*</span></label>
+              <select class="form-select" id="fHomeRegion" required>
+                <option value="">Select region...</option>
+                ${regionNames.map(r => `<option value="${r}">${r}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Country <span style="color: #ef4444;">*</span></label>
+              <select class="form-select" id="fCountry" required>
+                <option value="">Select country...</option>
+                ${allCountries.map(c => `<option value="${c}">${c}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Looking For (select all that apply)</label>
+            <div class="multiselect-box" id="fLookingFor" style="max-height: 120px;"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Short Note</label>
+            <textarea class="form-textarea" id="fNote" placeholder="Daily gift sender" maxlength="120"></textarea>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="fAgree" required>
+            <label for="fAgree">I agree my friend code will be publicly visible to other trainers on PogoRaids.</label>
+          </div>
+          <div class="form-error" id="errAgree" style="margin-top:6px;">You must agree to share your friend code.</div>
+        </form>
+      `;
+      renderMultiSelect('fLookingFor', []);
+      attachFormValidation();
+    }
+
+    function openModal() {
+      buildModalForm();
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => document.getElementById('fUsername').focus(), 100);
+    }
+
+    function closeModal() {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function showSuccessState() {
+      const body = document.getElementById('modalBody');
+      const footer = document.getElementById('modalFooter');
+      footer.style.display = 'none';
+      body.innerHTML = `
+        <div class="modal-success">
+          <div class="success-icon"><i class="fa-solid fa-check"></i></div>
+          <h2 class="modal-title" style="margin-bottom: 8px;">Profile Created!</h2>
+          <p style="color: var(--muted); margin-bottom: 24px;">Your trainer card is now visible to trainers around the world.</p>
+          <button class="btn-primary" id="successDone" style="display: inline-flex;">View My Profile</button>
+        </div>
+      `;
+      document.getElementById('successDone').addEventListener('click', closeModal);
+    }
+
+    function attachFormValidation() {
+      const fcInput = document.getElementById('fFriendCode');
+      if (fcInput) {
+        fcInput.addEventListener('input', (e) => {
+          let val = e.target.value.replace(/\D/g, '').slice(0, 12);
+          const parts = [];
+          for (let i = 0; i < val.length; i += 4) parts.push(val.slice(i, i + 4));
+          e.target.value = parts.join(' ');
+        });
+      }
+    }
+
+    function validateAndSubmit() {
+      const username = document.getElementById('fUsername').value.trim();
+      const friendCode = document.getElementById('fFriendCode').value.trim();
+      const homeRegion = document.getElementById('fHomeRegion').value;
+      const country = document.getElementById('fCountry').value;
+      const agree = document.getElementById('fAgree').checked;
+      let valid = true;
+
+      const errUsername = document.getElementById('errUsername');
+      const fUsername = document.getElementById('fUsername');
+      if (!username) {
+        errUsername.classList.add('visible'); fUsername.classList.add('error'); valid = false;
+      } else { errUsername.classList.remove('visible'); fUsername.classList.remove('error'); }
+
+      const errFriendCode = document.getElementById('errFriendCode');
+      const fFriendCode = document.getElementById('fFriendCode');
+      if (!/^\d{4}\s\d{4}\s\d{4}$/.test(friendCode)) {
+        errFriendCode.textContent = 'Friend code must be in format: XXXX XXXX XXXX';
+        errFriendCode.classList.add('visible'); fFriendCode.classList.add('error'); valid = false;
+      } else if (state.trainers.some(t => t.friendCode === friendCode)) {
+        errFriendCode.textContent = 'This friend code is already registered.';
+        errFriendCode.classList.add('visible'); fFriendCode.classList.add('error'); valid = false;
+      } else { errFriendCode.classList.remove('visible'); fFriendCode.classList.remove('error'); }
+
+      const errAgree = document.getElementById('errAgree');
+      if (!agree) { errAgree.classList.add('visible'); valid = false; } else { errAgree.classList.remove('visible'); }
+
+      if (!valid) { showToast('Please fix the errors in the form.', 'error'); return; }
+
+      showToast('Submitting...', 'info');
+      setTimeout(() => {
+        state.myProfile.friendCode = friendCode;
+        state.myProfile.homeRegion = homeRegion || state.myProfile.homeRegion;
+        state.myProfile.country = country || state.myProfile.country;
+        document.getElementById('myFriendCode').textContent = friendCode;
+        document.getElementById('myRegion').value = state.myProfile.homeRegion;
+        showSuccessState();
+      }, 800);
+    }
+
+    /* ============================================================
+       INITIALIZATION
+       ============================================================ */
+    function init() {
+      populateRegionSelects();
+      renderMultiSelect('lookingForSelect', state.myProfile.lookingFor);
+      renderRegionChips();
+      renderRegionProgress();
+      renderSkeletonCards(6);
+
+      // Simulate data loading
+      setTimeout(() => {
+        state.trainers = generateMockTrainers(80);
+        renderRegionChips();
+        renderRegionProgress();
+        renderTrainers();
+      }, 1000);
+
+      // Search
+      document.getElementById('searchInput').addEventListener('input', debounce((e) => {
+        state.filters.search = e.target.value;
+        state.currentPage = 1;
+        renderTrainers();
+        updateClearFiltersBtn();
+      }, 300));
+
+      // Sort
+      document.getElementById('sortSelect').addEventListener('change', (e) => {
+        state.filters.sort = e.target.value;
+        state.currentPage = 1;
+        renderTrainers();
+      });
+
+      // Clear Filters
+      document.getElementById('clearFilters').addEventListener('click', clearAllFilters);
+
+      // My Region change
+      document.getElementById('myRegion').addEventListener('change', (e) => {
+        state.myProfile.homeRegion = e.target.value;
+      });
+
+      // Copy my code
+      document.getElementById('copyMyCode').addEventListener('click', () => {
+        copyToClipboard(state.myProfile.friendCode, 'Your friend code copied!');
+      });
+
+      // Edit my code
+      document.getElementById('editMyCode').addEventListener('click', openModal);
+
+      // Save profile
+      document.getElementById('saveProfile').addEventListener('click', () => {
+        showToast('Profile saved successfully!', 'success');
+      });
+
+      // Hero CTA
+      document.getElementById('heroAddBtn').addEventListener('click', openModal);
+
+      // Modal events
+      document.getElementById('modalClose').addEventListener('click', closeModal);
+      document.getElementById('modalCancel').addEventListener('click', closeModal);
+      document.getElementById('modalSubmit').addEventListener('click', validateAndSubmit);
+      modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
+      });
+
+      // Availability toggle
+      document.querySelectorAll('.radio-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+          document.querySelectorAll('.radio-option').forEach(o => o.classList.remove('active'));
+          opt.classList.add('active');
+          state.myProfile.status = opt.dataset.status;
+        });
+      });
+
+      // Animate stats
+      document.querySelectorAll('[data-target]').forEach(el => {
+        const target = parseInt(el.dataset.target);
+        const duration = 1500;
+        const start = performance.now();
+        function update(now) {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          el.textContent = Math.floor(target * eased).toLocaleString();
+          if (progress < 1) requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+      });
+
+      // Language bar toggle (visual only)
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+        });
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
